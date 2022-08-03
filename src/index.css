@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html {
   background-color: #f2f2f2;
   height: 100%;
@@ -30,28 +34,21 @@ body {
   font-family: 'roboto';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f9f9f9;
+  background-color: #FFF;
   min-height: 100%;
   box-sizing: border-box;
-  // width: 100%;
-  // margin-left: auto;
-  // margin-right: auto;
-  // background-color: white;
   overflow-y: scroll;
-  &:hover {
-    cursor: default;
-  }
+  
+}
 
-  @media only screen and (max-width: 360px) {
+@media only screen and (max-width: 360px) {
+  body {
     width: 100%;
-  }
-
-  @media only screen and (min-width: 480px) {
-    width: 480px;
   }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@media only screen and (min-width: 480px) {
+  body {
+    width: 480px;
+  }
 }
