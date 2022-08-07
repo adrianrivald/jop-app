@@ -18,7 +18,7 @@ export default function Table({
                         {
                             props.tbList.map((result, idx) => {
                                 return (
-                                    <th scope="col" className={`py-3 px-2 ${props.isTableFooter && idx === 0 ? 'w-6/12' : ''} ${idx=== 0 ? '' : 'border-l-2'} border-bgrey`}>
+                                    <th scope="col" className={`py-3 px-2 ${props.isTableFooter && idx === 0 ? 'w-6/12' : ''} ${idx=== 0 || props.isTableFooter  ? '' : 'border-l-2'} border-bgrey`}>
                                         <div className="my-2 font-normal">
                                             {result.field}
                                         </div>
