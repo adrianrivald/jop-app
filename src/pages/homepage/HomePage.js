@@ -6,7 +6,7 @@ import Header from '../../components/ui/Header';
 function HomePage() {
     return (
         <div className="App">
-            <Header title="Penugasan" />
+            <Header title="Penugasan" isWithNotification={true} />
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <p>Welcome to JOP Landing Page</p>

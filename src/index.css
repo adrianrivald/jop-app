@@ -8,21 +8,21 @@ html {
 }
 
 @font-face {
-  font-family: 'roboto';
-  src: local('roboto'),
-    url(./assets/fonts/Roboto-Regular.ttf) format('truetype');
+  font-family: 'plus-jakarta';
+  src: local('plus-jakarta'),
+    url(./assets/fonts/PlusJakartaSans-Regular.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: 'roboto-medium';
-  src: local('roboto-medium'),
-    url(./assets/fonts/Roboto-Medium.ttf) format('truetype');
+  font-family: 'plus-jakarta-medium';
+  src: local('plus-jakarta-medium'),
+    url(./assets/fonts/PlusJakartaSans-Medium.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: 'roboto-bold';
-  src: local('roboto-bold'),
-    url(./assets/fonts/Roboto-Bold.ttf) format('truetype');
+  font-family: 'plus-jakarta-bold';
+  src: local('plus-jakarta-bold'),
+    url(./assets/fonts/PlusJakartaSans-Bold.ttf) format('truetype');
 }
 
 .link {
@@ -31,14 +31,21 @@ html {
 
 body {
   margin: auto;
-  font-family: 'roboto';
+  font-family: 'plus-jakarta';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #FFF;
+  background-color: #F2F5F7;
   min-height: 100%;
   box-sizing: border-box;
   overflow-y: scroll;
-  
+}
+
+.header {
+  width: auto;
+}
+
+.container {
+  padding:  16px 20px;
 }
 
 @media only screen and (max-width: 360px) {
