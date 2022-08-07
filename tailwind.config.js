@@ -30,6 +30,7 @@ module.exports = {
             'air': '#FBF196',
             'coal': '#332919',
             'earth': '#A7A29A',
+            'bgrey': '#F2F5F7'
           },
       },
     plugins: [],

@@ -1,7 +1,8 @@
-export default function Title(props) {
-    const { text } = props
+export default function Title({
+    text
+}) {
     return (
-        <h1 className="m-1 font-bold text-coal text-xl">
+        <h1 className="my-1 font-bold text-coal text-xl">
             {text}
         </h1>
     )

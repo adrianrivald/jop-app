@@ -1,8 +1,9 @@
-export default function Subtitle(props) {
-    const { title } = props
+export default function Subtitle({
+    text
+}) {
     return (
-        <h1 className="m-1 font-bold text-coal text-xl">
-            {title}
-        </h1>
+        <h2 className="my-0.5 font-normal text-coal text-xs">
+            {text}
+        </h2>
     )
 }
