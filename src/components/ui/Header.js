@@ -47,7 +47,8 @@ export default function Header({
                     ) : null
                 }
             <Drawer isOpen={isOpen} setIsOpen={setIsOpen}>
-                Isi burger menu
+                <div className='cursor-pointer' onClick={() => setIsOpen(!isOpen)}>X</div>
+                <p className='mt-20'>Isi burger</p>
             </Drawer>
             </div>
         </div>

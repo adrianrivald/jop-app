@@ -23,7 +23,7 @@ export default function Drawer({ children, isOpen, setIsOpen }) {
       <section
         className=" w-screen h-full cursor-pointer "
         onClick={() => {
-          setIsOpen(false);
+          setIsOpen(!isOpen);
         }}
       ></section>
     </main>
