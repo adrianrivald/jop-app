@@ -27,7 +27,7 @@ const UserMenu = () => {
     const Card = (props) => {
         return (
             <div className='p-2 bg-white text-black rounded-md'>
-                <p className='text-center m-12 text-xl font-bold'>{props.cardTitle}</p>
+                <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
                 <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
                 <div className='flex items-center justify-between'>
                     <span className='text-xs'>
