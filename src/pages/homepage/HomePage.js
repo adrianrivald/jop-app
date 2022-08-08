@@ -26,7 +26,7 @@ const UserMenu = () => {
 
     const Card = (props) => {
         return (
-            <div className='p-2 bg-white text-black rounded-md'>
+            <div className='p-2 bg-white text-black rounded-md shadow-lg'>
                 <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
                 <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
                 <div className='flex items-center justify-between'>
@@ -60,7 +60,7 @@ const Contact = () => {
     )
 }
 
-function HomePage() {
+export default function HomePage() {
     return (
         <div className="App">
             <Header title="Beranda" isWithBurgerMenu isWithNotification/>
@@ -72,5 +72,3 @@ function HomePage() {
         </div>
     )
 }
-
-export default HomePage;
