@@ -48,7 +48,7 @@ export default function Header({
                 }
             <Drawer isOpen={isOpen} setIsOpen={setIsOpen}>
                 <div className='m-10 flex justify-between items-center'>
-                    <p>Isi burger</p>
+                    <p>Menu</p>
                     <div className='cursor-pointer' onClick={() => setIsOpen(!isOpen)}>X</div>
                 </div>
             </Drawer>
