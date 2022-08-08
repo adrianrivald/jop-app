@@ -47,8 +47,10 @@ export default function Header({
                     ) : null
                 }
             <Drawer isOpen={isOpen} setIsOpen={setIsOpen}>
-                <div className='cursor-pointer' onClick={() => setIsOpen(!isOpen)}>X</div>
-                <p className='mt-20'>Isi burger</p>
+                <div className='m-10 flex justify-between items-center'>
+                    <p>Isi burger</p>
+                    <div className='cursor-pointer' onClick={() => setIsOpen(!isOpen)}>X</div>
+                </div>
             </Drawer>
             </div>
         </div>
