@@ -62,7 +62,7 @@ function Sample() {
     return (
         <>
             <div class="header">
-                <Header title="Penugasan" isWithBack isWithNotification />
+                <Header title="Penugasan" isWithBack isWithNotification isWithBurgerMenu />
             </div>
             <div className="container">
                 <div className='flex justify-between items-center'>

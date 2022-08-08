@@ -2,18 +2,23 @@ import back from '../../assets/icons/back.svg';
 import bell from '../../assets/icons/bell.svg';
 import burger from '../../assets/icons/burger.svg';
 import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import Drawer from './Drawer';
 
-export default function Header(props) {
-    const { 
-        title, 
-        isWithBack,
-        isWithNotification, 
-        isWithBurgerMenu,
-        handleNotification, 
-        handleBurgerMenu 
-    } = props;
+export default function Header({
+    title, 
+    isWithBack,
+    isWithNotification, 
+    isWithBurgerMenu,
+    handleNotification, 
+}) {
     const navigate = useNavigate();
+    const [ isOpen, setIsOpen ] = React.useState(false)
 
+    const handleBurgerMenu = () => {
+        setIsOpen(true)
+    }
+    
     return (
         <div className="flex p-5 items-center bg-white rounded-b-xl" style={{boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.2)'}}>
             {
@@ -37,10 +42,13 @@ export default function Header(props) {
                 {
                     isWithBurgerMenu ? (
                         <div className="flex-none">
-                            <img src={burger} className='cursor-pointer' onClick={handleBurgerMenu} alt="burger" />
+                            <img src={burger} className='cursor-pointer' onClick={handleBurgerMenu} alt="burger"/>
                         </div>
                     ) : null
                 }
+            <Drawer isOpen={isOpen} setIsOpen={setIsOpen}>
+                Isi burger menu
+            </Drawer>
             </div>
         </div>
     )
