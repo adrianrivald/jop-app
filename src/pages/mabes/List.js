@@ -3,6 +3,7 @@ import Button from '../../components/button/Button';
 import Table from '../../components/ui/Table';
 import React from 'react';
 import DropDown from '../../components/forms/Dropdown';
+import DatePicker from '../../components/forms/DatePicker';
 
 const listItem = [
     {
@@ -76,7 +77,7 @@ function MabesList() {
 
     const Dropdown = (props) => {
         return (
-            <div className='mt-1 p-2 w-3/6 rounded-md'>
+            <div className='mt-1 w-3/6'>
                 <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
                 <DropDown onChange={props.onChange} option={props.option} />
             </div>
@@ -101,10 +102,19 @@ function MabesList() {
                         }
                     />
                 </div>
-                <div className='flex justify-between items-center'>
-                    <Dropdown title="Estate" option={estate} />
-                    <Dropdown title="Jenis Tugas" option={task} />
-                    {/* <Task /> */}
+                <div>
+                    <div className='flex justify-between items-center gap-2'>
+                        <Dropdown title="Estate" option={estate} />
+                        <Dropdown title="Jenis Tugas" option={task} />
+                    </div>
+                    <div className='flex justify-between items-center gap-2 mt-2'>
+                        <div className='flex-auto w-64'>
+                            <DatePicker />
+                        </div>
+                        <div className='flex-auto'>
+                            <Button isFilter={true} text='Filter'/>
+                        </div>
+                    </div>
                 </div>
                 <div className='my-4'>
                     <Table 
