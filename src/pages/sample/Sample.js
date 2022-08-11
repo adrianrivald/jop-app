@@ -67,7 +67,7 @@ function Sample() {
             <div className="container">
                 <div className='flex justify-between items-center'>
                     <Title text='Gembung' />
-                    <Button text={"Edit"} isLong={true}/>
+                    <Button text={"Edit"}/>
                 </div>
                 <div className='mt-6'>
                     <Subtitle text='Informasi Wilayah & Cuaca' />

@@ -11,6 +11,7 @@ import SignUp from './pages/auth/signup';
 import Sample from './pages/sample/Sample';
 import Storybook from './pages/storybook';
 import Mandor from './pages/assignment/mandor'
+import MabesList from './pages/mabes/List';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         {/* mandor */}
         <Route path="/assignment/mandor/list" exact element={<Mandor />} />
         <Route path="/storybook" exact element={<Storybook/>} />
+        <Route path="/mabes/list" exact element={<MabesList/>} />
       </Routes>
     </Router>
   );
