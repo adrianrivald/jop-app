@@ -1,9 +1,10 @@
-import Header from '../../components/ui/Header';
-import Button from '../../components/button/Button';
-import Table from '../../components/ui/Table';
+import Header from '../../../components/ui/Header';
+import Button from '../../../components/button/Button';
+import Table from '../../../components/ui/Table';
 import React from 'react';
-import DropDown from '../../components/forms/Dropdown';
-import DatePicker from '../../components/forms/DatePicker';
+import DropDown from '../../../components/forms/Dropdown';
+import DatePicker from '../../../components/forms/DatePicker';
+import { useNavigate } from 'react-router-dom';
 
 const listItem = [
     {
@@ -42,7 +43,8 @@ const listItemFooter = [
     }
 ]
 
-function MabesList() {
+function Mabes() {
+    const navigate = useNavigate()
     const [tbList, setTbList] = React.useState([]);
     const [tbListFooter, setTbListFooter] = React.useState([]);
     const [estate] = React.useState([
@@ -87,7 +89,7 @@ function MabesList() {
     return (
         <>
             <div class="header">
-                <Header title="Penugasan" isWithBack isWithNotification isWithBurgerMenu />
+                <Header title="Penugasan" isWithBack  />
             </div>
             <div className="container">
                 <p className='text-xs'>Penugasan</p>
@@ -100,6 +102,7 @@ function MabesList() {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         }
+                        onClick={()=> navigate('/assignment/mabes/new-assignment')}
                     />
                 </div>
                 <div>
@@ -151,4 +154,4 @@ function MabesList() {
     )
 }
 
-export default MabesList;
+export default Mabes;

@@ -7,18 +7,21 @@ export default function Table({
     isWithStatus,
     tbList,
     tbListFooter,
-    status
+    status,
+    backgroundColor = 'bg-white',
+    borderColor,
+    cellBorder = 'border-bgrey'
 }){
 
     const TableItem = (props) => {
         return (
             <table className={`${isWithHeader && !props.isTableFooter ? 'border-t-2' : '' } ${isWithFooter && !props.isTableFooter ? 'border-b-2 ' : ''} border-bgrey border-spacing-1 bg-bgrey w-full text-sm text-left text-gray-500 dark:text-gray-400`}>
-                <thead className="text-xs bg-white">
+                <thead className={`text-xs ${backgroundColor}`}>
                     <tr>
                         {
                             props.tbList.map((result, idx) => {
                                 return (
-                                    <th scope="col" className={`py-3 px-2 ${props.isTableFooter && idx === 0 ? 'w-6/12' : ''} ${idx=== 0 || props.isTableFooter  ? '' : 'border-l-2'} border-bgrey`}>
+                                    <th scope="col" className={`py-3 px-2 ${props.isTableFooter && idx === 0 ? 'w-6/12' : ''} ${idx=== 0 || props.isTableFooter  ? '' : 'border-l-2'} ${cellBorder}`}>
                                         <div className="my-2 font-normal">
                                             {result.field}
                                         </div>
@@ -61,7 +64,7 @@ export default function Table({
     }
 
     return (
-        <div className="overflow-x-auto relative rounded-lg bg-bgrey">
+        <div className={`overflow-x-auto relative rounded-lg ${borderColor}`}>
             {
                 isWithHeader ?
                     <Header title={headerTitle} titleItem={titleItem} titleCode={titleCode} /> : null
