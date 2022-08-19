@@ -7,7 +7,7 @@ const FlatButton = ({ role, text, className, onClick }) => {
     if (role === 'white' ) roleStyle = 'bg-white text-flora border border-flora'
 
     return(
-        <button className={`${roleStyle} font-bold rounded-lg py-3 px-4 ${className}`} onClick={onClick}>{text}</button>
+        <button className={`${roleStyle} font-bold rounded-lg p-3 ${className}`} onClick={onClick}>{text}</button>
     )
 }
 

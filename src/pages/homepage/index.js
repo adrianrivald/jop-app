@@ -35,7 +35,7 @@ const UserMenu = () => {
                     <span className='text-xs'>
                         17 Februari 2022, 12:00
                     </span>
-                    <Link className='text-flora text-xs' to='/sample'>Detail</Link>
+                    <Link className='text-flora text-xs' to='/assignment/mabes/list'>Detail</Link>
                 </div>
             </div>
         )

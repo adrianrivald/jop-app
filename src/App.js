@@ -11,7 +11,11 @@ import SignUp from './pages/auth/signup';
 import Sample from './pages/sample/Sample';
 import Storybook from './pages/storybook';
 import Mandor from './pages/assignment/mandor'
-import MabesList from './pages/mabes/List';
+import Mabes from './pages/assignment/mabes';
+import MabesAssignment from './pages/assignment/mabes/new-assignment';
+import MabesDetail from './pages/assignment/mabes/detail';
+import MabesDetailAction from './pages/assignment/mabes/detail/action';
+import MabesEdit from './pages/assignment/mabes/edit';
 
 function App() {
   return (
@@ -24,8 +28,13 @@ function App() {
         <Route path="/sample" exact element={<Sample/>} />
         {/* mandor */}
         <Route path="/assignment/mandor/list" exact element={<Mandor />} />
+        {/* mabes */}
+        <Route path="/assignment/mabes/list" exact element={<Mabes/>} />
+        <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />
+        <Route path="/assignment/mabes/detail/:id" exact element={<MabesDetail/>} />
+        <Route path="/assignment/mabes/detail/:id/edit" exact element={<MabesEdit/>} />
+        <Route path="/assignment/mabes/detail/:id/action" exact element={<MabesDetailAction/>} />
         <Route path="/storybook" exact element={<Storybook/>} />
-        <Route path="/mabes/list" exact element={<MabesList/>} />
       </Routes>
     </Router>
   );
