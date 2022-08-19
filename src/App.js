@@ -15,6 +15,7 @@ import Mabes from './pages/assignment/mabes';
 import MabesAssignment from './pages/assignment/mabes/new-assignment';
 import MabesDetail from './pages/assignment/mabes/detail';
 import MabesDetailAction from './pages/assignment/mabes/detail/action';
+import MabesEdit from './pages/assignment/mabes/edit';
 
 function App() {
   return (
@@ -30,8 +31,9 @@ function App() {
         {/* mabes */}
         <Route path="/assignment/mabes/list" exact element={<Mabes/>} />
         <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />
-        <Route path="/assignment/mabes/detail" exact element={<MabesDetail/>} />
-        <Route path="/assignment/mabes/detail/action" exact element={<MabesDetailAction/>} />
+        <Route path="/assignment/mabes/detail/:id" exact element={<MabesDetail/>} />
+        <Route path="/assignment/mabes/detail/:id/edit" exact element={<MabesEdit/>} />
+        <Route path="/assignment/mabes/detail/:id/action" exact element={<MabesDetailAction/>} />
         <Route path="/storybook" exact element={<Storybook/>} />
       </Routes>
     </Router>

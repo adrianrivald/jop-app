@@ -5,21 +5,25 @@ import DropDown from '../../../../components/forms/Dropdown';
 import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
+const url = process.env.REACT_APP_API_URL;
 
 function Dropdown (props) {
     return (
         <div className='mt-5'>
-            <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
-            <DropDown onChange={props.onChange} option={props.option} />
+            <h2 className='text-left mb-1'>{props.title}</h2>
+            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
         </div>
     )
 }
 
-function MabesAssignment() {
-    const navigate = useNavigate()
+function MabesEdit() {
+    const {id} = useParams()
+    const navigate = useNavigate();
+    const [detailData, setDetailData] = React.useState({})
+    const [workerList, setWorkerList] = React.useState([])
     const [listData, setListData] = React.useState([]);
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
@@ -42,9 +46,8 @@ function MabesAssignment() {
         }
     ]
 
-
     React.useEffect(() => {
-        // getList(); will run every time filter has selected
+        getDetail();
         getEstate();
         getTask();
         getArea();
@@ -53,28 +56,42 @@ function MabesAssignment() {
         getMandor();
     },[])
 
+    
+    const getDetail = async() => {
+        await axios.get(`${url}penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
+        {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data;
+            setDetailData(data)
+            setWorkerList(data.pekerja)
+            console.log(data,'data')
+        })
+    }
+
     const getTask = () => {
-        try {
-            axios.get('https://jop.dudyali.com/api/v1/jenis-tugas/list',
-            {
-                url: process.env.REACT_APP_API_URL,
-                headers: {
-                    Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
-                    Accept: 'application/json'
+        axios.get('https://jop.dudyali.com/api/v1/jenis-tugas/list',
+        {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data.data
+            const taskData = data.map((res) => {
+                return {
+                    value: res.id,
+                    label: res.nama
                 }
-            }).then((res) => {
-                const data = res?.data?.data?.data
-                const taskData = data?.map((res) => {
-                    return {
-                        value: res.id,
-                        label: res.nama
-                    }
-                })
-                setTaskList(taskData)
             })
-        } catch (error) {
-            console.error(error.message)
-        }
+            setTaskList(taskData)
+        })
+
     }
 
     const getEstate = () => {
@@ -191,8 +208,8 @@ function MabesAssignment() {
         setSelectedTask(e.target.value)
     }
 
-    const onChangeHandler = () => {
-        console.log('')
+    const handleSubmit = async() => {
+        // await axios.post()
     }
 
     return (
@@ -201,51 +218,51 @@ function MabesAssignment() {
                 <Header title="Penugasan" isWithBack isWithNotification isWithBurgerMenu />
             </div>
             <div className="container">
-                <div>                 
-                    <Dropdown title="Pilih wilayah tugas" option={estateList} onChange={onChangeHandler} />
-                    <Dropdown title="Divisi" option={divisiList} onChange={onChangeHandler} />
-                    <Dropdown title="Hancak" option={hancakList} onChange={onChangeHandler} />
-                    <Dropdown title="Area/block" option={areaList} onChange={onChangeHandler} />
-                    <Dropdown title="Pilih jenis tugas" option={taskList} onChange={onChangeHandler} />
-                    <Dropdown title="Pilih penanggung jawab tugas / Mandor" option={mandorList} onChange={onChangeHandler} />
+                <form action='' method='post'>                 
+                    <Dropdown title="Pilih wilayah tugas" option={estateList} onChange={onChangeEstate} defaultValue={detailData?.wilayah_tugas?.nama} />
+                    <Dropdown title="Divisi" option={divisiList} onChange={onChangeEstate} defaultValue={detailData?.divisi?.id}/>
+                    <Dropdown title="Hancak" option={hancakList} onChange={onChangeEstate} defaultValue={detailData?.hancak?.id}/>
+                    <Dropdown title="Area/block" option={areaList} onChange={onChangeEstate} defaultValue={detailData?.field?.id}/>
+                    <Dropdown title="Pilih jenis tugas" option={taskList} onChange={onChangeEstate} defaultValue={detailData?.jenis_tugas?.id} />
+                    <Dropdown title="Pilih penanggung jawab tugas / Mandor" option={mandorList} onChange={onChangeEstate} defaultValue={detailData?.mandor?.id} />
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Clone</h2>
-                            <p className='font-bold mt-2.5'>PB 366</p>
+                            <p className='font-bold mt-2.5'>{detailData?.clone?.nama}</p>
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Sistem</h2>
-                            <DropDown onChange={onChangeHandler} option={[{label: '1/2SD/3'}]} />
+                            <DropDown onChange={() => console.log('')} option={[{label: '1/2SD/3'}]} defaultValue={detailData?.sistem?.id} />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Clone</h2>
-                            <DatePicker onChange={onChangeHandler} />
+                            <DatePicker />
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Sistem</h2>
-                            <TimePicker onChange={onChangeHandler} />
+                            <TimePicker />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Ulangi Tugas</h2>
-                            <DropDown onChange={onChangeHandler} option={recurringList} />
+                            <DropDown onChange={() => console.log('')} option={[{label: 'Harian'}]} />
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Batas Pengulangan</h2>
-                            <DatePicker onChange={onChangeHandler} />
+                            <DatePicker />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>
                         <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => console.log()} />
-                        <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={() => console.log()} />
+                        <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
                     </div>
-                </div>
+                </form>
             </div>
         </>
     )
 }
 
-export default MabesAssignment;
+export default MabesEdit;

@@ -5,85 +5,112 @@ import React from 'react';
 import DropDown from '../../../components/forms/Dropdown';
 import DatePicker from '../../../components/forms/DatePicker';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const listItem = [
-    {
-        field: 'Divisi',
-        item: '4'
-    },
-    {
-        field: 'Hancak',
-        item: 'B'
-    },
-    {
-        field: 'Block',
-        item: 'R.08401'
-    },
-    {
-        field: 'Clone',
-        item: 'PB 366,'
-    },
-    {
-        field: 'Sistem',
-        item: '1/2SD/3'
-    }
-]
-const listItemFooter = [
-    {
-        field: 'Mandor',
-        item: 'Aang Ginanjar'
-    },
-    {
-        field: 'Tapper',
-        item: '12'
-    },
-    {
-        field: 'Waktu Kerja',
-        item: '05:30 - Selesai'
-    }
-]
+const url = process.env.REACT_APP_API_URL;
+
+
+function Dropdown (props)  {
+    return (
+        <div className='mt-1 w-3/6'>
+            <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
+            <DropDown onChange={props.onChange} option={props.option} />
+        </div>
+    )
+}
+
 
 function Mabes() {
     const navigate = useNavigate()
-    const [tbList, setTbList] = React.useState([]);
-    const [tbListFooter, setTbListFooter] = React.useState([]);
-    const [estate] = React.useState([
-        {
-            label: 'Gembung'
-        },
-        {
-            label: 'Gembong'
-        }
-    ])
-    const [task] = React.useState([
-        {
-            label: 'Tapping'
-        },
-        {
-            label: 'Driver'
-        }
-    ])
+    const [listData, setListData] = React.useState([]);
+    const [estateList, setEstateList] = React.useState([])
+    const [taskList, setTaskList] = React.useState([])
+    const [selectedDate, setSelectedDate] = React.useState("");
+    const [selectedEstate, setSelectedEstate] = React.useState("")
+    const [selectedTask, setSelectedTask] = React.useState("")
+
 
     React.useEffect(() => {
-        getTbList();
-        getTbListFooter();
-    })
+        // getList(); will run every time filter has selected
+        getEstate();
+        getTask();
+    },[])
 
-    const getTbList = () => {
-        setTbList(listItem)
+    React.useEffect(() => {
+        getList()
+    },[selectedDate, selectedEstate, selectedTask])
+
+    const getList = async() => {
+        await axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`,
+        {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data.data
+            setListData(data)
+        })
     }
 
-    const getTbListFooter = () => {
-        setTbListFooter(listItemFooter)
+    const getTask = async() => {
+        await axios.get(`${url}jenis-tugas/list`,
+        {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data.data
+            const taskData = data.map((res) => {
+                return {
+                    value: res.id,
+                    label: res.nama
+                }
+            })
+            setTaskList(taskData)
+        })
+
     }
 
-    const Dropdown = (props) => {
-        return (
-            <div className='mt-1 w-3/6'>
-                <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
-                <DropDown onChange={props.onChange} option={props.option} />
-            </div>
-        )
+    const getEstate = async() => {
+        await axios.get(`${url}wilayah-tugas/list`,
+        {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data.data
+            const estateData = data.map((res) => {
+                return {
+                    value: res.id,
+                    label: res.nama
+                }
+            })
+            setEstateList(estateData)
+        })
+    }
+
+    const onChangeDate = (e) => {
+        setSelectedDate(e.target.value)
+    }
+
+    const onChangeEstate = (e) => {
+        console.log(e.target.value)
+        setSelectedEstate(e.target.value)
+    }
+
+    const onChangeTask = (e) => {
+        console.log(e.target.value)
+        setSelectedTask(e.target.value)
+    }
+
+    const onListClick = (id) => {
+        navigate(`/assignment/mabes/detail/${id}`)
     }
 
     return (
@@ -107,48 +134,36 @@ function Mabes() {
                 </div>
                 <div>
                     <div className='flex justify-between items-center gap-2'>
-                        <Dropdown title="Estate" option={estate} />
-                        <Dropdown title="Jenis Tugas" option={task} />
+                        <Dropdown title="Estate" option={estateList} onChange={onChangeEstate} />
+                        <Dropdown title="Jenis Tugas" option={taskList} onChange={onChangeTask} />
                     </div>
                     <div className='flex justify-between items-center gap-2 mt-2'>
                         <div className='flex-auto w-64'>
-                            <DatePicker />
+                            <DatePicker onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
                             <Button isFilter={true} text='Filter'/>
                         </div>
                     </div>
                 </div>
-                <div className='my-4'>
-                    <Table 
-                        headerTitle={'Estate'}
-                        titleItem={'Gembung'} 
-                        titleCode={'TP0029883'}  
-                        isWithFooter
-                        tbList={tbList}
-                        tbListFooter={tbListFooter}
-                    />
-                </div>
-                <div className='my-4'>
-                    <Table 
-                        headerTitle={'Estate'}
-                        titleItem={'Gembung'} 
-                        titleCode={'TP0029883'}  
-                        isWithFooter
-                        tbList={tbList}
-                        tbListFooter={tbListFooter}
-                    />
-                </div>
-                <div className='my-4'>
-                    <Table 
-                        headerTitle={'Estate'}
-                        titleItem={'Gembung'} 
-                        titleCode={'TP0029883'}  
-                        isWithFooter
-                        tbList={tbList}
-                        tbListFooter={tbListFooter}
-                    />
-                </div>
+                {
+                    listData.map((result) => {
+                        return (
+                            <div className='my-4'>
+                                <Table  
+                                    onClick={() => onListClick(result.id)}
+                                    isWithFooter
+                                    divisi_item={result.divisi.kode}
+                                    hancak_item={result.hancak.kode}
+                                    block_item={result.field.nama}
+                                    clone_item={result.clone.nama}
+                                    sistem_item={result.sistem.nama}
+                                    // tbListFooter={tbListFooter}
+                                />
+                            </div>
+                        )
+                    })
+                }
             </div>
         </>
     )
