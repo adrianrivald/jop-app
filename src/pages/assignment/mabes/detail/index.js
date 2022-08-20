@@ -59,12 +59,12 @@ function MabesDetail() {
 
     return (
         <>
-            <div class="header">
+            <div className="header">
                 <Header title="Penugasan" isWithBack />
             </div>
             <div className="container">
                 <div className='flex justify-between items-center'>
-                    <Title text='Gembung' />
+                    <Title text={detailData?.wilayah_tugas?.nama} />
                     <Button onClick={() => navigate(`/assignment/mabes/detail/${id}/edit`)} isText={true} text={"Edit"}/>
                 </div>
                 <div className='mt-6'>
@@ -72,7 +72,6 @@ function MabesDetail() {
                     <span>-</span>
                 </div>
                 <Table  
-                    isWithFooter
                     divisi_item={detailData?.divisi?.kode}
                     hancak_item={detailData?.hancak?.kode}
                     block_item={detailData?.field?.nama}

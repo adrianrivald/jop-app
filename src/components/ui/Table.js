@@ -10,7 +10,10 @@ export default function Table({
     block_item,
     clone_item,
     sistem_item,
-    tbListFooter,
+    mandor_item,
+    tanggal_tugas_item,
+    status_tugas_item,
+    tapper_item,
     status,
     backgroundColor = 'bg-white',
     borderColor,
@@ -20,7 +23,7 @@ export default function Table({
 
     const TableItem = (props) => {
         return (
-            <table onClick={onClick} className={`${isWithHeader && !props.isTableFooter ? 'border-t-2' : '' } ${isWithFooter && !props.isTableFooter ? 'border-b-2 ' : ''} border-bgrey border-spacing-1 bg-bgrey w-full text-sm text-left text-gray-500 dark:text-gray-400 cursor-pointer`}>
+            <table className={`${isWithHeader && !props.isTableFooter ? 'border-t-2' : '' } ${isWithFooter && !props.isTableFooter ? 'border-b-2 ' : ''} border-bgrey border-spacing-1 bg-bgrey w-full text-sm text-left text-gray-500 dark:text-gray-400 ${onClick ? 'cursor-pointer' : ''}`}>
                 <thead className={`text-xs ${backgroundColor}`}>
                     <tr>
                         <th scope="col" className={`py-3 px-2 ${props.isTableFooter  ? '' : 'border-l-2'} ${cellBorder}`}>
@@ -69,6 +72,41 @@ export default function Table({
         )
     }
 
+    const TableFooter = (props) => {
+        return (
+            <table className={`${isWithHeader && !props.isTableFooter ? 'border-t-2' : '' } ${isWithFooter && !props.isTableFooter ? 'border-b-2 ' : ''} border-bgrey border-spacing-1 bg-bgrey w-full text-sm text-left text-gray-500 dark:text-gray-400 cursor-pointer`}>
+                <thead className="text-xs bg-white">
+                    <tr>
+                        <th scope="col" className={`py-3 px-2 w-6/12 border-bgrey`}>
+                            <div className="my-2 font-normal">
+                                Mandor
+                            </div>
+                            <div>
+                                {props.mandor_item}
+                            </div>
+                        </th>
+                        <th scope="col" className={`py-3 px-2 border-bgrey`}>
+                            <div className="my-2 font-normal">
+                                Tapper
+                            </div>
+                            <div>
+                                {props.tapper_item}
+                            </div>
+                        </th>
+                        <th scope="col" className={`py-3 px-2 border-bgrey`}>
+                            <div className="my-2 font-normal">
+                                {props.status_tugas_item}
+                            </div>
+                            <div>
+                                {props.tanggal_tugas_item} - selesai
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        )
+    }
+
     const Header = (props) => {
         return (
             <div className="flex justify-between items-center py-3 px-2 bg-white">
@@ -95,7 +133,7 @@ export default function Table({
     }
 
     return (
-        <div className={`overflow-x-auto relative rounded-lg ${borderColor}`}>
+        <div className={`overflow-x-auto relative rounded-lg ${borderColor}`} onClick={onClick} >
             {isWithHeader && ( <Header title={headerTitle} titleItem={titleItem} titleCode={titleCode} />)}
             <TableItem 
                 divisi_item={divisi_item}
@@ -104,7 +142,14 @@ export default function Table({
                 block_item={block_item}
                 sistem_item={sistem_item}    
             />
-            {/* { isWithFooter && (<TableItem tbList={tbListFooter} isTableFooter />)} */}
+            { isWithFooter && (
+                <TableFooter
+                    mandor_item={mandor_item}
+                    tapper_item={tapper_item}
+                    status_tugas_item={status_tugas_item}
+                    tanggal_tugas_item={tanggal_tugas_item}
+                    isTableFooter 
+                />)}
             { isWithStatus && (<Status status={status} />)}
         </div>
     )

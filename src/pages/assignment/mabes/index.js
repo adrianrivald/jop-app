@@ -1,3 +1,5 @@
+import axios from '../../../services/axios';
+import moment from 'moment';
 import Header from '../../../components/ui/Header';
 import Button from '../../../components/button/Button';
 import Table from '../../../components/ui/Table';
@@ -5,7 +7,6 @@ import React from 'react';
 import DropDown from '../../../components/forms/Dropdown';
 import DatePicker from '../../../components/forms/DatePicker';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -25,6 +26,7 @@ function Mabes() {
     const [listData, setListData] = React.useState([]);
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
+    const [footerData, setFooterData] = React.useState([])
     const [selectedDate, setSelectedDate] = React.useState("");
     const [selectedEstate, setSelectedEstate] = React.useState("")
     const [selectedTask, setSelectedTask] = React.useState("")
@@ -40,29 +42,17 @@ function Mabes() {
         getList()
     },[selectedDate, selectedEstate, selectedTask])
 
-    const getList = async() => {
-        await axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`,
-        {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
-                Accept: 'application/json'
-            }
-        }).then((res) => {
+    const getList = () => {
+         axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`)
+         .then((res) => {
             const data = res.data.data.data
             setListData(data)
         })
     }
 
-    const getTask = async() => {
-        await axios.get(`${url}jenis-tugas/list`,
-        {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
-                Accept: 'application/json'
-            }
-        }).then((res) => {
+    const getTask = () => {
+        axios.get(`${url}jenis-tugas/list`)
+        .then((res) => {
             const data = res.data.data.data
             const taskData = data.map((res) => {
                 return {
@@ -75,15 +65,9 @@ function Mabes() {
 
     }
 
-    const getEstate = async() => {
-        await axios.get(`${url}wilayah-tugas/list`,
-        {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
-                Accept: 'application/json'
-            }
-        }).then((res) => {
+    const getEstate = () => {
+        axios.get(`${url}wilayah-tugas/list`)
+        .then((res) => {
             const data = res.data.data.data
             const estateData = data.map((res) => {
                 return {
@@ -158,7 +142,10 @@ function Mabes() {
                                     block_item={result.field.nama}
                                     clone_item={result.clone.nama}
                                     sistem_item={result.sistem.nama}
-                                    // tbListFooter={tbListFooter}
+                                    // mandor_item={result.mandor.nama}
+                                    status_tugas_item={result.status_tugas}
+                                    // tapper_item={result.tapper.nama}
+                                    tanggal_tugas_item={moment(result.tanggal_tugas, 'YYYY-MM-DD hhm:ss').format('hh:mm')}
                                 />
                             </div>
                         )
