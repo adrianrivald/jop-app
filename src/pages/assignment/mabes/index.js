@@ -32,7 +32,7 @@ function Mabes() {
     const [filterCount, setFilterCount] = React.useState(0)
     const [isEmpty, setIsEmpty] = React.useState(false)
     const [isNoFilter, setIsNoFilter] = React.useState(false)
-
+    const [selectedFilter, setSelectedFilter] = React.useState({})
 
     React.useEffect(() => {
         // getList(); will run every time filter has selected
@@ -40,15 +40,21 @@ function Mabes() {
         getTask();
     },[])
 
+    React.useEffect(() => {
+        setFilterCount(Object.keys(selectedFilter).length)
+    }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
+
+
     const getList = () => {
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
-        } else {
+        } else if (selectedTask || selectedDate || selectedEstate) {
             axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`)
             .then((res) => {
                const data = res.data.data.data
                setListData(data)
                setIsEmpty(false)
+               setIsNoFilter(false)
                if (data.length === 0 ) {
                     setIsEmpty(true)
                }
@@ -87,19 +93,26 @@ function Mabes() {
 
     const onChangeDate = (e) => {
         setSelectedDate(e.target.value)
-        setFilterCount((prev) => prev + 1)
+        setSelectedFilter({
+            ...selectedFilter,
+            selected_date: true
+        })
     }
 
     const onChangeEstate = (e) => {
-        console.log(e.target.value)
         setSelectedEstate(e.target.value)
-        setFilterCount((prev) => prev + 1)
+        setSelectedFilter({
+            ...selectedFilter,
+            selected_estate: true
+        })
     }
 
     const onChangeTask = (e) => {
-        console.log(e.target.value)
         setSelectedTask(e.target.value)
-        setFilterCount((prev) => prev + 1)
+        setSelectedFilter({
+            ...selectedFilter,
+            selected_task: true
+        })
     }
 
     const onListClick = (id) => {
