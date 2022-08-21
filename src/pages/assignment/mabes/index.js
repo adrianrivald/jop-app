@@ -15,7 +15,7 @@ function Dropdown (props)  {
     return (
         <div className='mt-1 w-3/6'>
             <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
-            <DropDown onChange={props.onChange} option={props.option} />
+            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
         </div>
     )
 }
@@ -29,6 +29,9 @@ function Mabes() {
     const [selectedDate, setSelectedDate] = React.useState("");
     const [selectedEstate, setSelectedEstate] = React.useState("")
     const [selectedTask, setSelectedTask] = React.useState("")
+    const [filterCount, setFilterCount] = React.useState(0)
+    const [isEmpty, setIsEmpty] = React.useState(false)
+    const [isNoFilter, setIsNoFilter] = React.useState(false)
 
 
     React.useEffect(() => {
@@ -38,11 +41,19 @@ function Mabes() {
     },[])
 
     const getList = () => {
-         axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`)
-         .then((res) => {
-            const data = res.data.data.data
-            setListData(data)
-        })
+        if (!selectedTask && !selectedEstate && !selectedDate) {
+            setIsNoFilter(true)
+        } else {
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`)
+            .then((res) => {
+               const data = res.data.data.data
+               setListData(data)
+               setIsEmpty(false)
+               if (data.length === 0 ) {
+                    setIsEmpty(true)
+               }
+           })
+        }
     }
 
     const getTask = () => {
@@ -76,16 +87,19 @@ function Mabes() {
 
     const onChangeDate = (e) => {
         setSelectedDate(e.target.value)
+        setFilterCount((prev) => prev + 1)
     }
 
     const onChangeEstate = (e) => {
         console.log(e.target.value)
         setSelectedEstate(e.target.value)
+        setFilterCount((prev) => prev + 1)
     }
 
     const onChangeTask = (e) => {
         console.log(e.target.value)
         setSelectedTask(e.target.value)
+        setFilterCount((prev) => prev + 1)
     }
 
     const onListClick = (id) => {
@@ -117,20 +131,20 @@ function Mabes() {
                 </div>
                 <div>
                     <div className='flex justify-between items-center gap-2'>
-                        <Dropdown title="Estate" option={estateList} onChange={onChangeEstate} />
-                        <Dropdown title="Jenis Tugas" option={taskList} onChange={onChangeTask} />
+                        <Dropdown title="Estate" defaultValue="Pilih estate" option={estateList} onChange={onChangeEstate} />
+                        <Dropdown title="Jenis Tugas" defaultValue="Pilih jenis tugas" option={taskList} onChange={onChangeTask} />
                     </div>
                     <div className='flex justify-between items-center gap-2 mt-2'>
                         <div className='flex-auto w-64'>
                             <DatePicker onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
-                            <Button isFilter={true} onClick={onFilter} text='Filter'/>
+                            <Button filterCount={filterCount} isFilter={true} onClick={onFilter} text='Filter'/>
                         </div>
                     </div>
                 </div>
                 {
-                    listData.map((result) => {
+                    !isNoFilter && !isEmpty ? listData.map((result) => {
                         return (
                             <div className='my-4'>
                                 <Table  
@@ -143,12 +157,15 @@ function Mabes() {
                                     sistem_item={result.sistem.nama}
                                     // mandor_item={result.mandor.nama}
                                     status_tugas_item={result.status_tugas}
-                                    // tapper_item={result.tapper.nama}
+                                    tapper_item={result.hancak.jumlah_rekomendasi_tapper}
                                     tanggal_tugas_item={moment(result.tanggal_tugas, 'YYYY-MM-DD hhm:ss').format('hh:mm')}
                                 />
                             </div>
                         )
-                    })
+                    }) : isNoFilter && !isEmpty ?
+                    <div className='flex my-4 justify-center'> Please select filter first </div>
+                    :
+                    <div className='flex my-4 justify-center'> No Data </div>
                 }
             </div>
         </>
