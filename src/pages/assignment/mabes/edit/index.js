@@ -2,18 +2,17 @@ import React from 'react';
 import axios from '../../../../services/axios';
 import moment from 'moment';
 import Header from '../../../../components/ui/Header';
-import Button from '../../../../components/button/Button';
 import DropDown from '../../../../components/forms/Dropdown';
 import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const url = process.env.REACT_APP_API_URL;
 
 function Dropdown (props) {
     return (
-        <div className={`mt-5 ${props.style}`}>
+        <div className={`mt-5 ${props.customClass}`}>
             <h2 className='text-left mb-1'>{props.title}</h2>
             <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
         </div>
@@ -22,10 +21,8 @@ function Dropdown (props) {
 
 function MabesEdit() {
     const {id} = useParams()
-    const navigate = useNavigate();
     const [detailData, setDetailData] = React.useState({})
-    const [workerList, setWorkerList] = React.useState([])
-    const [listData, setListData] = React.useState([]);
+    // const [workerList, setWorkerList] = React.useState([])
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
     const [sistemList, setSistemList] = React.useState([])
@@ -59,6 +56,7 @@ function MabesEdit() {
         getMandor();
         getSistem();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
     
     
@@ -67,7 +65,7 @@ function MabesEdit() {
         .then((res) => {
             const data = res.data.data;
             setDetailData(data)
-            setWorkerList(data.pekerja)
+            // setWorkerList(data.pekerja)
             
         setAddInput({
             "wilayah_tugas_id": data?.wilayah_tugas?.id,
@@ -204,11 +202,11 @@ function MabesEdit() {
     return (
         <>
             <div class="header">
-                <Header title="Penugasan" isWithBack isWithNotification isWithBurgerMenu />
+                <Header title="Penugasan" isWithBack/>
             </div>
             <div className="container">
                 <div>                 
-                    <Dropdown style="mt-0" title="Pilih wilayah tugas" option={estateList} onChange={(e) => onChangeHandler(e, "wilayah_tugas_id")} defaultValue={detailData?.wilayah_tugas?.nama} />
+                    <Dropdown customClass="mt-0" title="Pilih wilayah tugas" option={estateList} onChange={(e) => onChangeHandler(e, "wilayah_tugas_id")} defaultValue={detailData?.wilayah_tugas?.nama} />
                     <Dropdown title="Divisi" option={divisiList} onChange={(e) => onChangeHandler(e, "divisi_id")} defaultValue={detailData?.divisi?.nama}/>
                     <Dropdown title="Hancak" option={hancakList} onChange={(e) => onChangeHandler(e, "hancak_id")} defaultValue={detailData?.hancak?.nama}/>
                     <Dropdown title="Area/block" option={areaList} onChange={(e) => onChangeHandler(e, "field_id")} defaultValue={detailData?.field?.nama}/>

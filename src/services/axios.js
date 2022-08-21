@@ -1,20 +1,21 @@
 import axios from 'axios';
 
 const API_URL = process.env.REACT_API_URL
+const token = localStorage.getItem('jwt') ?? '5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc';
 
 const axiosInstance = axios.create({
   baseURL: `${API_URL}`,
   headers: {
     'Content-Type': 'application/json',
+    'Authorization' : `Bearer ${token}`
   },
 });
 
 axiosInstance.interceptors.request.use(
   config => {
-    const token = sessionStorage.getItem('jwt');
 
     if (!token) { // negated condition , will be used when there is stored token
-      config.headers.Authorization = `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`; // variable token will be used here
+      config.headers.Authorization = `Bearer ${token}`; // variable token will be used here
     } else {
       delete axiosInstance.defaults.headers.common.Authorization;
     }

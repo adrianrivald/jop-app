@@ -1,18 +1,16 @@
 import React from 'react';
 import Header from '../../../../components/ui/Header';
-import Button from '../../../../components/button/Button';
 import DropDown from '../../../../components/forms/Dropdown';
 import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
-import { useNavigate } from 'react-router-dom';
 import axios from '../../../../services/axios';
 
 const url = process.env.REACT_APP_API_URL;
 
 function Dropdown (props) {
     return (
-        <div className={`mt-5 ${props.style}`}>
+        <div className={`mt-5 ${props.customClass}`}>
             <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
             <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
         </div>
@@ -20,8 +18,6 @@ function Dropdown (props) {
 }
 
 function MabesAssignment() {
-    const navigate = useNavigate()
-    const [listData, setListData] = React.useState([]);
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
     const [sistemList, setSistemList] = React.useState([])
@@ -178,11 +174,11 @@ function MabesAssignment() {
     return (
         <>
             <div class="header">
-                <Header title="Penugasan" isWithBack isWithNotification isWithBurgerMenu />
+                <Header title="Penugasan" isWithBack/>
             </div>
             <div className="container">
                 <div>                 
-                    <Dropdown title="Wilayah tugas" defaultValue="Pilih wilayah tugas" style={'mt-0'} option={estateList} onChange={(e) => onChangeHandler(e, "wilayah_tugas_id")} />
+                    <Dropdown title="Wilayah tugas" defaultValue="Pilih wilayah tugas" customClass={'mt-0'} option={estateList} onChange={(e) => onChangeHandler(e, "wilayah_tugas_id")} />
                     <Dropdown title="Divisi" defaultValue="Pilih divisi" option={divisiList} onChange={(e) => onChangeHandler(e, "divisi_id")} />
                     <Dropdown title="Hancak" defaultValue="Pilih hancak" option={hancakList} onChange={(e) => onChangeHandler(e, "hancak_id")} />
                     <Dropdown title="Area/block"  defaultValue="Pilih area" option={areaList} onChange={(e) => onChangeHandler(e, "field_id")} />

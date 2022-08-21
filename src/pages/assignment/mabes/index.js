@@ -26,7 +26,6 @@ function Mabes() {
     const [listData, setListData] = React.useState([]);
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
-    const [footerData, setFooterData] = React.useState([])
     const [selectedDate, setSelectedDate] = React.useState("");
     const [selectedEstate, setSelectedEstate] = React.useState("")
     const [selectedTask, setSelectedTask] = React.useState("")
@@ -37,10 +36,6 @@ function Mabes() {
         getEstate();
         getTask();
     },[])
-
-    React.useEffect(() => {
-        getList()
-    },[selectedDate, selectedEstate, selectedTask])
 
     const getList = () => {
          axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`)
@@ -97,6 +92,10 @@ function Mabes() {
         navigate(`/assignment/mabes/detail/${id}`)
     }
 
+    const onFilter = () => {
+        getList()
+    }
+
     return (
         <>
             <div class="header">
@@ -126,7 +125,7 @@ function Mabes() {
                             <DatePicker onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
-                            <Button isFilter={true} text='Filter'/>
+                            <Button isFilter={true} onClick={onFilter} text='Filter'/>
                         </div>
                     </div>
                 </div>
