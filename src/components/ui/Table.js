@@ -26,7 +26,7 @@ export default function Table({
             <table className={`${isWithHeader && !props.isTableFooter ? 'border-t-2' : '' } ${isWithFooter && !props.isTableFooter ? 'border-b-2 ' : ''} border-bgrey border-spacing-1 bg-bgrey w-full text-sm text-left text-gray-500 dark:text-gray-400 ${onClick ? 'cursor-pointer' : ''}`}>
                 <thead className={`text-xs ${backgroundColor}`}>
                     <tr>
-                        <th scope="col" className={`py-3 px-2 ${props.isTableFooter  ? '' : 'border-l-2'} ${cellBorder}`}>
+                        <th scope="col" className={`py-3 px-2 ${cellBorder}`}>
                             <div className="my-2 font-normal">
                                 Divisi
                             </div>
