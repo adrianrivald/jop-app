@@ -21,7 +21,13 @@ const Login = () => {
         }).then(result => {
             console.log('res', result)
             const token = result.data.data.token
+            const userData = result.data.data.user
             cookies.set('token', token, { path: '/' });
+            localStorage.setItem('userData', JSON.stringify({
+                level: userData.level,
+                name: userData.nama,
+                code: userData.code
+            }));
             navigate('/homepage');
         })
     }

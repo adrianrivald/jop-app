@@ -1,7 +1,9 @@
 import axios from 'axios';
+import Cookies from 'universal-cookie';
 
 const API_URL = process.env.REACT_API_URL
-const token = localStorage.getItem('jwt') ?? '5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc';
+const cookies = new Cookies();
+const token = cookies.get('token');
 
 const axiosInstance = axios.create({
   baseURL: `${API_URL}`,
