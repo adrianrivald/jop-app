@@ -7,7 +7,7 @@ export default function DropDown({
 }) {
   return (
     <div>
-        <select defaultValue={defaultValue} onChange={onChange} {...rest} className="font-bold bg-white-50 dark:bg-white-50 shadow border-none text-xs rounded-lg focus:ring-flora-500 focus:border-flora-500 block w-full p-3">
+        <select defaultValue={defaultValue} onChange={onChange} {...rest} className="font-bold bg-white dark:bg-white shadow border-none text-xs rounded-lg focus:ring-flora-500 focus:border-flora-500 block w-full p-3">
           {defaultValue && (<option selected hidden disabled>{defaultValue}</option>)}
           {
             option.map((res, idx) => {
