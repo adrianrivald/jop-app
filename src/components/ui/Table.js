@@ -109,7 +109,7 @@ export default function Table({
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 border-bgrey`}>
-                            <div className={`my-2 text-xs font-normal font-extrabold capitalize ${statusColor()}`}>
+                            <div className={`my-2 text-xs text-soil font-normal font-extrabold capitalize ${statusColor()}`}>
                                 {props.status_tugas_item}
                             </div>
                             <div className="text-xs">
