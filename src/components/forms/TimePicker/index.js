@@ -1,7 +1,7 @@
-export default function TimePicker() {
+export default function TimePicker({value, onChange}) {
     return (
-        <div class="p-2.5 bg-white rounded-lg shadow flex justify-start">
-              <input className="outline-none w-full font-bold" type="time"/>
+        <div class="relative">
+              <input className="p-2 rounded-lg shadow flex justify-start w-full font-bold" type="time" onChange={onChange}  value={value}/>
         </div>
     );
   }
