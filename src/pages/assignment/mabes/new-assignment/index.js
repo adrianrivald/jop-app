@@ -201,7 +201,7 @@ function MabesAssignment() {
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Sistem</h2>
-                            <TimePicker onChange={onChangeHandler} />
+                            <TimePicker onChange={(e) => onChangeHandler(e, "waktu_tugas")} />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>
