@@ -21,13 +21,28 @@ export default function Table({
     onClick
 }){
 
+    const statusColor = () => {
+        switch (status_tugas_item) {
+            case 'menunggu-persetujuan':
+                return 'text-soil'
+            case 'diterima' :
+                return 'text-sky'
+            case 'pengalihan' : 
+                return 'text-sun'
+            case 'berjalan' :
+                return 'text-flora'
+            default:
+                break;
+        }
+    }
+
     const TableItem = (props) => {
         return (
             <table className={`${isWithHeader && !props.isTableFooter ? 'border-t-2' : '' } ${isWithFooter && !props.isTableFooter ? 'border-b-2 ' : ''} border-bgrey border-spacing-1 bg-bgrey w-full text-sm text-left text-gray-500 dark:text-gray-400 ${onClick ? 'cursor-pointer' : ''}`}>
                 <thead className={`text-xs ${backgroundColor}`}>
                     <tr>
                         <th scope="col" className={`py-3 px-2 ${cellBorder}`}>
-                            <div className="my-2 font-normal">
+                            <div className="my-2 font-normal text-xxs">
                                 Divisi
                             </div>
                             <div>
@@ -35,7 +50,7 @@ export default function Table({
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 ${props.isTableFooter  ? '' : 'border-l-2'} ${cellBorder}`}>
-                            <div className="my-2 font-normal">
+                            <div className="my-2 font-normal text-xxs">
                                 Hancak
                             </div>
                             <div>
@@ -43,7 +58,7 @@ export default function Table({
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 ${props.isTableFooter  ? '' : 'border-l-2'} ${cellBorder}`}>
-                            <div className="my-2 font-normal">
+                            <div className="my-2 font-normal text-xxs">
                                 Block
                             </div>
                             <div>
@@ -51,7 +66,7 @@ export default function Table({
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 ${props.isTableFooter  ? '' : 'border-l-2'} ${cellBorder}`}>
-                            <div className="my-2 font-normal">
+                            <div className="my-2 font-normal text-xxs">
                                 Clone
                             </div>
                             <div>
@@ -59,7 +74,7 @@ export default function Table({
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 ${props.isTableFooter  ? '' : 'border-l-2'} ${cellBorder}`}>
-                            <div className="my-2 font-normal">
+                            <div className="my-2 font-normal text-xxs">
                                 Sistem
                             </div>
                             <div>
@@ -77,16 +92,16 @@ export default function Table({
             <table className={`${isWithHeader && !props.isTableFooter ? 'border-t-2' : '' } ${isWithFooter && !props.isTableFooter ? 'border-b-2 ' : ''} border-bgrey border-spacing-1 bg-bgrey w-full text-sm text-left text-gray-500 dark:text-gray-400 cursor-pointer`}>
                 <thead className="text-xs bg-white">
                     <tr>
-                        <th scope="col" className={`py-3 px-2 w-6/12 border-bgrey`}>
-                            <div className="my-2 font-normal">
+                        <th scope="col" className={`py-3 px-2 w-5/12 border-bgrey`}>
+                            <div className="my-2 font-normal text-xxs">
                                 Mandor
                             </div>
-                            <div>
+                            <div className="text-sm">
                                 {props.mandor_item}
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 border-bgrey`}>
-                            <div className="my-2 font-normal">
+                            <div className="my-2 font-normal text-xxs">
                                 Tapper
                             </div>
                             <div>
@@ -94,10 +109,10 @@ export default function Table({
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 border-bgrey`}>
-                            <div className="my-2 font-normal">
+                            <div className={`my-2 text-xs font-normal font-extrabold capitalize ${statusColor()}`}>
                                 {props.status_tugas_item}
                             </div>
-                            <div>
+                            <div className="text-xs">
                                 {props.tanggal_tugas_item} - selesai
                             </div>
                         </th>

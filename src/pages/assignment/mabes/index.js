@@ -35,7 +35,6 @@ function Mabes() {
     const [selectedFilter, setSelectedFilter] = React.useState({})
 
     React.useEffect(() => {
-        // getList(); will run every time filter has selected
         getEstate();
         getTask();
     },[])
@@ -49,7 +48,7 @@ function Mabes() {
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem`)
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor`)
             .then((res) => {
                const data = res.data.data.data
                setListData(data)
@@ -168,8 +167,8 @@ function Mabes() {
                                     block_item={result.field.nama}
                                     clone_item={result.clone.nama}
                                     sistem_item={result.sistem.nama}
-                                    // mandor_item={result.mandor.nama}
-                                    status_tugas_item={result.status_tugas}
+                                    mandor_item={result.mandor.nama}
+                                    status_tugas_item={result.status_tugas === 'menunggu-persetujuan' ? 'menunggu' : result.status_tugas}
                                     tapper_item={result.hancak.jumlah_rekomendasi_tapper}
                                     tanggal_tugas_item={moment(result.tanggal_tugas, 'YYYY-MM-DD hhm:ss').format('hh:mm')}
                                 />
