@@ -28,7 +28,7 @@ const UserMenu = () => {
 
     const Card = (props) => {
         return (
-            <Link to={`${props.isDisabled ? '' : '/assignment/mabes/list'}`}>
+            <Link to={!props.isDisabled && '/assignment/mabes/list'}>
                 <div className={`p-2 bg-white text-black rounded-md shadow-lg ${props.isDisabled && ('cursor-not-allowed opacity-50	')}`}>
                     <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
                     <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
