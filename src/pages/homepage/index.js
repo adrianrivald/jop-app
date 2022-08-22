@@ -28,27 +28,29 @@ const UserMenu = () => {
 
     const Card = (props) => {
         return (
-            <div className='p-2 bg-white text-black rounded-md shadow-lg'>
-                <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
-                <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
-                <div className='flex items-center justify-between'>
-                    <span className='text-xs'>
-                        17 Februari 2022, 12:00
-                    </span>
-                    <Link className='text-flora text-xs' to='/assignment/mabes/list'>Detail</Link>
+            <Link to={!props.isDisabled && '/assignment/mabes/list'}>
+                <div className={`p-2 bg-white text-black rounded-md shadow-lg ${props.isDisabled && ('cursor-not-allowed opacity-50	')}`}>
+                    <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
+                    <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
+                    <div className='flex items-center justify-between'>
+                        <span className='text-xs'>
+                            17 Februari 2022, 12:00
+                        </span>
+                        <div className='text-flora text-xs'>Detail</div>
+                    </div>
                 </div>
-            </div>
+            </Link>
         )
     }
 
     return (
         <div className="grid grid-cols-2 gap-4 mt-6">
             <Card cardTitle="Tugas"/>
-            <Card cardTitle="Absensi"/>
-            <Card cardTitle="Timbang"/>
-            <Card cardTitle="Logistik"/>
-            <Card cardTitle="Laporan"/>
-            <Card cardTitle="Pengaturan"/>
+            <Card cardTitle="Absensi" isDisabled/>
+            <Card cardTitle="Timbang" isDisabled/>
+            <Card cardTitle="Logistik" isDisabled/>
+            <Card cardTitle="Laporan" isDisabled/>
+            <Card cardTitle="Pengaturan" isDisabled/>
         </div>
     )
 }
@@ -59,10 +61,10 @@ const Contact = (props) => {
             <h2 className='text-left mb-6 font-bold'>Contact</h2>
             <DropDown onChange={props.onChange} option={props.option} />
             {
-                props.option.filter(res => res.label === props.selectedContact).map((result, idx) => {
+                props.option.filter(res => res.value === props.selectedContact).map((result, idx) => {
                     return (
                         <div>
-                            {result.value.map(res => {
+                            {result.data.map(res => {
                                 return (
                                     <div className='p-4'>
                                         <div className='text-xs text-left'>
@@ -99,7 +101,7 @@ export default function HomePage() {
     },[])
 
     const onChangeContact = (e) => {
-        console.log(e.target.value)
+        console.log(e.target.value, 'value')
         const value = e.target.value
         setSelectedContact(value)
     }
@@ -108,7 +110,8 @@ export default function HomePage() {
         setContact([
             {
               label: "JOP",
-              value: [
+              value: "JOP",
+              data: [
                         {
                             tipe: 'Kantor',
                             no_telp: '0210210',
@@ -122,7 +125,8 @@ export default function HomePage() {
             },
             {
               label: "JOP 2",
-              value: [
+              value: "JOP 2",
+              data: [
                         {
                             tipe: 'Gudang',
                             no_telp: '0210210',
@@ -136,7 +140,8 @@ export default function HomePage() {
             },
             {
               label: "JOP 3",
-              value: [
+              value: "JOP 3",
+              data: [
                         {
                             tipe: 'Support',
                             no_telp: '0210210',

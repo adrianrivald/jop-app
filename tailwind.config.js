@@ -31,8 +31,25 @@ module.exports = {
             'air': '#FBF196',
             'coal': '#332919',
             'earth': '#A7A29A',
-            'bgrey': '#F2F5F7'
+            'bgrey': '#F2F5F7',
+            'soil': '#8C763F',
+            'sky': '#0D99FF',
+
           },
+          fontSize: {
+            'xxs': '.563rem',
+            'xs': '.75rem',
+            'sm': '.875rem',
+            'base': '1rem',
+            'lg': '1.125rem',
+            'xl': '1.25rem',
+            '2xl': '1.5rem',
+            '3xl': '1.875rem',
+            '4xl': '2.25rem',
+            '5xl': '3rem',
+            '6xl': '4rem',
+            '7xl': '5rem',
+          }
       },
     plugins: [],
   }
