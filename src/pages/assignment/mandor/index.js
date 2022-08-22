@@ -26,6 +26,7 @@ const Mandor = () => {
     
     useEffect(() => {
         getLIst()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate])
     
     const getLIst = async() => {
