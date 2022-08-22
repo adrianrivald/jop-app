@@ -28,8 +28,8 @@ const UserMenu = () => {
 
     const Card = (props) => {
         return (
-            <Link to='/assignment/mabes/list'>
-                <div className='p-2 bg-white text-black rounded-md shadow-lg'>
+            <Link to={`${props.isDisabled ? '' : '/assignment/mabes/list'}`}>
+                <div className={`p-2 bg-white text-black rounded-md shadow-lg ${props.isDisabled && ('cursor-not-allowed opacity-50	')}`}>
                     <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
                     <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
                     <div className='flex items-center justify-between'>
@@ -46,11 +46,11 @@ const UserMenu = () => {
     return (
         <div className="grid grid-cols-2 gap-4 mt-6">
             <Card cardTitle="Tugas"/>
-            <Card cardTitle="Absensi"/>
-            <Card cardTitle="Timbang"/>
-            <Card cardTitle="Logistik"/>
-            <Card cardTitle="Laporan"/>
-            <Card cardTitle="Pengaturan"/>
+            <Card cardTitle="Absensi" isDisabled/>
+            <Card cardTitle="Timbang" isDisabled/>
+            <Card cardTitle="Logistik" isDisabled/>
+            <Card cardTitle="Laporan" isDisabled/>
+            <Card cardTitle="Pengaturan" isDisabled/>
         </div>
     )
 }
