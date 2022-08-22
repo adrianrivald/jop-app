@@ -5,30 +5,32 @@ import Title from '../../components/title/Title';
 import Subtitle from '../../components/title/Subtitle';
 import DropDown from '../../components/forms/Dropdown';
 import React from 'react';
+import Cookies from 'universal-cookie';
 
 
-const UserInfo = () => {
+const UserInfo = (props) => {
     return (
     <div className='flex items-center justify-between p-2 bg-white text-left rounded-md'>
         <div className='flex items-center w-9/12'>
             <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" className='rounded-md w-16 mr-2' />
             <div>
-                <Title text="Hadi Sumantri" />
-                <Subtitle text="99299292" />
+                <Title text={props.userName} />
+                <Subtitle text={props.userCode} />
             </div>
         </div>
         <div className='flex-auto'>
             <Link className='text-flora' to=''>Edit Profile</Link>
+            <div className='text-flora text-xs mt-2 cursor-pointer' onClick={props.onLogout}>Logout</div>
         </div>
     </div>
     )
 }
 
-const UserMenu = () => {
+const UserMenu = (props) => {
 
     const Card = (props) => {
         return (
-            <Link to={!props.isDisabled && '/assignment/mabes/list'}>
+            <Link to={!props.isDisabled && `/assignment/${props.level}/list`}>
                 <div className={`p-2 bg-white text-black rounded-md shadow-lg ${props.isDisabled && ('cursor-not-allowed opacity-50	')}`}>
                     <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
                     <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
@@ -45,7 +47,7 @@ const UserMenu = () => {
 
     return (
         <div className="grid grid-cols-2 gap-4 mt-6">
-            <Card cardTitle="Tugas"/>
+            <Card cardTitle="Tugas" level={props.level}/>
             <Card cardTitle="Absensi" isDisabled/>
             <Card cardTitle="Timbang" isDisabled/>
             <Card cardTitle="Logistik" isDisabled/>
@@ -95,10 +97,19 @@ const Contact = (props) => {
 export default function HomePage() {
     const [ contact, setContact ] = React.useState([])
     const [ selectedContact, setSelectedContact ] = React.useState("JOP")
+    const userData = JSON.parse(localStorage.getItem('userData')) ?? {}
+    const cookies = new Cookies();
 
     React.useEffect(() => {
         getContactList();
     },[])
+
+    const onLogout = () => {
+        console.log(cookies.get('token'))
+        cookies.remove('token', {path: '/'});
+        localStorage.removeItem('userData')
+        window.location.href = `${window.location.origin}/auth/login`
+    }
 
     const onChangeContact = (e) => {
         console.log(e.target.value, 'value')
@@ -159,8 +170,8 @@ export default function HomePage() {
         <div className="App">
             <Header title="Beranda" isWithBurgerMenu isWithNotification/>
             <section className='container'>
-                <UserInfo />
-                <UserMenu />
+                <UserInfo userName={userData?.name} userCode={userData?.code} onLogout={onLogout}/>
+                <UserMenu level={userData?.level}/>
                 <Contact onChange={onChangeContact} selectedContact={selectedContact} option={contact} />
             </section>
         </div>

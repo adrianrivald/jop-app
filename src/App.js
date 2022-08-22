@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate
+  Navigate,
 } from "react-router-dom";
 import HomePage from './pages/homepage';
 import SignIn from './pages/auth/login';
@@ -15,8 +15,23 @@ import MabesAssignment from './pages/assignment/mabes/new-assignment';
 import MabesDetail from './pages/assignment/mabes/detail';
 import MabesDetailAction from './pages/assignment/mabes/detail/action';
 import MabesEdit from './pages/assignment/mabes/edit';
+import Cookies from 'universal-cookie';
 
 function App() {
+  const cookies = new Cookies();
+  const path = window.location.pathname;
+
+  React.useEffect(() => {
+    if (!cookies.get('token') && path !== '/auth/login') {
+      console.log('redirected')
+      window.location.href = `${window.location.origin}/auth/login`
+    }
+    if (cookies.get('token') && path === '/auth/login') {
+      window.location.href = `${window.location.origin}/homepage`
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
+
   return (
     <Router>
       <Routes>

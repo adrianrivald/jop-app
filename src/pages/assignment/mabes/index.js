@@ -14,7 +14,7 @@ const url = process.env.REACT_APP_API_URL;
 function Dropdown (props)  {
     return (
         <div className='mt-1 w-3/6'>
-            <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
+            <h2 className='text-left text-xs mb-1'>{props.title}</h2>
             <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
         </div>
     )
@@ -33,6 +33,16 @@ function Mabes() {
     const [isEmpty, setIsEmpty] = React.useState(false)
     const [isNoFilter, setIsNoFilter] = React.useState(false)
     const [selectedFilter, setSelectedFilter] = React.useState({})
+    const sortOption = [
+        {
+            value: 'asc',
+            label: 'Latest'
+        },
+        {
+            value: 'desc',
+            label: 'Oldest'
+        }
+    ]
 
     React.useEffect(() => {
         getEstate();
@@ -44,11 +54,11 @@ function Mabes() {
     }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
 
 
-    const getList = () => {
+    const getList = (sort) => {
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=-tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor`)
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor`)
             .then((res) => {
                const data = res.data.data.data
                setListData(data)
@@ -122,6 +132,12 @@ function Mabes() {
         getList()
     }
 
+    const onChangeSort = (e) => {
+        console.log(e.target.value)
+        const sort = e.target.value
+        getList(sort)
+    }
+
     return (
         <>
             <div class="header">
@@ -130,7 +146,7 @@ function Mabes() {
             <div className="container">
                 <p className='text-xs'>Penugasan</p>
                 <div className='flex justify-between items-center'>
-                    <p className='text-md font-bold'>Wilayah & Kerja</p>
+                    <p className='text-sm font-bold'>Wilayah & Kerja</p>
                     <Button 
                         isIcon 
                         icon={
@@ -153,6 +169,7 @@ function Mabes() {
                         <div className='flex-auto'>
                             <Button filterCount={filterCount} isFilter={true} onClick={onFilter} text='Filter'/>
                         </div>
+                        <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
                     </div>
                 </div>
                 {
