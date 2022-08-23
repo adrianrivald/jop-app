@@ -5,6 +5,7 @@ import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
 import axios from '../../../../services/axios';
+import { useNavigate } from 'react-router-dom';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -18,6 +19,7 @@ function Dropdown (props) {
 }
 
 function MabesAssignment() {
+    const navigate = useNavigate();
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
     const [sistemList, setSistemList] = React.useState([])
@@ -160,6 +162,7 @@ function MabesAssignment() {
     }
 
     const handleSubmit = () => {
+        console.log(addInput, 'addinputvalue')
         const config = {
             headers: {
                 Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
@@ -169,6 +172,24 @@ function MabesAssignment() {
         axios.post(`${url}penugasan/store`, addInput, config).then((res) => {
             console.log(res)
         })
+    }
+    let dateTime = {}
+    const onChangeDateTime = (e, type) => {
+        if(type === 'date') {
+            dateTime = {
+               ...dateTime,
+               'date' : e.target.value
+            }
+        } else {
+            dateTime = {
+                ...dateTime,
+                'time' : e.target.value
+            }
+        }
+        setAddInput({
+           ...addInput, 
+            'tanggal_tugas' : Object.values(dateTime).join(' ')}
+        )
     }
 
     return (
@@ -197,11 +218,11 @@ function MabesAssignment() {
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Clone</h2>
-                            <DatePicker onChange={(e) => onChangeHandler(e, "tanggal_tugas")} />
+                            <DatePicker onChange={(e) => onChangeDateTime(e, 'date')} />
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Sistem</h2>
-                            <TimePicker onChange={(e) => onChangeHandler(e, "waktu_tugas")} />
+                            <TimePicker onChange={(e) => onChangeDateTime(e, 'time')} />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>
@@ -215,7 +236,7 @@ function MabesAssignment() {
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>
-                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => console.log()} />
+                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() =>  navigate(-1)} />
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
                     </div>
                 </div>
