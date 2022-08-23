@@ -13,7 +13,7 @@ export default function Button({
         <>
             {
                 isText ?
-                    <button className={`bg-flora hover:bg-flora text-white font-bold p-2.5 rounded-xl w-32`} {...rest}>
+                    <button className={`text-xs bg-flora hover:bg-flora text-white font-bold p-2.5 rounded-xl w-32`} {...rest}>
                         {text}
                     </button> : null
             }
