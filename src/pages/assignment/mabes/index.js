@@ -58,7 +58,7 @@ function Mabes() {
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor`)
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`)
             .then((res) => {
                const data = res.data.data.data
                setListData(data)
@@ -188,6 +188,7 @@ function Mabes() {
                                     status_tugas_item={result.status_tugas === 'menunggu-persetujuan' ? 'menunggu' : result.status_tugas}
                                     tapper_item={result.hancak.jumlah_rekomendasi_tapper}
                                     tanggal_tugas_item={moment(result.tanggal_tugas, 'YYYY-MM-DD hhm:ss').format('hh:mm')}
+                                    worker_total={result.pekerja.length}
                                 />
                             </div>
                         )

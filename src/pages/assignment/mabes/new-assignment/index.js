@@ -5,6 +5,7 @@ import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
 import axios from '../../../../services/axios';
+import Cookies from 'universal-cookie';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -18,6 +19,8 @@ function Dropdown (props) {
 }
 
 function MabesAssignment() {
+    const cookies = new Cookies();
+    const token = cookies.get('token')
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
     const [sistemList, setSistemList] = React.useState([])
@@ -162,7 +165,7 @@ function MabesAssignment() {
     const handleSubmit = () => {
         const config = {
             headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Authorization: `Bearer ${token}c`,
                 Accept: 'application/json'
             }
         }
