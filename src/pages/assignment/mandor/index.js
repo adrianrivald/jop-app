@@ -44,12 +44,12 @@ const Mandor = () => {
             <section className="container p-4">
                <div className="flex justify-between items-center mb-4">
                     <div className='text-xs font-bold text-black'>Tugas Kerja</div>
-                    <DatePicker defaultValue={defaultDate} onChange={onChangeDate} />
+                    <DatePicker defaultValue={selectedDate} onChange={onChangeDate} />
                </div>
                {/* table */}
                 {listData.length ? listData.map((data) => (
                     <div className="flex flex-col justify-center items-center mb-3" key={data.id}>
-                        <grid className="grid grid-cols-5 bg-white rounded-lg mb-4 w-full">
+                        <div className="grid grid-cols-5 bg-white rounded-lg mb-4 w-full">
                                 <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey">
                                     <span>Estate: <b>{data.mandor.wilayah_tugas}</b></span> <b>{data.kode}</b>
                                 </div>
@@ -85,7 +85,7 @@ const Mandor = () => {
                                     <h1 className="mb-2">Waktu Kerja</h1>
                                     <div className=' font-bold'>{getDateTime(data.tanggal_tugas)} - Selesai</div>
                                 </div>
-                        </grid>
+                        </div>
                         <FlatButton className={'w-full mb-2 text-sm'} text={'Terima Tugas'}/>
                         <FlatButton className={'w-full text-sm'} role="white"  text={'Alihkan Tugas'}/>
                     </div>
