@@ -55,12 +55,27 @@ function MabesAssignment() {
         getEstate();
         getTask();
         getArea();
-        // getDivisi();
-        // getHancak();
+        // // getDivisi();
+        // // getHancak();
         getMandor();
         getSistem();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
+
+    React.useEffect(() => {
+        if(addInput.wilayah_tugas_id){
+            getDivisi();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addInput.wilayah_tugas_id])
+
+
+    React.useEffect(() => {
+        if(addInput.divisi_id){
+            getHancak();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addInput.divisi_id])
 
     React.useEffect(() => {
         if(addInput.wilayah_tugas_id){
@@ -302,6 +317,7 @@ function MabesAssignment() {
                         <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() =>  navigate(-1)} />
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
                     </div>
+                    <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                     <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                 </div>
             </div>

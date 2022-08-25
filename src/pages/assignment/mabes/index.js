@@ -155,9 +155,9 @@ function Mabes() {
         navigate(`/assignment/mabes/detail/${id}`)
     }
 
-    // const onFilter = () => {
-    // //     getList()
-    // }
+    // // const onFilter = () => {
+    // // // //     getList()
+    // // }
 
     const onChangeSort = (e) => {
         const sort = e.target.value
