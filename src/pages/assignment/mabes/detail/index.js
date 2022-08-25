@@ -8,6 +8,8 @@ import Subtitle from '../../../../components/title/Subtitle';
 import Title from '../../../../components/title/Title';
 import Header from '../../../../components/ui/Header';
 import Table from '../../../../components/ui/Table';
+import Cookies from 'universal-cookie';
+import Toast from '../../../../components/ui/Toast';
 
 
 const url = process.env.REACT_APP_API_URL;
@@ -15,12 +17,12 @@ const url = process.env.REACT_APP_API_URL;
 function WorkerList (props) {
     return (
         <div className='flex justify-between items-center mt-3 pt-3'>
-            <p className='text-xs mx-4'>SKU</p>
-            <div>
-                <p className='font-bold text-lg'>{props.name}</p>
-                <p className='text-xs'>{props.id}</p>
+            <p className='w-8 text-xxs mx-4'>SKU</p>
+            <div className='w-40'>
+                <p className='font-bold text-sm truncate'>{props.name}</p>
+                <p className='text-xxs'>{props.code}</p>
             </div>
-            <p className='text-xl text-flora font-bold'>{props.status}</p>
+            <p className='w-20 text-sm text-flora font-bold'>{props.status}Kerja</p>
             <div>
                 <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -33,10 +35,13 @@ function WorkerList (props) {
 
 function MabesDetail() {
     const {id} = useParams()
+    const cookies = new Cookies();
+    const token = cookies.get('token');
     const navigate = useNavigate();
     const [detailData, setDetailData] = React.useState({})
     const [workerList, setWorkerList] = React.useState([])
-    
+    const [isSubmitted, setIsSubmitted] = React.useState(false)
+
     React.useEffect(() => {
         getDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,6 +60,20 @@ function MabesDetail() {
             setDetailData(data)
             setWorkerList(data.pekerja)
             console.log(data,'data')
+        })
+    }
+
+    const onSubmitAssignment = () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }
+        axios.post(`${url}penugasan/izinkan-tapper`, {
+            penugasan_id: detailData.id
+        }, config).then((res) => {
+            setIsSubmitted(true)
         })
     }
 
@@ -86,7 +105,7 @@ function MabesDetail() {
                 <div className='flex justify-between items-center mt-3'>
                     <div>
                         <p className='text-xs'>{detailData?.mandor?.level}</p>
-                        <p className='text-l'>{detailData?.mandor?.nama}</p>
+                        <p className='text-sm font-bold'>{detailData?.mandor?.nama}</p>
                     </div>
                     <div>
                         <p className='text-xs'>{moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('D MMMM, YYYY')}</p>
@@ -98,8 +117,8 @@ function MabesDetail() {
                         workerList?.length > 0 ? workerList.map((res, idx) => {
                             return (
                                 <WorkerList 
-                                    name={res.name}
-                                    id={res.id}
+                                    name={res.nama}
+                                    code={res.kode}
                                     status={res.status}
                                 />
                             )
@@ -111,8 +130,9 @@ function MabesDetail() {
                     }
                 </div> 
                 <div className='mt-11'>
-                    <FlatButton className='w-full rounded-xl' text='Izinkan'/>
-                </div>        
+                    <FlatButton className='w-full rounded-xl text-sm' text='Izinkan' onClick={onSubmitAssignment}/>
+                </div>
+                <Toast text='Sukses izinkan tugas' onClose={() => setIsSubmitted(false)} isShow={isSubmitted}/> 
             </div>
         </>
     )

@@ -50,6 +50,11 @@ function Mabes() {
     },[])
 
     React.useEffect(() => {
+        getList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[selectedDate, selectedEstate, selectedTask])
+
+    React.useEffect(() => {
         setFilterCount(Object.keys(selectedFilter).length)
     }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
 
@@ -58,7 +63,7 @@ function Mabes() {
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor`)
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`)
             .then((res) => {
                const data = res.data.data.data
                setListData(data)
@@ -128,9 +133,9 @@ function Mabes() {
         navigate(`/assignment/mabes/detail/${id}`)
     }
 
-    const onFilter = () => {
-        getList()
-    }
+    // const onFilter = () => {
+    // //     getList()
+    // }
 
     const onChangeSort = (e) => {
         console.log(e.target.value)
@@ -167,7 +172,7 @@ function Mabes() {
                             <DatePicker onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
-                            <Button filterCount={filterCount} isFilter={true} onClick={onFilter} text='Filter'/>
+                            <Button filterCount={filterCount} isFilter={true} text='Filter'/>
                         </div>
                         <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
                     </div>
@@ -188,6 +193,7 @@ function Mabes() {
                                     status_tugas_item={result.status_tugas === 'menunggu-persetujuan' ? 'menunggu' : result.status_tugas}
                                     tapper_item={result.hancak.jumlah_rekomendasi_tapper}
                                     tanggal_tugas_item={moment(result.tanggal_tugas, 'YYYY-MM-DD hhm:ss').format('hh:mm')}
+                                    worker_total={result.pekerja.length}
                                 />
                             </div>
                         )

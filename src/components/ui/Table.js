@@ -13,6 +13,7 @@ export default function Table({
     mandor_item,
     tanggal_tugas_item,
     status_tugas_item,
+    worker_total,
     tapper_item,
     status,
     backgroundColor = 'bg-white',
@@ -105,7 +106,7 @@ export default function Table({
                                 Tapper
                             </div>
                             <div>
-                                {props.tapper_item}
+                                {props.worker_total} / {props.tapper_item}
                             </div>
                         </th>
                         <th scope="col" className={`py-3 px-2 border-bgrey`}>
@@ -163,6 +164,7 @@ export default function Table({
                     tapper_item={tapper_item}
                     status_tugas_item={status_tugas_item}
                     tanggal_tugas_item={tanggal_tugas_item}
+                    worker_total={worker_total}
                     isTableFooter 
                 />)}
             { isWithStatus && (<Status status={status} />)}

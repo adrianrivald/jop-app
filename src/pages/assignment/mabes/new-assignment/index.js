@@ -5,6 +5,9 @@ import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
 import axios from '../../../../services/axios';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
+import Toast from '../../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -18,6 +21,9 @@ function Dropdown (props) {
 }
 
 function MabesAssignment() {
+    const navigate = useNavigate();
+    const cookies = new Cookies();
+    const token = cookies.get('token')
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
     const [sistemList, setSistemList] = React.useState([])
@@ -26,7 +32,8 @@ function MabesAssignment() {
     const [areaList, setAreaList] = React.useState([])
     const [mandorList, setMandorList] = React.useState([])
     const [addInput, setAddInput] = React.useState({})
-    
+    const [dateTimeInput, setDateTimeInput] = React.useState({})
+    const [isSubmitted, setIsSubmitted] = React.useState(false)
 
     const recurringList = [
         {
@@ -45,15 +52,29 @@ function MabesAssignment() {
 
 
     React.useEffect(() => {
-        // getList(); will run every time filter has selected
         getEstate();
         getTask();
         getArea();
-        getDivisi();
-        getHancak();
+        // getDivisi();
+        // getHancak();
         getMandor();
         getSistem();
     },[])
+
+    React.useEffect(() => {
+        if(addInput.wilayah_tugas_id){
+            getDivisi();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addInput.wilayah_tugas_id])
+
+
+    React.useEffect(() => {
+        if(addInput.divisi_id){
+            getHancak();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addInput.divisi_id])
 
     const getTask = () => {
         try {
@@ -86,7 +107,7 @@ function MabesAssignment() {
     }
     
     const getDivisi = () => {
-        axios.get('https://jop.dudyali.com/api/v1/divisi/list').then((res) => {
+        axios.get(`${url}divisi/by-wilayah-tugas/${addInput.wilayah_tugas_id}?include=wilayah_tugas`).then((res) => {
             const data = res.data.data.data
             const divisiData = data.map((res) => {
                 return {
@@ -99,7 +120,7 @@ function MabesAssignment() {
     }
     
     const getHancak = () => {
-        axios.get('https://jop.dudyali.com/api/v1/hancak/list').then((res) => {
+        axios.get(`${url}hancak/by-divisi/${addInput.divisi_id}?include=divisi`).then((res) => {
             const data = res.data.data.data
             const hancakData = data.map((res) => {
                 return {
@@ -162,13 +183,36 @@ function MabesAssignment() {
     const handleSubmit = () => {
         const config = {
             headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Authorization: `Bearer ${token}`,
                 Accept: 'application/json'
             }
         }
         axios.post(`${url}penugasan/store`, addInput, config).then((res) => {
-            console.log(res)
+            setIsSubmitted(true)
         })
+    }
+    const onChangeDate = (e) => {
+        setDateTimeInput({
+            ...dateTimeInput,
+            'date' : e.target.value
+        })
+        setAddInput({
+           ...addInput, 
+            'tanggal_tugas' : Object.values(dateTimeInput).join(' ')}
+        )
+    }
+
+    const onChangeTime = (e) => {
+        setDateTimeInput({
+            ...dateTimeInput,
+            'time' : e.target.value
+        })
+        setAddInput({
+            ...addInput, 
+             'tanggal_tugas' : Object.values(dateTimeInput).join(' ')}
+         )
+        console.log(Object.values(dateTimeInput).join(' '), 'joined datetime')
+        console.log(dateTimeInput, 'datetime')
     }
 
     return (
@@ -197,11 +241,11 @@ function MabesAssignment() {
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Clone</h2>
-                            <DatePicker onChange={(e) => onChangeHandler(e, "tanggal_tugas")} />
+                            <DatePicker onChange={(e) => onChangeDate(e)} />
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Sistem</h2>
-                            <TimePicker onChange={(e) => onChangeHandler(e, "waktu_tugas")} />
+                            <TimePicker onChange={(e) => onChangeTime(e)} />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>
@@ -215,9 +259,10 @@ function MabesAssignment() {
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>
-                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => console.log()} />
+                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() =>  navigate(-1)} />
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
                     </div>
+                    <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                 </div>
             </div>
         </>
