@@ -1,4 +1,4 @@
-import axios from '../../../services/axios';
+import axios from 'axios';
 import moment from 'moment';
 import Header from '../../../components/ui/Header';
 import Button from '../../../components/button/Button';
@@ -7,6 +7,7 @@ import React from 'react';
 import DropDown from '../../../components/forms/Dropdown';
 import DatePicker from '../../../components/forms/DatePicker';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -22,7 +23,9 @@ function Dropdown (props)  {
 
 
 function Mabes() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const cookies = new Cookies();
+    const token = cookies.get('token');
     const [listData, setListData] = React.useState([]);
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
@@ -47,6 +50,7 @@ function Mabes() {
     React.useEffect(() => {
         getEstate();
         getTask();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     React.useEffect(() => {
@@ -63,7 +67,13 @@ function Mabes() {
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`)
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`, {
+                url: process.env.REACT_APP_API_URL,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json'
+                }
+            })
             .then((res) => {
                const data = res.data.data.data
                setListData(data)
@@ -77,7 +87,13 @@ function Mabes() {
     }
 
     const getTask = () => {
-        axios.get(`${url}jenis-tugas/list`)
+        axios.get(`${url}jenis-tugas/list`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        })
         .then((res) => {
             const data = res.data.data.data
             const taskData = data.map((res) => {
@@ -92,7 +108,13 @@ function Mabes() {
     }
 
     const getEstate = () => {
-        axios.get(`${url}wilayah-tugas/list`)
+        axios.get(`${url}wilayah-tugas/list`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        })
         .then((res) => {
             const data = res.data.data.data
             const estateData = data.map((res) => {
@@ -138,7 +160,6 @@ function Mabes() {
     // }
 
     const onChangeSort = (e) => {
-        console.log(e.target.value)
         const sort = e.target.value
         getList(sort)
     }
