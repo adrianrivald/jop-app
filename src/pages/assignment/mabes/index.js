@@ -190,7 +190,7 @@ function Mabes() {
                     </div>
                     <div className='flex justify-between items-center gap-2 mt-2'>
                         <div className='flex-auto w-64'>
-                            <DatePicker onChange={onChangeDate} />
+                            <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
                             <Button filterCount={filterCount} isFilter={true} text='Filter'/>
