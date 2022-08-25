@@ -29,7 +29,7 @@ function Mabes() {
     const [listData, setListData] = React.useState([]);
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
-    const [selectedDate, setSelectedDate] = React.useState("");
+    const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
     const [selectedEstate, setSelectedEstate] = React.useState("")
     const [selectedTask, setSelectedTask] = React.useState("")
     const [filterCount, setFilterCount] = React.useState(0)
