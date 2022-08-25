@@ -6,12 +6,14 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { getDateTime } from '../../../utils/getDateTime';
 import { getDate } from '../../../utils/getDate';
+import { useNavigate } from 'react-router-dom';
 
 const url = process.env.REACT_APP_API_URL;
 
 const Mandor = () => {
     const cookies = new Cookies();
     const token = cookies.get('token')
+    const navigate = useNavigate();
     const defaultDate = getDate(new Date());
     const [selectedDate, setSelectedDate] = useState(defaultDate);
     const [listData, setListData] = useState([]);
@@ -22,7 +24,7 @@ const Mandor = () => {
     
     useEffect(() => {
         getLIst()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate])
     
     const getLIst = async() => {
@@ -34,8 +36,14 @@ const Mandor = () => {
             }
         }).then((res) => {
             const data = res.data.data.data
+            console.log('data', data)
             setListData(data)
         })
+    }
+
+    const handleAcceptAssignment = (id) => {
+        console.log('id', id)
+        return navigate(`/assignment/mandor/detail/${id}/accept`)
     }
 
     return(
@@ -86,7 +94,7 @@ const Mandor = () => {
                                     <div className=' font-bold'>{getDateTime(data.tanggal_tugas)} - Selesai</div>
                                 </div>
                         </div>
-                        <FlatButton className={'w-full mb-2 text-sm'} text={'Terima Tugas'}/>
+                        <FlatButton className={'w-full mb-2 text-sm'} text={'Terima Tugas'} onClick={() => handleAcceptAssignment(data.hancak.id)}/>
                         <FlatButton className={'w-full text-sm'} role="white"  text={'Alihkan Tugas'}/>
                     </div>
                 )) : <div className="flex items-center justify-center" style={{ height: '60vh'}}>Tidak ada tugas di tanggal ini</div>}
