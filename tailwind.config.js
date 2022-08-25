@@ -34,6 +34,7 @@ module.exports = {
             'bgrey': '#F2F5F7',
             'soil': '#8C763F',
             'sky': '#0D99FF',
+            'red': '#7f1d1d',
 
           },
           fontSize: {
