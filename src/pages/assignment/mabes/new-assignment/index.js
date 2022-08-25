@@ -4,7 +4,7 @@ import DropDown from '../../../../components/forms/Dropdown';
 import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
-import axios from '../../../../services/axios';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Toast from '../../../../components/ui/Toast';
@@ -55,11 +55,27 @@ function MabesAssignment() {
         getEstate();
         getTask();
         getArea();
-        // getDivisi();
-        // getHancak();
+        // // getDivisi();
+        // // getHancak();
         getMandor();
         getSistem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
+
+    React.useEffect(() => {
+        if(addInput.wilayah_tugas_id){
+            getDivisi();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addInput.wilayah_tugas_id])
+
+
+    React.useEffect(() => {
+        if(addInput.divisi_id){
+            getHancak();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addInput.divisi_id])
 
     React.useEffect(() => {
         if(addInput.wilayah_tugas_id){
@@ -78,7 +94,13 @@ function MabesAssignment() {
 
     const getTask = () => {
         try {
-            axios.get('https://jop.dudyali.com/api/v1/jenis-tugas/list').then((res) => {
+            axios.get('https://jop.dudyali.com/api/v1/jenis-tugas/list', {
+                url: process.env.REACT_APP_API_URL,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json'
+                }
+            }).then((res) => {
                 const data = res?.data?.data?.data
                 const taskData = data?.map((res) => {
                     return {
@@ -94,7 +116,13 @@ function MabesAssignment() {
     }
 
     const getEstate = () => {
-        axios.get('https://jop.dudyali.com/api/v1/wilayah-tugas/list').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/wilayah-tugas/list', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const estateData = data.map((res) => {
                 return {
@@ -107,7 +135,13 @@ function MabesAssignment() {
     }
     
     const getDivisi = () => {
-        axios.get(`${url}divisi/by-wilayah-tugas/${addInput.wilayah_tugas_id}?include=wilayah_tugas`).then((res) => {
+        axios.get(`${url}divisi/by-wilayah-tugas/${addInput.wilayah_tugas_id}?include=wilayah_tugas`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const divisiData = data.map((res) => {
                 return {
@@ -120,7 +154,13 @@ function MabesAssignment() {
     }
     
     const getHancak = () => {
-        axios.get(`${url}hancak/by-divisi/${addInput.divisi_id}?include=divisi`).then((res) => {
+        axios.get(`${url}hancak/by-divisi/${addInput.divisi_id}?include=divisi`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const hancakData = data.map((res) => {
                 return {
@@ -133,7 +173,13 @@ function MabesAssignment() {
     }
     
     const getArea = () => {
-        axios.get('https://jop.dudyali.com/api/v1/field/list').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/field/list', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const areaData = data.map((res) => {
                 return {
@@ -146,7 +192,13 @@ function MabesAssignment() {
     }
     
     const getMandor = () => {
-        axios.get(`${url}penugasan/list-mandor`).then((res) => {
+        axios.get(`${url}penugasan/list-mandor`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const mandorData = data.map((res) => {
                 return {
@@ -159,7 +211,13 @@ function MabesAssignment() {
     }
 
     const getSistem = () => {
-        axios.get(`${url}sistem/list`).then((res) => {
+        axios.get(`${url}sistem/list`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const sistemData = data.map((res) => {
                 return {
@@ -177,7 +235,6 @@ function MabesAssignment() {
             "is_recurring" : 1,
             [input_id]: e.target.value
         }))
-        console.log(addInput, 'addinput')
     }
 
     const handleSubmit = () => {
@@ -211,8 +268,6 @@ function MabesAssignment() {
             ...addInput, 
              'tanggal_tugas' : Object.values(dateTimeInput).join(' ')}
          )
-        console.log(Object.values(dateTimeInput).join(' '), 'joined datetime')
-        console.log(dateTimeInput, 'datetime')
     }
 
     return (
@@ -262,6 +317,7 @@ function MabesAssignment() {
                         <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() =>  navigate(-1)} />
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
                     </div>
+                    <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                     <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                 </div>
             </div>

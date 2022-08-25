@@ -59,7 +59,6 @@ function MabesDetail() {
             const data = res.data.data;
             setDetailData(data)
             setWorkerList(data.pekerja)
-            console.log(data,'data')
         })
     }
 

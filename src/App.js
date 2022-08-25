@@ -23,7 +23,6 @@ function App() {
 
   React.useEffect(() => {
     if (!cookies.get('token') && path !== '/auth/login') {
-      console.log('redirected')
       window.location.href = `${window.location.origin}/auth/login`
     }
     if (cookies.get('token') && path === '/auth/login') {

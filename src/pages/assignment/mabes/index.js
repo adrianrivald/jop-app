@@ -1,4 +1,4 @@
-import axios from '../../../services/axios';
+import axios from 'axios';
 import moment from 'moment';
 import Header from '../../../components/ui/Header';
 import Button from '../../../components/button/Button';
@@ -7,6 +7,7 @@ import React from 'react';
 import DropDown from '../../../components/forms/Dropdown';
 import DatePicker from '../../../components/forms/DatePicker';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -22,11 +23,13 @@ function Dropdown (props)  {
 
 
 function Mabes() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const cookies = new Cookies();
+    const token = cookies.get('token');
     const [listData, setListData] = React.useState([]);
     const [estateList, setEstateList] = React.useState([])
     const [taskList, setTaskList] = React.useState([])
-    const [selectedDate, setSelectedDate] = React.useState("");
+    const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
     const [selectedEstate, setSelectedEstate] = React.useState("")
     const [selectedTask, setSelectedTask] = React.useState("")
     const [filterCount, setFilterCount] = React.useState(0)
@@ -47,6 +50,7 @@ function Mabes() {
     React.useEffect(() => {
         getEstate();
         getTask();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     React.useEffect(() => {
@@ -63,7 +67,13 @@ function Mabes() {
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`)
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`, {
+                url: process.env.REACT_APP_API_URL,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json'
+                }
+            })
             .then((res) => {
                const data = res.data.data.data
                setListData(data)
@@ -77,7 +87,13 @@ function Mabes() {
     }
 
     const getTask = () => {
-        axios.get(`${url}jenis-tugas/list`)
+        axios.get(`${url}jenis-tugas/list`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        })
         .then((res) => {
             const data = res.data.data.data
             const taskData = data.map((res) => {
@@ -92,7 +108,13 @@ function Mabes() {
     }
 
     const getEstate = () => {
-        axios.get(`${url}wilayah-tugas/list`)
+        axios.get(`${url}wilayah-tugas/list`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        })
         .then((res) => {
             const data = res.data.data.data
             const estateData = data.map((res) => {
@@ -133,12 +155,11 @@ function Mabes() {
         navigate(`/assignment/mabes/detail/${id}`)
     }
 
-    // const onFilter = () => {
-    // //     getList()
-    // }
+    // // const onFilter = () => {
+    // // // //     getList()
+    // // }
 
     const onChangeSort = (e) => {
-        console.log(e.target.value)
         const sort = e.target.value
         getList(sort)
     }
@@ -169,7 +190,7 @@ function Mabes() {
                     </div>
                     <div className='flex justify-between items-center gap-2 mt-2'>
                         <div className='flex-auto w-64'>
-                            <DatePicker onChange={onChangeDate} />
+                            <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
                             <Button filterCount={filterCount} isFilter={true} text='Filter'/>

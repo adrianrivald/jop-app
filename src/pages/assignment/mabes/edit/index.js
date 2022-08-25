@@ -1,12 +1,13 @@
 import React from 'react';
-import axios from '../../../../services/axios';
+import axios from 'axios';
 import moment from 'moment';
 import Header from '../../../../components/ui/Header';
 import DropDown from '../../../../components/forms/Dropdown';
 import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -21,6 +22,9 @@ function Dropdown (props) {
 
 function MabesEdit() {
     const {id} = useParams()
+    const navigate = useNavigate();
+    const cookies = new Cookies();
+    const token = cookies.get('token');
     const [detailData, setDetailData] = React.useState({})
     // const [workerList, setWorkerList] = React.useState([])
     const [estateList, setEstateList] = React.useState([])
@@ -61,7 +65,13 @@ function MabesEdit() {
     
     
     const getDetail = () => {
-        axios.get(`${url}penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`)
+        axios.get(`${url}penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        })
         .then((res) => {
             const data = res.data.data;
             setDetailData(data)
@@ -84,7 +94,13 @@ function MabesEdit() {
     }
     
     const getSistem = () => {
-        axios.get(`${url}sistem/list`).then((res) => {
+        axios.get(`${url}sistem/list`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const sistemData = data.map((res) => {
                 return {
@@ -97,7 +113,13 @@ function MabesEdit() {
     }
 
     const getTask = () => {
-        axios.get('https://jop.dudyali.com/api/v1/jenis-tugas/list').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/jenis-tugas/list', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const taskData = data.map((res) => {
                 return {
@@ -111,7 +133,13 @@ function MabesEdit() {
     }
 
     const getEstate = () => {
-        axios.get('https://jop.dudyali.com/api/v1/wilayah-tugas/list').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/wilayah-tugas/list', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const estateData = data.map((res) => {
                 return {
@@ -124,7 +152,13 @@ function MabesEdit() {
     }
     
     const getDivisi = () => {
-        axios.get('https://jop.dudyali.com/api/v1/divisi/list').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/divisi/list', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const divisiData = data.map((res) => {
                 return {
@@ -137,7 +171,13 @@ function MabesEdit() {
     }
     
     const getHancak = () => {
-        axios.get('https://jop.dudyali.com/api/v1/hancak/list').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/hancak/list', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const hancakData = data.map((res) => {
                 return {
@@ -150,7 +190,13 @@ function MabesEdit() {
     }
     
     const getArea = () => {
-        axios.get('https://jop.dudyali.com/api/v1/field/list').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/field/list', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const areaData = data.map((res) => {
                 return {
@@ -163,7 +209,13 @@ function MabesEdit() {
     }
     
     const getMandor = () => {
-        axios.get('https://jop.dudyali.com/api/v1/penugasan/list-mandor').then((res) => {
+        axios.get('https://jop.dudyali.com/api/v1/penugasan/list-mandor', {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
             const data = res.data.data.data
             const mandorData = data.map((res) => {
                 return {
@@ -176,13 +228,11 @@ function MabesEdit() {
     }
     
     const onChangeHandler = (e, input_id) => {
-        console.log(e.target.value)
         setAddInput((prev) => ({
             ...prev ,
             "is_recurring" : 1,
             [input_id]: e.target.value
         }))
-        console.log(addInput, 'addinput')
     }
 
     
@@ -194,7 +244,6 @@ function MabesEdit() {
             }
         }
         axios.put(`${url}penugasan/update/${id}`, addInput, config).then((res) => {
-            console.log(res)
         })
     }
 
@@ -243,7 +292,7 @@ function MabesEdit() {
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>
-                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => console.log()} />
+                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => navigate(-1)} />
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
                     </div>
                 </div>

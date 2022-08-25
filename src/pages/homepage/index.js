@@ -105,14 +105,12 @@ export default function HomePage() {
     },[])
 
     const onLogout = () => {
-        console.log(cookies.get('token'))
         cookies.remove('token', {path: '/'});
         localStorage.removeItem('userData')
         window.location.href = `${window.location.origin}/auth/login`
     }
 
     const onChangeContact = (e) => {
-        console.log(e.target.value, 'value')
         const value = e.target.value
         setSelectedContact(value)
     }
