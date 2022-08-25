@@ -31,7 +31,7 @@ function MabesAssignment() {
     const [areaList, setAreaList] = React.useState([])
     const [mandorList, setMandorList] = React.useState([])
     const [addInput, setAddInput] = React.useState({})
-    
+    const [dateTimeInput, setDateTimeInput] = React.useState({})
 
     const recurringList = [
         {
@@ -176,23 +176,28 @@ function MabesAssignment() {
             console.log(res)
         })
     }
-    let dateTime = {}
-    const onChangeDateTime = (e, type) => {
-        if(type === 'date') {
-            dateTime = {
-               ...dateTime,
-               'date' : e.target.value
-            }
-        } else {
-            dateTime = {
-                ...dateTime,
-                'time' : e.target.value
-            }
-        }
+    const onChangeDate = (e) => {
+        setDateTimeInput({
+            ...dateTimeInput,
+            'date' : e.target.value
+        })
         setAddInput({
            ...addInput, 
-            'tanggal_tugas' : Object.values(dateTime).join(' ')}
+            'tanggal_tugas' : Object.values(dateTimeInput).join(' ')}
         )
+    }
+
+    const onChangeTime = (e) => {
+        setDateTimeInput({
+            ...dateTimeInput,
+            'time' : e.target.value
+        })
+        setAddInput({
+            ...addInput, 
+             'tanggal_tugas' : Object.values(dateTimeInput).join(' ')}
+         )
+        console.log(Object.values(dateTimeInput).join(' '), 'joined datetime')
+        console.log(dateTimeInput, 'datetime')
     }
 
     return (
@@ -221,11 +226,11 @@ function MabesAssignment() {
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Clone</h2>
-                            <DatePicker onChange={(e) => onChangeDateTime(e, 'date')} />
+                            <DatePicker onChange={(e) => onChangeDate(e)} />
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Sistem</h2>
-                            <TimePicker onChange={(e) => onChangeDateTime(e, 'time')} />
+                            <TimePicker onChange={(e) => onChangeTime(e)} />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>

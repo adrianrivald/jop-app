@@ -9,6 +9,7 @@ import Title from '../../../../components/title/Title';
 import Header from '../../../../components/ui/Header';
 import Table from '../../../../components/ui/Table';
 import Cookies from 'universal-cookie';
+import Toast from '../../../../components/ui/Toast';
 
 
 const url = process.env.REACT_APP_API_URL;
@@ -39,7 +40,8 @@ function MabesDetail() {
     const navigate = useNavigate();
     const [detailData, setDetailData] = React.useState({})
     const [workerList, setWorkerList] = React.useState([])
-    
+    const [isSubmitted, setIsSubmitted] = React.useState(false)
+
     React.useEffect(() => {
         getDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,14 +66,14 @@ function MabesDetail() {
     const onSubmitAssignment = () => {
         const config = {
             headers: {
-                Authorization: `Bearer ${token}c`,
+                Authorization: `Bearer ${token}`,
                 Accept: 'application/json'
             }
         }
-        axios.post(`${url}penugasan/store`, {
+        axios.post(`${url}penugasan/izinkan-tapper`, {
             penugasan_id: detailData.id
         }, config).then((res) => {
-            console.log(res)
+            setIsSubmitted(true)
         })
     }
 
@@ -129,7 +131,8 @@ function MabesDetail() {
                 </div> 
                 <div className='mt-11'>
                     <FlatButton className='w-full rounded-xl text-sm' text='Izinkan' onClick={onSubmitAssignment}/>
-                </div>        
+                </div>
+                <Toast text='Sukses izinkan tugas' onClose={() => setIsSubmitted(false)} isShow={isSubmitted}/> 
             </div>
         </>
     )

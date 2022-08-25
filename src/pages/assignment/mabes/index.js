@@ -50,6 +50,11 @@ function Mabes() {
     },[])
 
     React.useEffect(() => {
+        getList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[selectedDate, selectedEstate, selectedTask])
+
+    React.useEffect(() => {
         setFilterCount(Object.keys(selectedFilter).length)
     }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
 
@@ -128,9 +133,9 @@ function Mabes() {
         navigate(`/assignment/mabes/detail/${id}`)
     }
 
-    const onFilter = () => {
-        getList()
-    }
+    // const onFilter = () => {
+    // //     getList()
+    // }
 
     const onChangeSort = (e) => {
         console.log(e.target.value)
@@ -167,7 +172,7 @@ function Mabes() {
                             <DatePicker onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
-                            <Button filterCount={filterCount} isFilter={true} onClick={onFilter} text='Filter'/>
+                            <Button filterCount={filterCount} isFilter={true} text='Filter'/>
                         </div>
                         <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
                     </div>
