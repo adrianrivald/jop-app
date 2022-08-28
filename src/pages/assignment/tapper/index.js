@@ -22,8 +22,6 @@ const DetailTapper = () =>{
                 Accept: 'application/json'
             }
         }).then((res) => {
-            const data = res.data.data;
-            console.log(data)
         })
     }
     return (
