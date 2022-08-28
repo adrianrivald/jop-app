@@ -5,13 +5,11 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { getDateTime } from '../../../../utils/getDateTime';
-import { getLocaleDateString } from '../../../../utils/getDate';
 import { toSentenceCase } from '../../../../utils/strings';
-import { getStatusColor } from '../../../../utils/getStatusColor';
 
 const url = process.env.REACT_APP_API_URL;
 
-const MandorAcceptAssignment = () => {
+const MandorDiversionAssignment = () => {
     const cookies = new Cookies();
     const token = cookies.get('token');
     let { id } = useParams();
@@ -40,12 +38,12 @@ const MandorAcceptAssignment = () => {
 
     return(
        <div className="App min-h-screen h-full" >
-            <Header title="Terima Penugasan" isWithBack/>
+            <Header title="Pengalihan Penugasan" isWithBack/>
             <section className="container p-4 flex flex-col justify-between" style={{ height: 'calc(100vh - 70px)'}}>
                 <div className="flex flex-col" key={detail.id}>
                     <div className="flex flex-col justify-between items-start mb-4">
                         <div className="text-xs text-black mb-1">Tugas Kerja :</div>
-                        <div className="text-xs font-bold text-black">{getLocaleDateString(detail?.tanggal_tugas)}</div>
+                        <div className="text-xs font-bold text-black">{detail.tanggal_tugas}</div>
                     </div>
                     <div className="grid grid-cols-5 bg-white rounded-lg mb-4 w-full">
                         <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey">
@@ -83,15 +81,15 @@ const MandorAcceptAssignment = () => {
                             <h1 className="mb-2">Waktu Kerja</h1>
                             <div className="font-bold">{getDateTime(detail?.tanggal_tugas)} - Selesai</div>
                         </div>
-                        <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey bg-white border-t-2 rounded-b-lg">
-                            <span className="text-xs">Status Tugas:</span> <b className={`text-sm text-${getStatusColor(detail?.status_tugas)}`}>{toSentenceCase(detail?.status_tugas || "")}</b>
+                        <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey bg-sun rounded-b-lg">
+                            <span className="text-xs text-white">Status Tugas:</span> <b className="text-sm text-white">{toSentenceCase(detail?.status_tugas || "")}</b>
                         </div>
                     </div>
                     <div className="flex flex-col justify-between items-start mb-4">
                         <div className="text-xs text-black mb-1">Tugas Diterima :</div>
                         <div className="flex justify-between items-center w-full mb-5">
-                            <div className="text-xs text-left font-bold text-black w-4/5">{detail.tanggal_status ?getLocaleDateString(detail.tanggal_status) : "-"}</div>
-                            <div className="text-xs font-bold text-black">{detail.tanggal_status ?getDateTime(detail.tanggal_status) : "-"}</div>
+                            <div className="text-xs text-left font-bold text-black w-4/5">9 Agustus 2022</div>
+                            <div className="text-xs font-bold text-black">20:35 WIB</div>
                         </div>
                     </div>
                     <div className="flex flex-col items-center">
@@ -100,12 +98,13 @@ const MandorAcceptAssignment = () => {
                     </div>
                 </div>
                 {/* button with condition */}
-                {!detail.approved_by_mabes_at ?
+                {detail.status_tugas === "menunggu-persetujuan" ?
                 <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Masukkan Tapper'} onClick={() => {}}/> :
-                <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Lihat Tapper'} onClick={() => {}}/> }
+                <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Lihat Tapper'} onClick={() => {}}/> 
+                }
             </section>
        </div>
     )
 }
 
-export default MandorAcceptAssignment
+export default MandorDiversionAssignment

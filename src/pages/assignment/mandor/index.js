@@ -8,6 +8,7 @@ import { getDateTime } from '../../../utils/getDateTime';
 import { getDate } from '../../../utils/getDate';
 import { useNavigate } from 'react-router-dom';
 import { toSentenceCase } from '../../../utils/strings';
+import { getStatusColor } from '../../../utils/getStatusColor';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -62,8 +63,7 @@ const Mandor = () => {
     }
 
     const handleDiversionAssignment = (id) => {
-        // balikin ke halaman alihkan tugas tanpa edit
-        return navigate(`/assignment/mandor/detail/${id}/accept`)
+        return navigate(`/assignment/mandor/detail/${id}/diversion`)
     }
 
     return(
@@ -113,8 +113,8 @@ const Mandor = () => {
                                 <h1 className="mb-2">Waktu Kerja</h1>
                                 <div className="font-bold">{getDateTime(data.tanggal_tugas)} - Selesai</div>
                             </div>
-                            <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey bg-sun rounded-b-lg">
-                            <span className="text-xs text-white">Status Tugas:</span> <b className="text-sm text-white">{toSentenceCase(data.status_tugas)}</b>
+                            <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey bg-white rounded-b-lg border-t-2">
+                            <span className="text-xs">Status Tugas:</span> <b className={`text-sm text-${getStatusColor(data.status_tugas)}`}>{toSentenceCase(data.status_tugas)}</b>
                         </div>
                         </div>
                         {data.status_tugas === "menunggu-persetujuan" ?
