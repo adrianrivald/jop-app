@@ -49,7 +49,7 @@ const UserMenu = (props) => {
         <div className="grid grid-cols-2 gap-4 mt-6">
             <Card cardTitle="Tugas" level={props.level}/>
             <Card cardTitle="Absensi" isDisabled={props.level === 'mabes'}/>
-            <Card cardTitle="Timbang" isDisabled/>
+            <Card cardTitle="Timbang" level={props.level} isDisabled={props.level === 'mabes'}/>
             <Card cardTitle="Logistik" isDisabled/>
             <Card cardTitle="Laporan" isDisabled/>
             <Card cardTitle="Pengaturan" isDisabled/>
