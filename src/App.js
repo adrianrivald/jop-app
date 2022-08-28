@@ -16,6 +16,7 @@ import MabesDetail from './pages/assignment/mabes/detail';
 import MabesDetailAction from './pages/assignment/mabes/detail/action';
 import MabesEdit from './pages/assignment/mabes/edit';
 import Cookies from 'universal-cookie';
+import DetailTapper from './pages/assignment/tapper';
 
 function App() {
   const cookies = new Cookies();
@@ -45,7 +46,8 @@ function App() {
         <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />
         <Route path="/assignment/mabes/detail/:id" exact element={<MabesDetail/>} />
         <Route path="/assignment/mabes/detail/:id/edit" exact element={<MabesEdit/>} />
-        <Route path="/assignment/mabes/detail/:id/action" exact element={<MabesDetailAction/>} />
+        <Route path="/assignment/mabes/detail/action" exact element={<MabesDetailAction/>} />
+        <Route path="/assignment/tapper/:id" exact element={<DetailTapper />} />
         <Route path="/storybook" exact element={<Storybook/>} />
       </Routes>
     </Router>

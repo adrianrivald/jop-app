@@ -28,7 +28,7 @@ export default function Table({
                 return 'text-soil'
             case 'diterima' :
                 return 'text-sky'
-            case 'pengalihan' : 
+            case 'dialihkan' : 
                 return 'text-sun'
             case 'berjalan' :
                 return 'text-flora'
