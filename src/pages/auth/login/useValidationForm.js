@@ -10,8 +10,8 @@ const validateFormField = (form, formItem) => {
       case (formItem === 'username' && form[formItem].length < 3): {
         return [false,  { [formItem] : `${toSentenceCase(formItem) } minimal 3 karakter` }]
       }
-      case (formItem === 'kataSandi' && form[formItem].length < 3): {
-        return [false,  { [formItem] : `${toSentenceCase(formItem) } minimal 3 karakter` }]
+      case (formItem === 'kataSandi' && form[formItem].length < 6): {
+        return [false,  { [formItem] : `${toSentenceCase(formItem) } minimal 6 karakter` }]
       }
     }
   

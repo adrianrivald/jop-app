@@ -40,8 +40,6 @@ const Login = () => {
 
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const [valid, errorMessage] = useValidationForm(form)
-        console.log('valid', valid)
-        console.log('error', errorMessage)
 
         setErrorMessage({ ...errorMessage })
 
