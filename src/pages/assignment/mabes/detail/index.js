@@ -64,18 +64,23 @@ function MabesDetail() {
     }
 
     const onSubmitAssignment = () => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json'
+        if(detailData?.pekerja?.length > 0){
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json'
+                }
             }
+            axios.post(`${url}penugasan/izinkan-tapper`, {
+                penugasan_id: detailData.id
+            }, config).then((res) => {
+                setIsSubmitted(true)
+                setAlertMessage('Sukses izinkan tugas')
+                setTimeout(() => {
+                    setIsSubmitted(false)
+                }, 3000);
+            })
         }
-        axios.post(`${url}penugasan/izinkan-tapper`, {
-            penugasan_id: detailData.id
-        }, config).then((res) => {
-            setIsSubmitted(true)
-            setAlertMessage('Sukses izinkan tugas')
-        })
     }
 
     const onCancel = () => {
@@ -115,7 +120,7 @@ function MabesDetail() {
             <div className="container">
                 <div className='flex justify-between items-center'>
                     <Title text={detailData?.wilayah_tugas?.nama} />
-                    <Button disabled={detailData?.status_tugas !== "menunggu-persetujuan" && detailData?.status_tugas !== "dialihkan"} onClick={onEdit} isText={true} text={"Edit"}/>
+                    <Button disabled={detailData?.status_tugas !== "menunggu-persetujuan" && detailData?.status_tugas !== "dialihkan" ? true : false} onClick={onEdit} isText={true} text={"Edit"}/>
                 </div>
                 <div className='mt-6'>
                     <Subtitle text='Informasi Wilayah & Cuaca' />

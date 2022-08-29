@@ -245,7 +245,6 @@ function MabesEdit() {
         if (input_id === "field_id") {
             getClone(e.target.value)
         }
-        console.log(e.target.value,'isre')
     }
     const onChangeDate = (e) => {
         setDateTimeInput({
@@ -275,7 +274,6 @@ function MabesEdit() {
             ...addInput, 
             'is_recurring' : isRecurring === true ? 1 : 0}
             )
-        console.log(addInput["is_recurring"],' value checkbox')
         }
 
     const getClone = (id) => {

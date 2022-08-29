@@ -155,9 +155,10 @@ function Mabes() {
         navigate(`/assignment/mabes/detail/${id}`)
     }
 
-    // // const onFilter = () => {
-    // // // //     getList()
-    // // }
+    const onClickFilter = () => {
+        setSelectedFilter({})
+        setIsNoFilter(true)
+    }
 
     const onChangeSort = (e) => {
         const sort = e.target.value
@@ -193,7 +194,7 @@ function Mabes() {
                             <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
                         </div>
                         <div className='flex-auto'>
-                            <Button filterCount={filterCount} isFilter={true} text='Filter'/>
+                            <Button filterCount={filterCount} onClick={onClickFilter} isFilter={true} text='Filter'/>
                         </div>
                         <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
                     </div>

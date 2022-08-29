@@ -16,10 +16,10 @@ export default function Button({
         <>
             {
                 isText ? !isBack ?
-                    <button className={`text-xs bg-flora hover:bg-flora text-white font-bold p-2.5 rounded-xl w-32 ${className}`} {...rest}>
+                    <button className={`text-xs bg-flora hover:bg-flora text-white font-bold p-2.5 rounded-xl w-32 ${disabled ? 'opacity-50 cursor-not-allowed	' : ''} ${className}`} {...rest}>
                         {text}
                     </button> : 
-                    <button className={`text-xs bg-white hover:bg-white text-flora font-bold p-2.5 rounded-xl w-32 border border-flora ${disabled ? 'opacity-50 cursor-not-allowed	' : ''} ${className}`} {...rest}>
+                    <button className={`text-xs bg-white hover:bg-white text-flora font-bold p-2.5 rounded-xl w-32 border border-flora  ${className}`} {...rest}>
                         {text}
                     </button>
                     : null
