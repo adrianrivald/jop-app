@@ -95,6 +95,9 @@ function MabesDetail() {
         }, config).then((res) => {
             setIsSubmitted(true)
             setAlertMessage("Sukses membatalkan tugas")
+            setTimeout(() => {
+                setIsSubmitted(false)
+            }, 3000);
         })
     }
 
