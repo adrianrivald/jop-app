@@ -9,7 +9,9 @@ import HomePage from './pages/homepage';
 import SignIn from './pages/auth/login';
 import Sample from './pages/sample/Sample';
 import Storybook from './pages/storybook';
-import Mandor from './pages/assignment/mandor'
+import Mandor from './pages/assignment/mandor';
+import MandorAcceptAssignment from './pages/assignment/mandor/accept';
+import MandorDiversionAssignment from './pages/assignment/mandor/diversion';
 import Mabes from './pages/assignment/mabes';
 import MabesAssignment from './pages/assignment/mabes/new-assignment';
 import MabesDetail from './pages/assignment/mabes/detail';
@@ -41,6 +43,8 @@ function App() {
         <Route path="/sample" exact element={<Sample/>} />
         {/* mandor */}
         <Route path="/assignment/mandor/list" exact element={<Mandor />} />
+        <Route path="/assignment/mandor/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
+        <Route path="/assignment/mandor/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
         {/* mabes */}
         <Route path="/assignment/mabes/list" exact element={<Mabes/>} />
         <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />

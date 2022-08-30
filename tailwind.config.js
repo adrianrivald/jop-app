@@ -35,6 +35,7 @@ module.exports = {
             'soil': '#8C763F',
             'sky': '#0D99FF',
             'red': '#7f1d1d',
+            'brown': '#8C763F',
 
           },
           fontSize: {
