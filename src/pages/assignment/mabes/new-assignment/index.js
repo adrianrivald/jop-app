@@ -20,6 +20,13 @@ function Dropdown (props) {
     )
 }
 
+function CheckIsRecurring (props) {
+    return (
+        <input checked={props.checked} onClick={props.onChange} type="checkbox" class="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
+
+    )
+}
+
 function MabesAssignment() {
     const navigate = useNavigate();
     const cookies = new Cookies();
@@ -245,9 +252,11 @@ function MabesAssignment() {
     }
 
     const onChangeHandler = (e, input_id) => {
+        if (input_id === "is_recurring") {
+            setIsRecurring(e.target.checked)
+        }
         setAddInput((prev) => ({
             ...prev ,
-            "is_recurring" : isRecurring ? 1 : 0,
             [input_id]: e.target.value
         }))
         if (input_id === "field_id") {
@@ -262,7 +271,10 @@ function MabesAssignment() {
                 Accept: 'application/json'
             }
         }
-        axios.post(`${url}penugasan/store`, addInput, config).then((res) => {
+        axios.post(`${url}penugasan/store`, {
+            ...addInput,
+            "is_recurring" : isRecurring === true ? 1 : 0
+        }, config).then((res) => {
             setIsSubmitted(true)
             setTimeout(() => {
                 setIsSubmitted(false)
@@ -328,7 +340,7 @@ function MabesAssignment() {
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1 flex items-center gap-2'>
                                 Ulangi Tugas
-                                <input checked={isRecurring} onClick={() => setIsRecurring(!isRecurring)} type="checkbox" value="" class="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
+                                <CheckIsRecurring checked={isRecurring} onChange={(e => onChangeHandler(e, "is_recurring"))} />
                             </h2>
                             <DropDown defaultValue="Pilih ulangi tugas" onChange={(e) => onChangeHandler(e, "tipe_recurring")} option={recurringList} />
                         </div>

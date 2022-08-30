@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, createSearchParams } from 'react-router-dom';
 import Button from '../../../../components/button/Button';
 import Subtitle from '../../../../components/title/Subtitle';
 import Title from '../../../../components/title/Title';
@@ -112,7 +112,12 @@ function MabesDetail() {
     }
 
     const onSwitch = () => {
-        navigate(`/assignment/mabes/detail/${id}/edit`)
+        navigate({
+            pathname: `/assignment/mabes/detail/${id}/edit`,
+            search: createSearchParams({
+                isSwitch: "true"
+            }).toString()
+        })
     }
 
     return (

@@ -15,15 +15,25 @@ const url = process.env.REACT_APP_API_URL;
 function Dropdown (props) {
     return (
         <div className={`mt-5 ${props.customClass}`}>
-            <h2 className='text-left mb-1'>{props.title}</h2>
-            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+            <h2 className={`text-left mb-1 ${props.isSwitch ? "text-sun" : ""}`}>{props.title}</h2>
+            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} className={`${props.isSwitch ? "bg-sun text-white" : ""}`} />
         </div>
+    )
+}
+
+function CheckIsRecurring (props) {
+    return (
+        <input checked={props.checked} onClick={props.onChange} type="checkbox" class="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
+
     )
 }
 
 function MabesEdit() {
     const {id} = useParams()
     const navigate = useNavigate();
+    const search = window.location.search;
+    const params = new URLSearchParams(search);
+    const isSwitch = params.get('isSwitch');
     const cookies = new Cookies();
     const token = cookies.get('token');
     const [detailData, setDetailData] = React.useState({})
@@ -39,7 +49,10 @@ function MabesEdit() {
     const [addInput, setAddInput] = React.useState({})
     const [isRecurring, setIsRecurring] = React.useState(false)
     const [isSubmitted, setIsSubmitted] = React.useState(false)
+    const [isSuccess, setIsSuccess] = React.useState(false)
     const [clone, setClone] = React.useState("")
+    const [currentMandor, setCurrentMandor] = React.useState("")
+    const [alertMessage, setAlertMessage] = React.useState("")
     const recurringList = [
         {
             value: "harian",
@@ -94,12 +107,14 @@ function MabesEdit() {
                 "tipe_recurring": data?.tipe_recurring,
                 "batas_recurring": data?.batas_recurring
             })
+            setCurrentMandor(data?.mandor?.id);
             getDivisi(data?.wilayah_tugas?.id)
             getHancak(data?.divisi?.id)
             getClone(data?.field?.id)
             if (data?.is_recurring === 1 ){
                 setIsRecurring(true)
             } 
+            console.log(addInput.mandor_id, 'manodorid')
         })
     }
     
@@ -238,6 +253,9 @@ function MabesEdit() {
     }
     
     const onChangeHandler = (e, input_id) => {
+        if (input_id === "is_recurring") {
+            setIsRecurring(e.target.checked)
+        }
         setAddInput((prev) => ({
             ...prev ,
             [input_id]: e.target.value
@@ -268,14 +286,6 @@ function MabesEdit() {
          )
     }
 
-    const onChangeRecurring = (e) => {
-        setIsRecurring(!isRecurring)
-        setAddInput({
-            ...addInput, 
-            'is_recurring' : isRecurring === true ? 1 : 0}
-            )
-        }
-
     const getClone = (id) => {
         axios.get(`${url}field/by-uuid/${id}?include=clone`, {
             url: process.env.REACT_APP_API_URL,
@@ -296,12 +306,26 @@ function MabesEdit() {
                 Accept: 'application/json'
             }
         }
-        axios.put(`${url}penugasan/update/${id}`, addInput, config).then((res) => {
+        if ((isSwitch === "true" && addInput.mandor_id !== currentMandor) || !isSwitch) {
+            axios.put(`${url}penugasan/update/${id}`, {
+                ...addInput,
+                "is_recurring" : isRecurring === true ? 1 : 0
+            }, config).then((res) => {
+                setIsSuccess(true)
+                setAlertMessage("Sukses mengubah data !")
+                setIsSubmitted(true)
+                setTimeout(() => {
+                    setIsSubmitted(false)
+                }, 3000);
+            })
+        } else {
+            setIsSuccess(false)
+            setAlertMessage('Mandor belum dialhikan, silakan ganti mandor');
             setIsSubmitted(true)
             setTimeout(() => {
                 setIsSubmitted(false)
             }, 3000);
-        })
+        }
     }
 
 
@@ -317,7 +341,7 @@ function MabesEdit() {
                     <Dropdown title="Hancak" option={hancakList} onChange={(e) => onChangeHandler(e, "hancak_id")} defaultValue={detailData?.hancak?.nama}/>
                     <Dropdown title="Area/block" option={areaList} onChange={(e) => onChangeHandler(e, "field_id")} defaultValue={detailData?.field?.nama}/>
                     <Dropdown title="Pilih jenis tugas" option={taskList} onChange={(e) => onChangeHandler(e, "jenis_tugas_id")} defaultValue={detailData?.jenis_tugas?.nama} />
-                    <Dropdown title="Pilih penanggung jawab tugas / Mandor" option={mandorList} onChange={(e) => onChangeHandler(e, "mandor_id")} defaultValue={detailData?.mandor?.nama} />
+                    <Dropdown title="Pilih penanggung jawab tugas / Mandor" option={mandorList} onChange={(e) => onChangeHandler(e, "mandor_id")} defaultValue={detailData?.mandor?.nama} isSwitch={isSwitch} />
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Clone</h2>
@@ -346,7 +370,7 @@ function MabesEdit() {
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1 flex items-center gap-2'>
                                 Ulangi Tugas
-                                <input defaultChecked={detailData?.is_recurring === 1 && true} checked={isRecurring} onChange={onChangeRecurring} type="checkbox" value="" class="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
+                                <CheckIsRecurring checked={isRecurring} onChange={(e => onChangeHandler(e, "is_recurring"))} />
                             </h2>
                             <DropDown defaultValue={detailData?.tipe_recurring} onChange={(e) => onChangeHandler(e, "tipe_recurring")} option={recurringList} />
                         </div>
@@ -361,7 +385,7 @@ function MabesEdit() {
                         <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => navigate(-1)} />
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
                     </div>
-                    <Toast text="Sukses mengubah data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
+                    <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
                 </div>
             </div>
         </>
