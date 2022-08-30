@@ -22,7 +22,7 @@ function Dropdown (props) {
 
 function CheckIsRecurring (props) {
     return (
-        <input checked={props.checked} onClick={props.onChange} type="checkbox" class="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
+        <input checked={props.checked} onClick={props.onChange} type="checkbox" className="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
 
     )
 }
@@ -305,7 +305,7 @@ function MabesAssignment() {
 
     return (
         <>
-            <div class="header">
+            <div className="header">
                 <Header title="Penugasan" isWithBack/>
             </div>
             <div className="container">

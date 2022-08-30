@@ -26,7 +26,7 @@ const DetailTapper = () =>{
     }
     return (
         <>
-            <div class="header">
+            <div className="header">
                 <Header title="Detail Tapper" isWithBack />
             </div>
             <div className="container">
