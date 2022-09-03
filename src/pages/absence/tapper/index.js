@@ -154,7 +154,7 @@ const DetailTapper = () =>{
                         </div>
                     </div>
                 </div>
-                <div className="history mt-5">
+                <div className="history mt-5 mb-12">
                     <div className="flex justify-between items-center mb-4">
                         <Title text={'Riwayat Absensi'} className="text-sm" />
                         <DropDown option={[{label: '30 Hari Terakhir'}]} />
@@ -211,7 +211,22 @@ const DetailTapper = () =>{
                         }
                     </div>
                 </div>
-                <div className="button-area">
+            </div>
+                <div className="button-area" 
+                    style={{
+                        background: 'linear-gradient(180deg, rgba(242, 245, 247, 0) 0%, #F2F5F7 31.25%)',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'flex-end',
+                        padding: '12px 20px',
+                        gap: '12px',
+                        position: 'fixed',
+                        width: '480px',
+                        bottom: '0'
+                        }
+                    }
+                >
                     <FlatButton 
                         className='w-full rounded-xl' 
                         role='white' text='Kembali ke atas' 
@@ -222,7 +237,6 @@ const DetailTapper = () =>{
                         }
                     />
                 </div>
-            </div>
         </>
     )
 }
