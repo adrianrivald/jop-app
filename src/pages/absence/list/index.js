@@ -104,7 +104,7 @@ function AbsenceList() {
                             <p className="text-4xl font-bold">{absenceList?.pekerja?.masuk?.total}</p>
                             {
                                 absenceList?.pekerja?.masuk?.list?.length > 0 ? 
-                                    <div className="h-7">
+                                    <div>
                                         <p className="text-xxs">Terakhir masuk:</p>
                                         <p className="text-xxs font-bold">
                                             {absenceList?.pekerja?.masuk?.list[0]?.nama ?? ""}, &nbsp;
@@ -129,7 +129,7 @@ function AbsenceList() {
                         <div className="p-3 rounded-xl border border-cloud w-full">
                             <p className="text-4xl font-bold">{absenceList?.pekerja?.keluar?.total}</p>
                             {absenceList?.pekerja?.keluar?.list?.length > 0 ? 
-                                <div className="h-7">
+                                <div>
                                     <p className="text-xxs">Terakhir keluar:</p>
                                     <p className="text-xxs font-bold">
                                         {absenceList?.pekerja?.keluar?.list[0]?.nama}, &nbsp;
