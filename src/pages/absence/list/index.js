@@ -104,14 +104,15 @@ function AbsenceList() {
                             <p className="text-4xl font-bold">{absenceList?.pekerja?.masuk?.total}</p>
                             {
                                 absenceList?.pekerja?.masuk?.list?.length > 0 ? 
-                                    <>
+                                    <div className="h-7">
                                         <p className="text-xxs">Terakhir masuk:</p>
                                         <p className="text-xxs font-bold">
                                             {absenceList?.pekerja?.masuk?.list[0]?.nama ?? ""}, &nbsp;
                                             {`${moment(absenceList?.pekerja?.masuk?.list[0]?.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB` ?? "-"} 
                                         </p>      
-                                    </>
-                                 : null
+                                    </div>
+                                 : 
+                                 <div className="h-7" />
                             }                      
                             <Button 
                                 isIcon 
@@ -127,14 +128,15 @@ function AbsenceList() {
                         </div>
                         <div className="p-3 rounded-xl border border-cloud w-full">
                             <p className="text-4xl font-bold">{absenceList?.pekerja?.keluar?.total}</p>
-                            {absenceList?.pekerja?.masuk?.list?.length > 0 ? 
-                                <>
+                            {absenceList?.pekerja?.keluar?.list?.length > 0 ? 
+                                <div className="h-7">
                                     <p className="text-xxs">Terakhir keluar:</p>
                                     <p className="text-xxs font-bold">
                                         {absenceList?.pekerja?.keluar?.list[0]?.nama}, &nbsp;
                                         {moment(absenceList?.pekerja?.keluar?.list[0]?.absensi_keluar, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB
                                     </p>
-                                </> : null
+                                </div> : 
+                                <div className="h-7" />
                             }
                             <Button 
                                 isIcon 
