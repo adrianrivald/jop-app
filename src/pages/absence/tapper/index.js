@@ -137,7 +137,7 @@ const DetailTapper = () =>{
                 <div className="performance mt-5">
                     <div className="flex justify-between items-center">
                         <Title text={'Performa'} className="text-sm" />
-                        <DropDown option={[{label: '30 Hari Terakhir'}]} />
+                        <DropDown option={[{label: '30 Hari Terakhir'},{label: '7 Hari Terakhir'}]} />
                     </div>
                     <div className="flex justify-between mt-3 gap-3">
                         <div className="p-3 rounded-xl border border-cloud w-full">
@@ -157,7 +157,7 @@ const DetailTapper = () =>{
                 <div className="history mt-5 mb-12">
                     <div className="flex justify-between items-center mb-4">
                         <Title text={'Riwayat Absensi'} className="text-sm" />
-                        <DropDown option={[{label: '30 Hari Terakhir'}]} />
+                        <DropDown option={[{label: 'Terbaru'},{label: 'Terlama'}]} />
                     </div>
                     <div className={`accordion divide-y divide-cloud`}>
                         {

@@ -53,7 +53,7 @@ function MabesDetail() {
         {
             url: process.env.REACT_APP_API_URL,
             headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Authorization: `Bearer ${token}`,
                 Accept: 'application/json'
             }
         }).then((res) => {

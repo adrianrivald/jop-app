@@ -19,7 +19,8 @@ import MabesDetailAction from './pages/assignment/mabes/detail/action';
 import MabesEdit from './pages/assignment/mabes/edit';
 import Cookies from 'universal-cookie';
 import DetailTapper from './pages/absence/tapper';
-import Absence from './pages/absence/';
+import Absence from './pages/absence';
+import AbsenceList from './pages/absence/list';
 import AbsenceIn from './pages/absence/scan/in';
 import AbsenceOut from './pages/absence/scan/out';
 
@@ -56,8 +57,9 @@ function App() {
         <Route path="/assignment/mabes/detail/action" exact element={<MabesDetailAction/>} />
         {/* absensi */}
         <Route path="/absence" exact element={<Absence />} />
-        <Route path="/absence/in" exact element={<AbsenceIn />} />
-        <Route path="/absence/out" exact element={<AbsenceOut />} />
+        <Route path="/absence/:id_tugas" exact element={<AbsenceList />} />
+        <Route path="/absence/:id_tugas/in" exact element={<AbsenceIn />} />
+        <Route path="/absence/:id_tugas/out" exact element={<AbsenceOut />} />
         <Route path="/absence/tapper/:id" exact element={<DetailTapper />} />
         <Route path="/storybook" exact element={<Storybook/>} />
       </Routes>

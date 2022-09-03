@@ -1,5 +1,4 @@
 import axios from 'axios';
-import moment from 'moment';
 import Header from '../../../../components/ui/Header';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,14 +13,23 @@ function AbsenceOut() {
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
-    const [data, setData] = React.useState('No result');
-
-    const onChange = () => {
-        console.log('')
-    }
 
     const onResult = (result, error) => {
-        alert(result)
+        if (result) {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json'
+                }
+            }
+            axios.post(`${url}absensi/store`, {
+                "pekerja_id": "46020822-5409-4011-8658-3dcd06c3e256",
+                "penugasan_id": "abf5e6a3-84d0-4c32-a83c-25794de50080",
+                "tipe_absen": "keluar"
+            }, config).then((res) => {
+                navigate('/absence/tapper/46020822-5409-4011-8658-3dcd06c3e256')
+            })
+        }
     }
     
     return (
@@ -31,6 +39,7 @@ function AbsenceOut() {
             </div>
             <div className='qr-area'>
                 <QrReader
+                    scanDelay={1000}
                     onResult={onResult} 
                     videoContainerStyle={{
                         padding: 0,

@@ -1,111 +1,107 @@
-import axios from 'axios';
-import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/ui/Header';
-import Button from '../../components/button/Button';
-import Table from '../../components/ui/Table';
-import React from 'react';
-import DropDown from '../../components/forms/Dropdown';
 import DatePicker from '../../components/forms/DatePicker';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Cookies from 'universal-cookie';
-import Subtitle from '../../components/title/Subtitle';
-import Title from '../../components/title/Title';
+import { getDateTime } from '../../utils/getDateTime';
+import { getDate } from '../../utils/getDate';
+import { useNavigate } from 'react-router-dom';
+import { toSentenceCase } from '../../utils/strings';
+import { getStatusColor } from '../../utils/getStatusColor';
 
 const url = process.env.REACT_APP_API_URL;
 
+const Absence = () => {
+    const cookies = new Cookies();
+    const token = cookies.get('token');
+    const navigate = useNavigate();
+    const defaultDate = getDate(new Date());
+    const [selectedDate, setSelectedDate] = useState(defaultDate);
+    const [listData, setListData] = useState([]);
+    
+    const onChangeDate = (e) => {
+        setSelectedDate(e.target.value)
+    }
+    
+    useEffect(() => {
+        getLIst()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDate])
+    
+    const getLIst = async() => {
+        await axios.get(`${url}penugasan/by-mandor?filter[tanggal_tugas]=${selectedDate}&include=divisi,hancak,clone,sistem,mandor,field`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data.data
+            console.log('data', data)
+            setListData(data)
+        })
+    }
 
-function Dropdown (props)  {
-    return (
-        <div className='mt-1'>
-            <h2 className='text-left text-xs mb-1'>{props.title}</h2>
-            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+    const onClickTask = (id) => {
+        navigate(`/absence/${id}`)
+    }
+
+    return(
+        <div className="App">
+            <Header title="Penugasan" isWithBack />
+            <section className="container p-4">
+               <div className="flex justify-between items-center mb-4">
+                    <div className='text-xs font-bold text-black'>Tugas Kerja</div>
+                    <DatePicker defaultValue={selectedDate} onChange={onChangeDate} />
+               </div>
+               {/* table */}
+                {listData.length ? listData.map((data) => (
+                    <div className="flex flex-col justify-center items-center mb-3" key={data.id} onClick={() =>onClickTask(data.id)}>
+                        <div className="grid grid-cols-5 bg-white rounded-lg mb-4 w-full">
+                            <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey">
+                                <span>Estate: <b>{data.mandor.wilayah_tugas}</b></span> <b>{data.kode}</b>
+                            </div>
+                            <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
+                                <h1 className="mb-2">Divisi</h1>
+                                <div className='font-bold'>{data.divisi.kode}</div>
+                            </div>
+                            <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
+                                <h1 className="mb-2">Hancak</h1>
+                                <div className='font-bold'>{data.hancak.kode}</div>
+                            </div>
+                            <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
+                                <h1 className="mb-2">Block</h1>
+                                <div className='font-bold'>{data.field.nama}</div>
+                            </div>
+                            <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
+                                <h1 className="mb-2">Clone</h1>
+                                <div className='font-bold'>{data.clone.nama}</div>
+                            </div>
+                            <div className="flex flex-col text-left text-xs py-3 px-2">
+                                <h1 className="mb-2">Sistem</h1>
+                                <div className='font-bold'>{data.sistem.nama}</div>
+                            </div>
+                            <div className="col-span-2 flex flex-col items-start justify-start text-xs py-3 px-2 border-t-2 border-bgrey">
+                                <h1 className="mb-2">Mandor</h1>
+                                <div className='font-bold'>{data.mandor.nama}</div>
+                            </div>
+                            <div className="flex flex-col items-start justify-start text-xs py-3 px-2 border-t-2 border-bgrey">
+                                <h1 className="mb-2">Tapper</h1>
+                                <div className='font-bold'>{data.hancak.jumlah_rekomendasi_tapper}</div>
+                            </div>
+                            <div className="col-span-2 flex flex-col items-end justify-start text-xs py-3 px-2 border-t-2 border-bgrey">
+                                <h1 className="mb-2">Waktu Kerja</h1>
+                                <div className="font-bold">{getDateTime(data.tanggal_tugas)} - Selesai</div>
+                            </div>
+                            <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey bg-white rounded-b-lg border-t-2">
+                            <span className="text-xs">Status Tugas:</span> <b className={`text-sm text-${getStatusColor(data.status_tugas)}`}>{toSentenceCase(data.status_tugas)}</b>
+                        </div>
+                        </div>
+                    </div>
+                )) : <div className="flex items-center justify-center" style={{ height: '60vh'}}>Tidak ada tugas di tanggal ini</div>}
+            </section>
         </div>
     )
 }
 
-
-function Absence() {
-    const navigate = useNavigate();
-    const cookies = new Cookies();
-    const token = cookies.get('token');
-
-
-    return (
-        <>
-            <div className="header">
-                <Header title="Absensi" isWithBack  />
-            </div>
-            <div className="container">
-                <p className='text-xs'>Penugasan</p>
-                <div className='flex justify-between items-center'>
-                    <p className='text-sm font-bold'>Wilayah & Kerja</p>
-                    <Button
-                        isText
-                        text="Detail Tugas"
-                    />
-                </div>
-                <div>
-                    <Dropdown title="Pilih jenis pekerjaan karyawan" defaultValue="Tapper" option={[{label: 'Tapper'}]} onChange={()=>console.log('')} />
-                    <div className="flex justify-between mt-3 gap-3">
-                        <div className="p-3 rounded-xl border border-cloud w-full">
-                            <p className="text-4xl font-bold">90</p>
-                            <p className="text-xxs">Total Kerja</p>
-                            <Button 
-                                isIcon 
-                                icon={
-                                    <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M10.0555 0C11.2521 0 12.2222 0.970047 12.2222 2.16667V3.5C12.2222 3.77614 11.9983 4 11.7222 4C11.446 4 11.2222 3.77614 11.2222 3.5V2.16667C11.2222 1.52233 10.6998 1 10.0555 1H8.72217C8.44603 1 8.22217 0.77614 8.22217 0.5C8.22217 0.22386 8.44603 0 8.72217 0H10.0555ZM3.72217 0C3.9983 0 4.22217 0.22386 4.22217 0.5C4.22217 0.77614 3.9983 1 3.72217 1H2.38883C1.7445 1 1.22217 1.52233 1.22217 2.16667V3.5C1.22217 3.77614 0.998301 4 0.722168 4C0.446034 4 0.222168 3.77614 0.222168 3.5V2.16667C0.222168 0.970047 1.19223 0 2.38883 0H3.72217ZM11.2222 8.5C11.2222 8.22387 11.446 8 11.7222 8C11.9983 8 12.2222 8.22387 12.2222 8.5V9.83333C12.2222 11.0299 11.2521 12 10.0555 12H8.72217C8.44603 12 8.22217 11.7761 8.22217 11.5C8.22217 11.2239 8.44603 11 8.72217 11H10.0555C10.6998 11 11.2222 10.4777 11.2222 9.83333V8.5ZM0.222168 8.5C0.222168 8.22387 0.446034 8 0.722168 8C0.998301 8 1.22217 8.22387 1.22217 8.5V9.83333C1.22217 10.4777 1.7445 11 2.38883 11H3.72217C3.9983 11 4.22217 11.2239 4.22217 11.5C4.22217 11.7761 3.9983 12 3.72217 12H2.38883C1.19223 12 0.222168 11.0299 0.222168 9.83333V8.5ZM9.22217 5.5C9.49831 5.5 9.72217 5.72387 9.72217 6C9.72217 6.27613 9.49831 6.5 9.22217 6.5H3.22217C2.94603 6.5 2.72217 6.27613 2.72217 6C2.72217 5.72387 2.94603 5.5 3.22217 5.5H9.22217Z" fill="white"/>
-                                    </svg>
-                                }
-                                text="Scan Masuk"
-                                className="w-full mt-2"
-                                onClick={()=> navigate('/absence/in')}
-                            />
-                        </div>
-                        <div className="p-3 rounded-xl border border-cloud w-full">
-                            <p className="text-4xl font-bold">20</p>
-                            <p className="text-xxs">Total Izin</p>
-                            <Button 
-                                isIcon 
-                                icon={
-                                    <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M10.0555 0C11.2521 0 12.2222 0.970047 12.2222 2.16667V3.5C12.2222 3.77614 11.9983 4 11.7222 4C11.446 4 11.2222 3.77614 11.2222 3.5V2.16667C11.2222 1.52233 10.6998 1 10.0555 1H8.72217C8.44603 1 8.22217 0.77614 8.22217 0.5C8.22217 0.22386 8.44603 0 8.72217 0H10.0555ZM3.72217 0C3.9983 0 4.22217 0.22386 4.22217 0.5C4.22217 0.77614 3.9983 1 3.72217 1H2.38883C1.7445 1 1.22217 1.52233 1.22217 2.16667V3.5C1.22217 3.77614 0.998301 4 0.722168 4C0.446034 4 0.222168 3.77614 0.222168 3.5V2.16667C0.222168 0.970047 1.19223 0 2.38883 0H3.72217ZM11.2222 8.5C11.2222 8.22387 11.446 8 11.7222 8C11.9983 8 12.2222 8.22387 12.2222 8.5V9.83333C12.2222 11.0299 11.2521 12 10.0555 12H8.72217C8.44603 12 8.22217 11.7761 8.22217 11.5C8.22217 11.2239 8.44603 11 8.72217 11H10.0555C10.6998 11 11.2222 10.4777 11.2222 9.83333V8.5ZM0.222168 8.5C0.222168 8.22387 0.446034 8 0.722168 8C0.998301 8 1.22217 8.22387 1.22217 8.5V9.83333C1.22217 10.4777 1.7445 11 2.38883 11H3.72217C3.9983 11 4.22217 11.2239 4.22217 11.5C4.22217 11.7761 3.9983 12 3.72217 12H2.38883C1.19223 12 0.222168 11.0299 0.222168 9.83333V8.5ZM9.22217 5.5C9.49831 5.5 9.72217 5.72387 9.72217 6C9.72217 6.27613 9.49831 6.5 9.22217 6.5H3.22217C2.94603 6.5 2.72217 6.27613 2.72217 6C2.72217 5.72387 2.94603 5.5 3.22217 5.5H9.22217Z" fill="white"/>
-                                    </svg>
-                                }
-                                text="Scan Keluar"
-                                className="w-full mt-2"
-                                onClick={()=> navigate('/absence/out')}
-                            />
-                        </div>
-                    </div>
-                    <div className='flex items-center justify-between mt-8'>
-                        <div className='flex-1'>
-                            <Subtitle text="Daftar Pekerja" />
-                            <Title text="Masuk" />
-                        </div>
-                        <div className='flex-none'>
-                            <Button filterCount={4} onClick={() => console.log('')} isFilter={true} text='Filter'/>
-                        </div>
-                    </div>
-                    <div className='divide-y divide-cloud'>
-                        <div className='flex justify-between items-center mt-3 pt-3'>
-                            <p className='w-8 text-xxs mx-4'>02897</p>
-                            <div className='w-40'>
-                                <p className='font-bold text-sm truncate'>Atmaja Prima</p>
-                            </div>
-                            <p className='w-20 text-sm text-flora font-bold'>08:32</p>
-                            <div onClick={() => console.log('')} className="cursor-pointer">
-                                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                            <hr />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
-}
-
-export default Absence;
+export default Absence
