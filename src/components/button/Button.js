@@ -26,8 +26,13 @@ export default function Button({
             }
             {
                 isIcon ?
-                <button className={`bg-flora flex hover:bg-flora text-white font-bold p-2.5 rounded-xl ${className}`} {...rest}>
-                    {icon}
+                <button className={`bg-flora flex justify-center hover:bg-flora text-white font-bold p-2.5 rounded-xl ${className}`} {...rest}>
+                    <div className="mx-auto flex items-center ">
+                        {icon}
+                        {text && (
+                            <span className="ml-1">{text}</span>
+                        )}
+                    </div>
                 </button> : null
             }
             {
