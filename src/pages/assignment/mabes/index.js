@@ -32,7 +32,7 @@ function Mabes() {
     const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
     const [selectedEstate, setSelectedEstate] = React.useState("")
     const [selectedTask, setSelectedTask] = React.useState("")
-    const [filterCount, setFilterCount] = React.useState(0)
+    // const [filterCount, setFilterCount] = React.useState(0)
     const [isEmpty, setIsEmpty] = React.useState(false)
     const [isNoFilter, setIsNoFilter] = React.useState(false)
     const [selectedFilter, setSelectedFilter] = React.useState({})
@@ -58,9 +58,9 @@ function Mabes() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[selectedDate, selectedEstate, selectedTask])
 
-    React.useEffect(() => {
-        setFilterCount(Object.keys(selectedFilter).length)
-    }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
+    // React.useEffect(() => {
+    //     setFilterCount(Object.keys(selectedFilter).length)
+    // }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
 
 
     const getList = (sort) => {
@@ -155,10 +155,10 @@ function Mabes() {
         navigate(`/assignment/mabes/detail/${id}`)
     }
 
-    const onClickFilter = () => {
-        setSelectedFilter({})
-        setIsNoFilter(true)
-    }
+    // const onClickFilter = () => {
+    //     setSelectedFilter({})
+    //     setIsNoFilter(true)
+    // }
 
     const onChangeSort = (e) => {
         const sort = e.target.value
@@ -193,9 +193,9 @@ function Mabes() {
                         <div className='flex-auto w-64'>
                             <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
                         </div>
-                        <div className='flex-auto'>
+                        {/* <div className='flex-auto'>
                             <Button filterCount={filterCount} onClick={onClickFilter} isFilter={true} text='Filter'/>
-                        </div>
+                        </div> */}
                         <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
                     </div>
                 </div>

@@ -18,12 +18,12 @@ function WorkerList(props) {
             const modified_date = moment(result.absensi_keluar, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
             return (
                 <div className='flex justify-between items-center mt-3 pt-3' key={idx}>
-                    <p className='w-8 text-xxs mx-4'>{result.kode}</p>
+                    <p className='w-8 text-xxs mx-4'>{result?.kode}</p>
                     <div className='w-40'>
-                        <p className='font-bold text-sm truncate'>{result.nama}</p>
+                        <p className='font-bold text-sm truncate'>{result?.nama}</p>
                     </div>
                     <p className='w-20 text-sm text-flora font-bold'>{modified_date !== 'Invalid date' ? modified_date : 'no data'}</p>
-                    <div onClick={() => props.onClickWorker(result.id)} className="cursor-pointer">
+                    <div onClick={() => props.onClickWorker(result?.id)} className="cursor-pointer">
                         <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -102,11 +102,17 @@ function AbsenceList() {
                     <div className="flex justify-between mt-3 gap-3">
                         <div className="p-3 rounded-xl border border-cloud w-full">
                             <p className="text-4xl font-bold">{absenceList?.pekerja?.masuk?.total}</p>
-                            <p className="text-xxs">Terakhir masuk:</p>
-                            <p className="text-xxs font-bold">
-                                {absenceList?.pekerja?.masuk?.list[0]?.nama ?? ""}, &nbsp;
-                                {`${moment(absenceList?.pekerja?.masuk?.list[0]?.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB` ?? "-"} 
-                            </p>                            
+                            {
+                                absenceList?.pekerja?.masuk?.list?.length > 0 ? 
+                                    <>
+                                        <p className="text-xxs">Terakhir masuk:</p>
+                                        <p className="text-xxs font-bold">
+                                            {absenceList?.pekerja?.masuk?.list[0]?.nama ?? ""}, &nbsp;
+                                            {`${moment(absenceList?.pekerja?.masuk?.list[0]?.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB` ?? "-"} 
+                                        </p>      
+                                    </>
+                                 : null
+                            }                      
                             <Button 
                                 isIcon 
                                 icon={
@@ -121,11 +127,15 @@ function AbsenceList() {
                         </div>
                         <div className="p-3 rounded-xl border border-cloud w-full">
                             <p className="text-4xl font-bold">{absenceList?.pekerja?.keluar?.total}</p>
-                            <p className="text-xxs">Terakhir keluar:</p>
-                            <p className="text-xxs font-bold">
-                                {absenceList?.pekerja?.keluar?.list[0].nama}, &nbsp;
-                                {moment(absenceList?.pekerja?.keluar?.list[0].absensi_keluar, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB
-                            </p>
+                            {absenceList?.pekerja?.masuk?.list?.length > 0 ? 
+                                <>
+                                    <p className="text-xxs">Terakhir keluar:</p>
+                                    <p className="text-xxs font-bold">
+                                        {absenceList?.pekerja?.keluar?.list[0]?.nama}, &nbsp;
+                                        {moment(absenceList?.pekerja?.keluar?.list[0]?.absensi_keluar, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB
+                                    </p>
+                                </> : null
+                            }
                             <Button 
                                 isIcon 
                                 icon={
@@ -145,14 +155,18 @@ function AbsenceList() {
                             <Title text="Masuk" />
                         </div>
                         <div className='flex-none'>
-                            <Button filterCount={4} onClick={() => console.log('')} isFilter={true} text='Filter'/>
+                            {/* <Button filterCount={4} onClick={() => console.log('')} isFilter={true} text='Filter'/> */}
                         </div>
                     </div>
                     <div className='divide-y divide-cloud'>
-                        <WorkerList 
-                            workerList={workerList}
-                            onClickWorker={onClickWorker}
-                        />
+                        {
+                            workerList.length > 0 ? 
+                                <WorkerList 
+                                    workerList={workerList}
+                                    onClickWorker={onClickWorker}
+                                /> : <div className='flex justify-center p-5'>No data</div>
+
+                        }
                     </div>
                 </div>
             </div>
