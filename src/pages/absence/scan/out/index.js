@@ -20,7 +20,7 @@ function AbsenceOut() {
     const [alertMessage, setAlertMessage] = React.useState("");
     const [isSubmitted, setIsSubmitted] = React.useState(false);
 
-    const onResult = (result, error) => {
+    const onResult = async(result, error) => {
         try {
             if (result) {
                     const config = {
@@ -29,7 +29,7 @@ function AbsenceOut() {
                             Accept: 'application/json'
                         }
                     }
-                    axios.post(`${url}absensi/store`, {
+                    await axios.post(`${url}absensi/store`, {
                         "pekerja_id": userData?.id,
                         "penugasan_id": id_tugas,
                         "tipe_absen": "keluar"
@@ -37,7 +37,7 @@ function AbsenceOut() {
                         navigate('/absence/tapper/46020822-5409-4011-8658-3dcd06c3e256')
                     })
                 } 
-        } catch (error) {
+        } catch (error){
             alert('error')
             console.error(error.message)
             setIsSubmitted(true)
@@ -50,10 +50,10 @@ function AbsenceOut() {
     
     return (
         <>
-            <div className="header">
+            <div className="header" style={{position: 'relative', zIndex: '9999'}}>
                 <Header title="Absensi" isWithBack  />
             </div>
-            <div className='qr-area'>
+            <div className='qr-area' style={{marginTop: '-10px'}}>
                 <QrReader
                     scanDelay={1000}
                     onResult={onResult} 

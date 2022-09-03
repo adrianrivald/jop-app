@@ -12,6 +12,28 @@ import Title from '../../../components/title/Title';
 
 const url = process.env.REACT_APP_API_URL;
 
+function WorkerList(props) {
+    return (
+        props.workerList.map((result, idx) => {
+            const modified_date = moment(result.absensi_keluar, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
+            return (
+                <div className='flex justify-between items-center mt-3 pt-3' key={idx}>
+                    <p className='w-8 text-xxs mx-4'>{result.kode}</p>
+                    <div className='w-40'>
+                        <p className='font-bold text-sm truncate'>{result.nama}</p>
+                    </div>
+                    <p className='w-20 text-sm text-flora font-bold'>{modified_date !== 'Invalid date' ? modified_date : 'no data'}</p>
+                    <div onClick={() => props.onClickWorker(result.id)} className="cursor-pointer">
+                        <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <hr />
+                </div>
+            )
+        })
+    )
+}
 
 function Dropdown (props)  {
     return (
@@ -29,6 +51,7 @@ function AbsenceList() {
     const token = cookies.get('token');
     const { id_tugas } = useParams();
     const [absenceList, setAbsenceList] = React.useState({});
+    const [workerList, setWorkerList] = React.useState([]);
 
     React.useEffect(() => {
         getAbsence();
@@ -47,10 +70,15 @@ function AbsenceList() {
             }).then((res) => {
                 const data = res.data.data;
                 setAbsenceList(data)
+                setWorkerList(data?.pekerja?.seluruh?.list)
             })
         } catch(error) {
             console.error(error.message)
         }
+    }
+
+    const onClickWorker = (id_tapper) => {
+        navigate(`/absence/tapper/${id_tapper}`)   
     }
 
 
@@ -76,8 +104,8 @@ function AbsenceList() {
                             <p className="text-4xl font-bold">{absenceList?.pekerja?.masuk?.total}</p>
                             <p className="text-xxs">Terakhir masuk:</p>
                             <p className="text-xxs font-bold">
-                                {absenceList?.pekerja?.masuk?.list[0]?.nama}, &nbsp;
-                                {moment(absenceList?.pekerja?.masuk?.list[0]?.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB
+                                {absenceList?.pekerja?.masuk?.list[0]?.nama ?? ""}, &nbsp;
+                                {`${moment(absenceList?.pekerja?.masuk?.list[0]?.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} WIB` ?? "-"} 
                             </p>                            
                             <Button 
                                 isIcon 
@@ -121,19 +149,10 @@ function AbsenceList() {
                         </div>
                     </div>
                     <div className='divide-y divide-cloud'>
-                        <div className='flex justify-between items-center mt-3 pt-3'>
-                            <p className='w-8 text-xxs mx-4'>02897</p>
-                            <div className='w-40'>
-                                <p className='font-bold text-sm truncate'>Atmaja Prima</p>
-                            </div>
-                            <p className='w-20 text-sm text-flora font-bold'>08:32</p>
-                            <div onClick={() => console.log('')} className="cursor-pointer">
-                                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                            <hr />
-                        </div>
+                        <WorkerList 
+                            workerList={workerList}
+                            onClickWorker={onClickWorker}
+                        />
                     </div>
                 </div>
             </div>

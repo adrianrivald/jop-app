@@ -14,53 +14,8 @@ const DetailTapper = () =>{
     const { id } = useParams();
     const [tapperDetail, setTapperDetail] = React.useState({})
     const [openedId, setOpenedId] = React.useState({})
-    const riwayatPenugasan = [
-        {
-            "id": "abf5e6a3-84d0-4c32-a83c-25794de50080",
-            "kode": "T63518",
-            "tanggal_tugas": "2022-08-12 10:00:00",
-            "mandor": "Bambang",
-            "absensi_masuk": null,
-            "absensi_keluar": null,
-            "wilayah_tugas": {
-                "estate": "SEBAYUR",
-                "divisi": "DIVISI 1",
-                "hancak": "HANCAK A",
-                "field": "R.03459",
-                "clone": "RRIC 100"
-            }
-        },
-        {
-            "id": "abf5e6a3-84d0-4c32-a83c-25794de50080",
-            "kode": "T63518",
-            "tanggal_tugas": "2022-08-13 10:00:00",
-            "mandor": "Adi",
-            "absensi_masuk": null,
-            "absensi_keluar": null,
-            "wilayah_tugas": {
-                "estate": "GEMBUNG",
-                "divisi": "DIVISI 5",
-                "hancak": "HANCAK A",
-                "field": "R.03459",
-                "clone": "RRIC 100"
-            }
-        },
-        {
-            "id": "abf5e6a3-84d0-4c32-a83c-25794de50080",
-            "kode": "T63518",
-            "tanggal_tugas": "2022-08-14 10:00:00",
-            "mandor": "Bayu",
-            "absensi_masuk": null,
-            "absensi_keluar": null,
-            "wilayah_tugas": {
-                "estate": "Gembung",
-                "divisi": "DIVISI 2",
-                "hancak": "HANCAK A",
-                "field": "R.02459",
-                "clone": "R3xC 100"
-            }
-        }
-    ]
+    const [tapperHistory, setTapperHistory] = React.useState([])
+
     React.useEffect(() => {
         getDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,6 +32,7 @@ const DetailTapper = () =>{
         }).then((res) => {
             const data = res.data.data
             setTapperDetail(data)
+            setTapperHistory(data.riwayat_penugasan)
         })
     }
 
@@ -154,14 +110,14 @@ const DetailTapper = () =>{
                         </div>
                     </div>
                 </div>
-                <div className="history mt-5 mb-12">
+                <div className="history mt-5">
                     <div className="flex justify-between items-center mb-4">
                         <Title text={'Riwayat Absensi'} className="text-sm" />
                         <DropDown option={[{label: 'Terbaru'},{label: 'Terlama'}]} />
                     </div>
                     <div className={`accordion divide-y divide-cloud`}>
                         {
-                            riwayatPenugasan.map((res, idx) => {
+                            tapperHistory.map((res, idx) => {
                                 return (
                                     openedId[`item_${idx}`] === true ? (
                                         <div className="bg-white divide-y divide-cloud">
@@ -177,21 +133,21 @@ const DetailTapper = () =>{
                                                 </div>
                                             </div>  
                                             <div className=" p-3 ">
-                                                <div className='flex justify-between items-center mt-3 w-3/5'>
-                                                    <p>Mandor Absensi</p>
-                                                    <p className="font-bold">Aang Ginanjar</p>
+                                                <div className='flex justify-between items-center mt-3 w-full'>
+                                                    <p className="w-2/4">Mandor Absensi</p>
+                                                    <p className="w-2/4">{res?.mandor}</p>
                                                 </div>
-                                                <div className='flex justify-between items-center mt-3 w-3/5'>
-                                                    <p>Waktu Absensi</p>
-                                                    <p className="font-bold">05:22</p>
+                                                <div className='flex justify-between items-center mt-3 w-full'>
+                                                    <p className="w-2/4">Waktu Absensi</p>
+                                                    <p className="w-2/4 font-bold">{moment(res?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')}</p>
                                                 </div>
-                                                <div className='flex justify-between items-center mt-3 w-3/5'>
-                                                    <p>Wilayah Kerja</p>
-                                                    <div>
-                                                        <p className="font-bold">Divisi 4</p>
-                                                        <p className="font-bold">Hancak B</p>
-                                                        <p className="font-bold">Blok R.0298</p>
-                                                        <p className="font-bold">Clone PB366</p>
+                                                <div className='flex justify-between items-center mt-3 w-full'>
+                                                    <p className="w-2/4">Wilayah Kerja</p>
+                                                    <div className="w-2/4">
+                                                        <p className="font-bold">{res?.wilayah_tugas?.divisi}</p>
+                                                        <p className="font-bold">{res?.wilayah_tugas?.hancak}</p>
+                                                        <p className="font-bold">Block {res?.wilayah_tugas?.field}</p>
+                                                        <p className="font-bold">Clone {res?.wilayah_tugas?.clone}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -212,20 +168,20 @@ const DetailTapper = () =>{
                     </div>
                 </div>
             </div>
-                <div className="button-area" 
-                    style={{
-                        background: 'linear-gradient(180deg, rgba(242, 245, 247, 0) 0%, #F2F5F7 31.25%)',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'flex-end',
-                        padding: '12px 20px',
-                        gap: '12px',
-                        position: 'fixed',
-                        width: '480px',
-                        bottom: '0'
-                        }
-                    }
+                <div className="button-area p-3" 
+                    // style={{
+                    //     background: 'linear-gradient(180deg, rgba(242, 245, 247, 0) 0%, #F2F5F7 31.25%)',
+                    //     display: 'flex',
+                    //     flexDirection: 'row',
+                    //     justifyContent: 'center',
+                    //     alignItems: 'flex-end',
+                    //     padding: '12px 20px',
+                    //     gap: '12px',
+                    //     position: 'fixed',
+                    //     width: '480px',
+                    //     bottom: '0'
+                    //     }
+                    // }
                 >
                     <FlatButton 
                         className='w-full rounded-xl' 

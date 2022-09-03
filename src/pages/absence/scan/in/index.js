@@ -50,10 +50,10 @@ function AbsenceIn() {
     
     return (
         <>
-            <div className="header">
+            <div className="header" style={{position: 'relative', zIndex: '9999'}}>
                 <Header title="Absensi" isWithBack  />
             </div>
-            <div className='qr-area'>
+            <div className='qr-area' style={{marginTop: '-10px'}}>
                 <QrReader
                     scanDelay={1000}
                     onResult={onResult} 
