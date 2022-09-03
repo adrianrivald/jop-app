@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { QrReader } from 'react-qr-reader';
 import Overlay from '../components/overlay';
+import Toast from '../../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -16,26 +17,34 @@ function AbsenceIn() {
     const cookies = new Cookies();
     const token = cookies.get('token');
     const userData = JSON.parse(localStorage.getItem('userData'));
+    const [alertMessage, setAlertMessage] = React.useState("");
+    const [isSubmitted, setIsSubmitted] = React.useState(false);
 
     const onResult = (result, error) => {
-        if (result) {
-            try {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json'
+        try {
+            if (result) {
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: 'application/json'
+                        }
                     }
-                }
-                axios.post(`${url}absensi/store`, {
-                    "pekerja_id": userData?.id,
-                    "penugasan_id": id_tugas,
-                    "tipe_absen": "masuk"
-                }, config).then((res) => {
-                    navigate('/absence/tapper/46020822-5409-4011-8658-3dcd06c3e256')
-                })
-            } catch(error){
-                console.error(error.message)
-            }
+                    axios.post(`${url}absensi/store`, {
+                        "pekerja_id": userData?.id,
+                        "penugasan_id": id_tugas,
+                        "tipe_absen": "masuk"
+                    }, config).then((res) => {
+                        navigate('/absence/tapper/46020822-5409-4011-8658-3dcd06c3e256')
+                    })
+                } 
+        } catch (error) {
+            alert('error')
+            console.error(error.message)
+            setIsSubmitted(true)
+            setAlertMessage('Gagal scan QR code')
+            setTimeout(() => {
+                setIsSubmitted(false)
+            }, 3000);
         }
     }
     
@@ -62,6 +71,7 @@ function AbsenceIn() {
                     constraints={ {facingMode: 'environment'} }
                 />
             </div>
+            <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={false} />
         </>
     )
 }

@@ -1,34 +1,50 @@
 import axios from 'axios';
+import { useParams } from "react-router-dom";
 import Header from '../../../../components/ui/Header';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { QrReader } from 'react-qr-reader';
 import Overlay from '../components/overlay';
+import Toast from '../../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
 
 
 function AbsenceOut() {
+    const { id_tugas } = useParams();
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const [alertMessage, setAlertMessage] = React.useState("");
+    const [isSubmitted, setIsSubmitted] = React.useState(false);
 
     const onResult = (result, error) => {
-        if (result) {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: 'application/json'
-                }
-            }
-            axios.post(`${url}absensi/store`, {
-                "pekerja_id": "46020822-5409-4011-8658-3dcd06c3e256",
-                "penugasan_id": "abf5e6a3-84d0-4c32-a83c-25794de50080",
-                "tipe_absen": "keluar"
-            }, config).then((res) => {
-                navigate('/absence/tapper/46020822-5409-4011-8658-3dcd06c3e256')
-            })
+        try {
+            if (result) {
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: 'application/json'
+                        }
+                    }
+                    axios.post(`${url}absensi/store`, {
+                        "pekerja_id": userData?.id,
+                        "penugasan_id": id_tugas,
+                        "tipe_absen": "keluar"
+                    }, config).then((res) => {
+                        navigate('/absence/tapper/46020822-5409-4011-8658-3dcd06c3e256')
+                    })
+                } 
+        } catch (error) {
+            alert('error')
+            console.error(error.message)
+            setIsSubmitted(true)
+            setAlertMessage('Gagal scan QR code')
+            setTimeout(() => {
+                setIsSubmitted(false)
+            }, 3000);
         }
     }
     
@@ -55,6 +71,7 @@ function AbsenceOut() {
                     constraints={ {facingMode: 'environment'} }
                 />
             </div>
+            <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={false} />
         </>
     )
 }

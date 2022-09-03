@@ -48,7 +48,7 @@ const Absence = () => {
 
     return(
         <div className="App">
-            <Header title="Penugasan" isWithBack />
+            <Header title="Absensi" isWithBack />
             <section className="container p-4">
                <div className="flex justify-between items-center mb-4">
                     <div className='text-xs font-bold text-black'>Tugas Kerja</div>
