@@ -20,6 +20,10 @@ function AbsenceOut() {
         console.log('')
     }
 
+    const onResult = (result, error) => {
+        alert(result)
+    }
+    
     return (
         <>
             <div className="header">
@@ -27,15 +31,7 @@ function AbsenceOut() {
             </div>
             <div className='qr-area'>
                 <QrReader
-                    onResult={(result, error) => {
-                    if (!!result) {
-                        setData(result?.text);
-                    }
-
-                    if (!!error) {
-                        console.info(error);
-                    }
-                    }} 
+                    onResult={onResult} 
                     videoContainerStyle={{
                         padding: 0,
                         height: '100%',
@@ -48,16 +44,7 @@ function AbsenceOut() {
                     }}
                     ViewFinder={Overlay}
                     constraints={ {facingMode: 'environment'} }
-                >
-                    <div style={{
-                        position: 'absolute',
-                        left: 'calc(50% - 360px/2)',
-                        color: 'white',
-                        fontSize: '40px'
-                    }}>
-                        testt
-                    </div>
-                </QrReader>
+                />
             </div>
         </>
     )
