@@ -35,6 +35,7 @@ function AbsenceOut() {
                         }
                         }}
                         style={{ width: '100%', position: 'relative' }}
+                        constraints={ {facingMode: 'environment'} }
                     >
                         <div style={{
                             position: 'absolute',
