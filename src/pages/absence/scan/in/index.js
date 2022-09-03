@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
-import Header from '../../../components/ui/Header';
+import Header from '../../../../components/ui/Header';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';

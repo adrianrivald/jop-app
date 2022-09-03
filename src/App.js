@@ -20,8 +20,8 @@ import MabesEdit from './pages/assignment/mabes/edit';
 import Cookies from 'universal-cookie';
 import DetailTapper from './pages/absence/tapper';
 import Absence from './pages/absence/';
-import AbsenceIn from './pages/absence/in';
-import AbsenceOut from './pages/absence/out';
+import AbsenceIn from './pages/absence/scan/in';
+import AbsenceOut from './pages/absence/scan/out';
 
 function App() {
   const cookies = new Cookies();
