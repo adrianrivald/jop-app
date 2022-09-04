@@ -16,29 +16,29 @@ function AbsenceIn() {
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
-    const userData = JSON.parse(localStorage.getItem('userData'));
     const [alertMessage, setAlertMessage] = React.useState("");
     const [isSubmitted, setIsSubmitted] = React.useState(false);
 
-    const onResult = (result, error) => {
+    const onResult = async(result, error) => {
         try {
             if (result) {
+                console.log(result,'resultscan')
+                console.log(result.text,'resultscan')
                     const config = {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             Accept: 'application/json'
                         }
                     }
-                    axios.post(`${url}absensi/store`, {
-                        "pekerja_id": userData?.id,
+                    await axios.post(`${url}absensi/store`, {
+                        "pekerja_id": result?.text,
                         "penugasan_id": id_tugas,
                         "tipe_absen": "masuk"
-                    }, config).then((res) => {
-                        navigate('/absence/tapper/46020822-5409-4011-8658-3dcd06c3e256')
+                    }, config).then(() => {
+                        navigate(`/absence/tapper/${result?.text}`)
                     })
                 } 
-        } catch (error) {
-            alert('error')
+        } catch (error){
             console.error(error.message)
             setIsSubmitted(true)
             setAlertMessage('Gagal scan QR code')
@@ -50,7 +50,7 @@ function AbsenceIn() {
     
     return (
         <>
-            <div className="header" style={{position: 'relative', zIndex: '9999'}}>
+            <div className="header" style={{position: 'relative', zIndex: '99'}}>
                 <Header title="Absensi" isWithBack  />
             </div>
             <div className='qr-area' style={{marginTop: '-10px'}}>
