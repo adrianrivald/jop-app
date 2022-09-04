@@ -15,14 +15,14 @@ const url = process.env.REACT_APP_API_URL;
 function WorkerList(props) {
     return (
         props.workerList.map((result, idx) => {
-            const modified_date = moment(result.absensi_keluar, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
+            const modified_date = moment(result.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
             return (
                 <div className='flex justify-between items-center mt-3 pt-3' key={idx}>
                     <p className='w-8 text-xxs mx-4'>{result?.kode}</p>
                     <div className='w-40'>
-                        <p className='font-bold text-sm truncate'>{result?.nama}</p>
+                        <p className={`font-bold text-sm truncate ${modified_date !== 'Invalid date' ? '' : 'text-earth'}`}>{result?.nama}</p>
                     </div>
-                    <p className='w-20 text-sm text-flora font-bold'>{modified_date !== 'Invalid date' ? modified_date : 'no data'}</p>
+                    <p className={`w-20 text-sm text-flora font-bold ${modified_date !== 'Invalid date' ? '' : 'text-earth'}`}>{modified_date !== 'Invalid date' ? modified_date : '-'}</p>
                     <div onClick={() => props.onClickWorker(result?.id)} className="cursor-pointer">
                         <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
