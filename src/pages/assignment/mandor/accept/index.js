@@ -27,7 +27,6 @@ const MandorAcceptAssignment = () => {
         }).then((result) => {
             if(result.data.code === 200) {
                 const data = result.data.data
-                console.log('data', data)
                 setDetail(data)
             }
         })
