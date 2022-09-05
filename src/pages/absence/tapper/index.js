@@ -18,9 +18,11 @@ const DetailTapper = () =>{
     const [tapperDetail, setTapperDetail] = React.useState({})
     const [openedId, setOpenedId] = React.useState({})
     const [tapperHistory, setTapperHistory] = React.useState([])
+    const [absenceHistory, setAbsenceHistory] = React.useState([])
 
     React.useEffect(() => {
         getDetail();
+        getAbsenceHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
@@ -36,6 +38,21 @@ const DetailTapper = () =>{
             const data = res.data.data
             setTapperDetail(data)
             setTapperHistory(data.riwayat_penugasan)
+        })
+    }
+
+    const getAbsenceHistory = async(sort) => {
+        await axios.get(`${url}absensi/riwayat-by-tapper/${id}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`,
+        {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data
+            console.log(data)
+            setAbsenceHistory(data.data)
         })
     }
 
@@ -59,6 +76,12 @@ const DetailTapper = () =>{
         }
         return Fallback
     }
+
+    const onSort = (e) => {
+        const sort = e.target.value
+        getAbsenceHistory(sort);
+    }
+
     return (
         <>
             <div className="header">
@@ -116,11 +139,11 @@ const DetailTapper = () =>{
                 <div className="history mt-5">
                     <div className="flex justify-between items-center mb-4">
                         <Title text={'Riwayat Absensi'} className="text-sm" />
-                        <DropDown option={[{label: 'Terbaru'},{label: 'Terlama'}]} />
+                        <DropDown onChange={onSort} option={[{label: 'Terbaru', value: 'asc'},{label: 'Terlama', value: 'desc'}]} />
                     </div>
                     <div className={`accordion divide-y divide-cloud`}>
                         {
-                            tapperHistory.map((res, idx) => {
+                            absenceHistory.map((res, idx) => {
                                 return (
                                     openedId[`item_${idx}`] === true ? (
                                         <div className="bg-white divide-y divide-cloud">
