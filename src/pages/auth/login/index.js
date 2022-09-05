@@ -48,7 +48,6 @@ const Login = () => {
               "username": username,
               "password": password
           }).then((response) => {
-              console.log('res', response)
               const token = response.data.data.token
               const userData = response.data.data.user
               cookies.set('token', token, { path: '/' });
@@ -60,8 +59,6 @@ const Login = () => {
               }));
               navigate('/homepage');
           }).catch((error) => {
-            console.log('error', error)
-            
             if(error.response.status === 422) {
                 setErrorMessage({ ...errorMessage, submit: error.response.data.message })
             } else if(error.response.status === 401) {
