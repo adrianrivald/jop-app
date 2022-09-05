@@ -157,7 +157,7 @@ function AbsenceList() {
                             <Title text="Masuk" />
                         </div>
                         <div className='flex-none'>
-                            {/* <Button filterCount={4} onClick={() => console.log('')} isFilter={true} text='Filter'/> */}
+                            <DropDown option={[{label: 'Terbaru'},{label: 'Terlama'}]} />
                         </div>
                     </div>
                     <div className='divide-y divide-cloud'>

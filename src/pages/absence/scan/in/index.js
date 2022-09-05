@@ -22,8 +22,6 @@ function AbsenceIn() {
     const onResult = async(result, error) => {
         try {
             if (result) {
-                console.log(result,'resultscan')
-                console.log(result.text,'resultscan')
                     const config = {
                         headers: {
                             Authorization: `Bearer ${token}`,

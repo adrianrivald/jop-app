@@ -22,7 +22,6 @@ function AbsenceOut() {
     const onResult = async(result, error) => {
         try {
             if (result) {
-                console.log(result,'resultscan')
                     const config = {
                         headers: {
                             Authorization: `Bearer ${token}`,
