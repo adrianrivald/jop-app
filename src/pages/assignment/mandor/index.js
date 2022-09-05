@@ -120,7 +120,7 @@ const Mandor = () => {
                         {data.status_tugas === "menunggu-persetujuan" ?
                             <Fragment>
                                 <FlatButton className={'w-full mb-2 text-sm'} text={'Terima Tugas'} onClick={() => handleAcceptAssignment(data.id)}/>
-                                <FlatButton className={'w-full text-sm'} role="white"  text={'Alihkan Tugas'}/>
+                                <FlatButton className={'w-full text-sm'} role="white"  text={'Alihkan Tugas'} onClick={() => handleDiversionAssignment(data.id)}/>
                             </Fragment> : data.status_tugas === "dialihkan" ?
                             <FlatButton className={'w-full text-sm'}  text={'Detail Tugas'} onClick={() => handleDiversionAssignment(data.id)} /> : 
                             <FlatButton className={'w-full mb-2 text-sm'} text={'Detail Tugas'} onClick={() => handleDetailAssignment(data.id)}/>}
