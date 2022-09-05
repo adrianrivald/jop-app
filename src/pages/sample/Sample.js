@@ -61,7 +61,7 @@ function Sample() {
 
     return (
         <>
-            <div class="header">
+            <div className="header">
                 <Header title="Penugasan" isWithBack isWithNotification isWithBurgerMenu />
             </div>
             <div className="container">

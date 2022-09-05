@@ -54,7 +54,8 @@ const Login = () => {
               localStorage.setItem('userData', JSON.stringify({
                   level: userData.level,
                   name: userData.nama,
-                  code: userData.code
+                  code: userData.code,
+                  id: userData.id
               }));
               navigate('/homepage');
           }).catch((error) => {

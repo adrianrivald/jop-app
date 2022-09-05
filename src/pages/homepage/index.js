@@ -30,7 +30,7 @@ const UserMenu = (props) => {
 
     const Card = (props) => {
         return (
-            <Link to={!props.isDisabled && `/assignment/${props.level}/list`}>
+            <Link to={!props.isDisabled && `${props.url}`}>
                 <div className={`p-2 bg-white text-black rounded-md shadow-lg ${props.isDisabled && ('cursor-not-allowed opacity-50	')}`}>
                     <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
                     <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
@@ -47,9 +47,9 @@ const UserMenu = (props) => {
 
     return (
         <div className="grid grid-cols-2 gap-4 mt-6">
-            <Card cardTitle="Tugas" level={props.level}/>
-            <Card cardTitle="Absensi" isDisabled={props.level === 'mabes'}/>
-            <Card cardTitle="Timbang" level={props.level} isDisabled={props.level === 'mabes'}/>
+            <Card cardTitle="Tugas" url={`/assignment/${props.level}/list`}/>
+            <Card cardTitle="Absensi" isDisabled={props.level === 'mabes'} url='/absence'/>
+            <Card cardTitle="Timbang" isDisabled={props.level === 'mabes'} url='/timbang'/>
             <Card cardTitle="Logistik" isDisabled/>
             <Card cardTitle="Laporan" isDisabled/>
             <Card cardTitle="Pengaturan" isDisabled/>

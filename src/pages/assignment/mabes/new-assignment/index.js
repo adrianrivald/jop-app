@@ -20,6 +20,13 @@ function Dropdown (props) {
     )
 }
 
+function CheckIsRecurring (props) {
+    return (
+        <input checked={props.checked} onClick={props.onChange} type="checkbox" className="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
+
+    )
+}
+
 function MabesAssignment() {
     const navigate = useNavigate();
     const cookies = new Cookies();
@@ -34,6 +41,8 @@ function MabesAssignment() {
     const [addInput, setAddInput] = React.useState({})
     const [dateTimeInput, setDateTimeInput] = React.useState({})
     const [isSubmitted, setIsSubmitted] = React.useState(false)
+    const [isRecurring, setIsRecurring] = React.useState(false)
+    const [clone, setClone] = React.useState("")
 
     const recurringList = [
         {
@@ -229,12 +238,30 @@ function MabesAssignment() {
         })
     }
 
+    const getClone = (id) => {
+        axios.get(`${url}field/by-uuid/${id}?include=clone`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data
+            setClone(data.clone.nama)
+        })
+    }
+
     const onChangeHandler = (e, input_id) => {
+        if (input_id === "is_recurring") {
+            setIsRecurring(e.target.checked)
+        }
         setAddInput((prev) => ({
             ...prev ,
-            "is_recurring" : 1,
             [input_id]: e.target.value
         }))
+        if (input_id === "field_id") {
+            getClone(e.target.value)
+        }
     }
 
     const handleSubmit = () => {
@@ -244,8 +271,14 @@ function MabesAssignment() {
                 Accept: 'application/json'
             }
         }
-        axios.post(`${url}penugasan/store`, addInput, config).then((res) => {
+        axios.post(`${url}penugasan/store`, {
+            ...addInput,
+            "is_recurring" : isRecurring === true ? 1 : 0
+        }, config).then((res) => {
             setIsSubmitted(true)
+            setTimeout(() => {
+                setIsSubmitted(false)
+            }, 3000);
         })
     }
     const onChangeDate = (e) => {
@@ -272,7 +305,7 @@ function MabesAssignment() {
 
     return (
         <>
-            <div class="header">
+            <div className="header">
                 <Header title="Penugasan" isWithBack/>
             </div>
             <div className="container">
@@ -286,7 +319,7 @@ function MabesAssignment() {
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Clone</h2>
-                            <p className='font-bold mt-2.5'>PB 366</p>
+                            <p className='font-bold mt-2.5'>{clone}</p>
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Sistem</h2>
@@ -295,17 +328,20 @@ function MabesAssignment() {
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
-                            <h2 className='text-left mb-1'>Clone</h2>
+                            <h2 className='text-left mb-1'>Tanggal Tugas</h2>
                             <DatePicker onChange={(e) => onChangeDate(e)} />
                         </div>
                         <div className='flex-auto w-64'>
-                            <h2 className='text-left mb-1'>Sistem</h2>
+                            <h2 className='text-left mb-1'>Waktu Tugas</h2>
                             <TimePicker onChange={(e) => onChangeTime(e)} />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-5'>
                         <div className='flex-auto w-64'>
-                            <h2 className='text-left mb-1'>Ulangi Tugas</h2>
+                            <h2 className='text-left mb-1 flex items-center gap-2'>
+                                Ulangi Tugas
+                                <CheckIsRecurring checked={isRecurring} onChange={(e => onChangeHandler(e, "is_recurring"))} />
+                            </h2>
                             <DropDown defaultValue="Pilih ulangi tugas" onChange={(e) => onChangeHandler(e, "tipe_recurring")} option={recurringList} />
                         </div>
                         <div className='flex-auto w-64'>

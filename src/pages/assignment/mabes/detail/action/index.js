@@ -44,7 +44,7 @@ function MabesDetailAction() {
 
     return (
         <>
-            <div class="header">
+            <div className="header">
                 <Header title="Penugasan" isWithBack />
             </div>
             <div className="container">
