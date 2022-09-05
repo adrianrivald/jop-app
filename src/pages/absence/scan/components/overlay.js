@@ -7,7 +7,7 @@ import './overlay.css'
 
 const url = process.env.REACT_APP_API_URL;
 
-const Overlay = (props) => {
+const Overlay = () => {
 
     const [code ,setCode] = React.useState("");
     const [tapperDetail, setTapperDetail] = React.useState({});
@@ -26,7 +26,7 @@ const Overlay = (props) => {
         {
             url: process.env.REACT_APP_API_URL,
             headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Authorization: `Bearer ${token}`,
                 Accept: 'application/json'
             }
         }).then((res) => {

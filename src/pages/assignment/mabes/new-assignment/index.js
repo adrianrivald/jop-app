@@ -278,6 +278,7 @@ function MabesAssignment() {
             setIsSubmitted(true)
             setTimeout(() => {
                 setIsSubmitted(false)
+                navigate('/assignment/mabes/list')
             }, 3000);
         })
     }

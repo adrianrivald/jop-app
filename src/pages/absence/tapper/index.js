@@ -7,11 +7,14 @@ import Title from "../../../components/title/Title";
 import Header from "../../../components/ui/Header";
 import Fallback from "../../../assets/images/fallback-ava.png"
 import FlatButton from "../../../components/button/flat";
+import Cookies from "universal-cookie";
 
 const url = process.env.REACT_APP_API_URL;
 
 const DetailTapper = () =>{
     const { id } = useParams();
+    const cookies = new Cookies();
+    const token = cookies.get('token');
     const [tapperDetail, setTapperDetail] = React.useState({})
     const [openedId, setOpenedId] = React.useState({})
     const [tapperHistory, setTapperHistory] = React.useState([])
@@ -26,7 +29,7 @@ const DetailTapper = () =>{
         {
             url: process.env.REACT_APP_API_URL,
             headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Authorization: `Bearer ${token}`,
                 Accept: 'application/json'
             }
         }).then((res) => {

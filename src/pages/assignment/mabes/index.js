@@ -64,10 +64,11 @@ function Mabes() {
 
 
     const getList = (sort) => {
+        console.log(sort,'sort')
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`, {
+            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' || !sort ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`, {
                 url: process.env.REACT_APP_API_URL,
                 headers: {
                     Authorization: `Bearer ${token}`,
