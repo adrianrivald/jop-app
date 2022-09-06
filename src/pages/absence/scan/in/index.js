@@ -18,7 +18,7 @@ function AbsenceIn() {
     const token = cookies.get('token');
     const [alertMessage, setAlertMessage] = React.useState("");
     const [isSubmitted, setIsSubmitted] = React.useState(false);
-
+    
     const onResult = async(result, error) => {
         try {
             if (result) {

@@ -58,9 +58,9 @@ function AbsenceList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
-    const getAbsence = () => {
+    const getAbsence = (sort) => {
         try {
-            axios.get(`${url}absensi/by-penugasan/${id_tugas}`,
+            axios.get(`${url}absensi/by-penugasan/${id_tugas}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`,
             {
                 url: process.env.REACT_APP_API_URL,
                 headers: {
@@ -79,6 +79,24 @@ function AbsenceList() {
 
     const onClickWorker = (id_tapper) => {
         navigate(`/absence/tapper/${id_tapper}`)   
+    }
+
+    const onSort = (e) => {
+        const sort = e.target.value
+        getAbsence(sort);
+        // const sorted = workerList.sort((a, b) => {
+        //     const aTime = moment(a.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
+        //     const bTime = moment(b.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
+        //     if (e.target.value === "desc") {
+        //         return bTime.localeCompare(aTime);
+        //         // setWorkerList(bTime.localeCompare(aTime))
+        //     } else {
+        //         return aTime.localeCompare(bTime);
+        //         // setWorkerList(aTime.localeCompare(bTime))
+        //     }
+        // })
+        // console.log(sorted)
+        // setWorkerList(sorted)
     }
 
 
@@ -157,7 +175,7 @@ function AbsenceList() {
                             <Title text="Masuk" />
                         </div>
                         <div className='flex-none'>
-                            <DropDown option={[{label: 'Terbaru'},{label: 'Terlama'}]} />
+                            <DropDown onChange={onSort} option={[{label: 'Terbaru', value:'asc'},{label: 'Terlama', value:'desc'}]} />
                         </div>
                     </div>
                     <div className='divide-y divide-cloud'>

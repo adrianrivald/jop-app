@@ -37,7 +37,6 @@ const Absence = () => {
             }
         }).then((res) => {
             const data = res.data.data.data
-            console.log('data', data)
             setListData(data)
         })
     }

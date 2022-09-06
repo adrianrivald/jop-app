@@ -278,6 +278,7 @@ function MabesAssignment() {
             setIsSubmitted(true)
             setTimeout(() => {
                 setIsSubmitted(false)
+                navigate('/assignment/mabes/list')
             }, 3000);
         })
     }
@@ -342,11 +343,11 @@ function MabesAssignment() {
                                 Ulangi Tugas
                                 <CheckIsRecurring checked={isRecurring} onChange={(e => onChangeHandler(e, "is_recurring"))} />
                             </h2>
-                            <DropDown defaultValue="Pilih ulangi tugas" onChange={(e) => onChangeHandler(e, "tipe_recurring")} option={recurringList} />
+                            <DropDown disabled={!isRecurring} defaultValue="Pilih ulangi tugas" onChange={(e) => onChangeHandler(e, "tipe_recurring")} option={recurringList} />
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Batas Pengulangan</h2>
-                            <DatePicker onChange={(e) => onChangeHandler(e, "batas_recurring")} />
+                            <DatePicker disabled={!isRecurring} onChange={(e) => onChangeHandler(e, "batas_recurring")} />
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>

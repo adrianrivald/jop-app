@@ -302,7 +302,7 @@ function MabesEdit() {
     const handleSubmit = () => {
         const config = {
             headers: {
-                Authorization: `Bearer 5|T45hz7TdtCoEHVbaxBhtx4tN6exZunEqHGWEILrc`,
+                Authorization: `Bearer ${token}`,
                 Accept: 'application/json'
             }
         }
@@ -316,6 +316,7 @@ function MabesEdit() {
                 setIsSubmitted(true)
                 setTimeout(() => {
                     setIsSubmitted(false)
+                    navigate(`/assignment/mabes/detail/${id}`)
                 }, 3000);
             })
         } else {
@@ -372,14 +373,12 @@ function MabesEdit() {
                                 Ulangi Tugas
                                 <CheckIsRecurring checked={isRecurring} onChange={(e => onChangeHandler(e, "is_recurring"))} />
                             </h2>
-                            <DropDown defaultValue={detailData?.tipe_recurring} onChange={(e) => onChangeHandler(e, "tipe_recurring")} option={recurringList} />
+                            <DropDown disabled={!isRecurring} defaultValue={detailData?.tipe_recurring} onChange={(e) => onChangeHandler(e, "tipe_recurring")} option={recurringList} />
                         </div>
                         <div className='flex-auto w-64'>
                             <h2 className='text-left mb-1'>Batas Pengulangan</h2>
-                            {detailData?.batas_recurring && (
-                                <DatePicker defaultValue={moment(detailData?.batas_recurring, 'YYYY-MM-DD hh:mm').format('YYYY-MM-DD') ?? ""} onChange={(e) => onChangeHandler(e, "batas_recurring")}/>
-                            )}
-                            </div>
+                            <DatePicker disabled={!isRecurring} defaultValue={moment(detailData?.batas_recurring, 'YYYY-MM-DD hh:mm').format('YYYY-MM-DD') ?? ""} onChange={(e) => onChangeHandler(e, "batas_recurring")}/>
+                        </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>
                         <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => navigate(-1)} />
