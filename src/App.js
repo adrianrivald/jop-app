@@ -23,6 +23,7 @@ import Absence from './pages/absence';
 import AbsenceList from './pages/absence/list';
 import AbsenceIn from './pages/absence/scan/in';
 import AbsenceOut from './pages/absence/scan/out';
+import TapperPlanning from './pages/assignment/mandor/tapper';
 
 function App() {
   const cookies = new Cookies();
@@ -49,6 +50,7 @@ function App() {
         <Route path="/assignment/mandor/list" exact element={<Mandor />} />
         <Route path="/assignment/mandor/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
         <Route path="/assignment/mandor/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
+        <Route path="/assignment/mandor/tapper/:id" exact element={<TapperPlanning />} />
         {/* mabes */}
         <Route path="/assignment/mabes/list" exact element={<Mabes/>} />
         <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />
