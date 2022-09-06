@@ -37,7 +37,8 @@ const Absence = () => {
             }
         }).then((res) => {
             const data = res.data.data.data
-            setListData(data)
+            const list = data.filter(res => res.status_tugas === 'diterima' && res.approved_by_mabes_at !== null)
+            setListData(list)
         })
     }
 

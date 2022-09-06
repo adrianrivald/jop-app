@@ -179,7 +179,11 @@ function MabesDetail() {
                             }
                         </div> 
                         <div className='mt-11'>
-                            <Button disabled={detailData?.pekerja?.length === 0} isText={true} text={"Izinkan"} className='w-full rounded-xl text-sm' onClick={onSubmitAssignment}/>
+                            {
+                                detailData?.status_tugas === 'diterima' && detailData?.approved_by_mabes_at ? null : (
+                                    <Button disabled={detailData?.pekerja?.length === 0} isText={true} text={"Izinkan"} className='w-full rounded-xl text-sm' onClick={onSubmitAssignment}/>
+                                )
+                            }
                         </div>
                     </>
                     ) : (
