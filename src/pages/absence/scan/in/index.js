@@ -37,9 +37,9 @@ function AbsenceIn() {
                     })
                 } 
         } catch (error){
-            console.error(error.message)
+            console.log(error.message)
             setIsSubmitted(true)
-            setAlertMessage('Gagal scan QR code')
+            setAlertMessage(error?.response?.data?.error?.message)
             setTimeout(() => {
                 setIsSubmitted(false)
             }, 3000);
