@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../../../components/ui/Header';
 import FlatButton from '../../../../components/button/flat';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { getDateTime } from '../../../../utils/getDateTime';
@@ -16,6 +16,7 @@ const MandorAcceptAssignment = () => {
     const token = cookies.get('token');
     let { id } = useParams();
     const [detail, setDetail] = useState({});
+    const navigate = useNavigate();
 
     const getDetailMandorAssignment = async () => {
         await axios.get(`${url}penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`, {
@@ -27,6 +28,7 @@ const MandorAcceptAssignment = () => {
         }).then((result) => {
             if(result.data.code === 200) {
                 const data = result.data.data
+                console.log('data', data)
                 setDetail(data)
             }
         })
@@ -36,6 +38,11 @@ const MandorAcceptAssignment = () => {
         getDetailMandorAssignment()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id])
+
+    const handleEnterTapper = () => {
+        navigate(`/assignment/mandor/tapper/${id}`)
+        console.log('test')
+    }
 
     return(
        <div className="App min-h-screen h-full" >
@@ -100,8 +107,8 @@ const MandorAcceptAssignment = () => {
                 </div>
                 {/* button with condition */}
                 {!detail.approved_by_mabes_at ?
-                <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Masukkan Tapper'} onClick={() => {}}/> :
-                <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Lihat Tapper'} onClick={() => {}}/> }
+                <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Masukkan Tapper'} onClick={handleEnterTapper}/> :
+                <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Lihat Tapper'} onClick={handleEnterTapper}/> }
             </section>
        </div>
     )

@@ -75,19 +75,19 @@ const MandorDiversionAssignment = () => {
                         </div>
                         <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
                             <h1 className="mb-2">Divisi</h1>
-                            <div className='font-bold'>{detail?.divisi?.kode}</div>
+                            <div className="font-bold">{detail?.divisi?.kode}</div>
                         </div>
                         <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
                             <h1 className="mb-2">Hancak</h1>
-                            <div className='font-bold'>{detail?.hancak?.kode}</div>
+                            <div className="font-bold">{detail?.hancak?.kode}</div>
                         </div>
                         <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
                             <h1 className="mb-2">Block</h1>
-                            <div className='font-bold'>{detail?.field?.nama}</div>
+                            <div className="font-bold">{detail?.field?.nama}</div>
                         </div>
                         <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
                             <h1 className="mb-2">Clone</h1>
-                            <div className='font-bold'>{detail?.clone?.nama}</div>
+                            <div className="font-bold">{detail?.clone?.nama}</div>
                         </div>
                         <div className="flex flex-col text-left text-xs py-3 px-2">
                             <h1 className="mb-2">Sistem</h1>
@@ -99,7 +99,7 @@ const MandorDiversionAssignment = () => {
                         </div>
                         <div className="flex flex-col items-start justify-start text-xs py-3 px-2 border-t-2 border-bgrey">
                             <h1 className="mb-2">Tapper</h1>
-                            <div className='font-bold'>{detail?.pekerja?.length}/{detail?.hancak?.jumlah_rekomendasi_tapper}</div>
+                            <div className="font-bold">{detail?.pekerja?.length}/{detail?.hancak?.jumlah_rekomendasi_tapper}</div>
                         </div>
                         <div className="col-span-2 flex flex-col items-end justify-start text-xs py-3 px-2 border-t-2 border-bgrey">
                             <h1 className="mb-2">Waktu Kerja</h1>
