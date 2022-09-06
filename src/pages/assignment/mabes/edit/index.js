@@ -16,7 +16,7 @@ function Dropdown (props) {
     return (
         <div className={`mt-5 ${props.customClass}`}>
             <h2 className={`text-left mb-1 ${props.isSwitch ? "text-sun" : ""}`}>{props.title}</h2>
-            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} className={`${props.isSwitch ? "bg-sun text-white" : ""}`} />
+            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
         </div>
     )
 }
