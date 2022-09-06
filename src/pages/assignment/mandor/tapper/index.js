@@ -16,7 +16,9 @@ const TapperPlanning = () => {
     const [listTapper, setListTapper] = useState([]);
     const [listWorker, setListWorker] = useState([]);
 
-    const getDetailMandorAssignment = async () => {
+    const getAllData = async () => {
+        let detailData;
+        
         await axios.get(`${url}penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`, {
             url: process.env.REACT_APP_API_URL,
             headers: {
@@ -27,12 +29,12 @@ const TapperPlanning = () => {
             if(result.data.code === 200) {
                 const data = result.data.data
                 console.log('detail', data)
+                setListWorker(data.pekerja.map(data => data.id))
                 setDetail(data)
+                detailData = data
             }
         })
-    }
 
-    const getListAvailableTapper = async () => {
         await axios.get(`${url}penugasan/list-tapper/available/${id}?include=wilayah_tugas,skema_kerja`, {
             url: process.env.REACT_APP_API_URL,
             headers: {
@@ -42,34 +44,33 @@ const TapperPlanning = () => {
         }).then((result) => {
             if(result.data.code === 200) {
                 const data = result.data.data.data
-                console.log('list data', data)
+                console.log('list dataaaaa', data)
                 const newData = data.map(listTapper => {
-                    let newData = {...listTapper, isChecked: false}
-                    detail?.pekerja?.map(item => {
+                    let newListTapper = {...listTapper, isChecked: false}
+                    // eslint-disable-next-line array-callback-return
+                    detailData?.pekerja.map(item => {
                         if(listTapper.id === item.id) {
-                            return newData = {...listTapper, isChecked: true}
+                            return newListTapper = {...listTapper, isChecked: true}
                         }
                     })
-                    return newData
+                    return newListTapper
                 })
                 console.log('new data', newData)
                 setListTapper(newData)
             }
-        })
+        }) 
     }
  
     useEffect(() => {
-        getDetailMandorAssignment()
-        getListAvailableTapper()
+        getAllData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id])
+    }, [])
 
     const detailPekerja = () => {
         return (detail.pekerja?.map((tapper,key) => (
             <li key={key} className="w-full rounded-t-lg border-b border-gray-200 cursor-pointer">
                 <div className="flex items-center pl-3">
-                    {!detail.pekerja?.length && <input id={tapper.id} type="checkbox" value={tapper.id} className="w-6 h-6 border-2 border-earth rounded-lg" onChange={(e) => handleListTapper(e)}/>}
-                    <label htmlFor={tapper.id} className="flex justify-between items-center py-3 ml-2 w-full text-sm font-medium text-left">
+                    <label htmlFor={tapper.id} className="flex justify-between items-center py-3 ml-2 w-full text-sm font-medium text-left" onClick={() => goToDetailTapper(tapper.id)}>
                         <div className="w-16">{tapper.skema_kerja?.nama}</div>
                         <div className="flex flex-col flex-1 mx-4">
                             <div className="font-bold">{tapper?.nama}</div>
@@ -89,12 +90,6 @@ const TapperPlanning = () => {
     }
 
     const handleAssignWorker = async() => {
-        const form = {
-            "penugasan_id": id,
-            "pekerja": listWorker
-        }
-        console.log('form', form )
-
         await axios.post(`${url}penugasan/assign-pekerja`, {
             penugasan_id: id,
             pekerja: listWorker
@@ -110,6 +105,10 @@ const TapperPlanning = () => {
                 return navigate(`/assignment/mandor/list`)
             }
         })
+    }
+
+    const goToDetailTapper = (id) => {
+        return navigate(`/absence/tapper/${id}`)
     }
 
     return(
@@ -149,7 +148,7 @@ const TapperPlanning = () => {
                             <li key={key} className="w-full rounded-t-lg border-b border-gray-200 cursor-pointer">
                                 <div className="flex items-center pl-3">
                                     <input id={tapper.id} type="checkbox" value={tapper.id} className="w-6 h-6 border-2 border-earth rounded-lg" onChange={(e) => handleListTapper(e)} defaultChecked={tapper.isChecked} />
-                                    <label htmlFor={tapper.id} className="flex justify-between items-center py-3 ml-2 w-full text-sm font-medium text-left">
+                                    <label htmlFor={tapper.id} className="flex justify-between items-center py-3 ml-2 w-full text-sm font-medium text-left" onClick={() => goToDetailTapper(tapper.id)}>
                                         <div className="w-16">{tapper.skema_kerja?.nama}</div>
                                         <div className="flex flex-col flex-1 mx-4">
                                             <div className="font-bold">{tapper?.nama}</div>

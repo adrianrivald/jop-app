@@ -106,7 +106,7 @@ const MandorAcceptAssignment = () => {
                     </div>
                 </div>
                 {/* button with condition */}
-                {!detail.approved_by_mabes_at ?
+                {detail.status_tugas === 'dibatalkan' ? null : !detail.approved_by_mabes_at ?
                 <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Masukkan Tapper'} onClick={handleEnterTapper}/> :
                 <FlatButton className={'w-full mb-2 text-sm font-bold'} text={'Lihat Tapper'} onClick={handleEnterTapper}/> }
             </section>
