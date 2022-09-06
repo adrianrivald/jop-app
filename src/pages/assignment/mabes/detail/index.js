@@ -78,6 +78,7 @@ function MabesDetail() {
                 setAlertMessage('Sukses izinkan tugas')
                 setTimeout(() => {
                     setIsSubmitted(false)
+                    navigate('/assignment/mabes/list')
                 }, 3000);
             })
         }
