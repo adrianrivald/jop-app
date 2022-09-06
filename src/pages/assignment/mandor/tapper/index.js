@@ -13,8 +13,8 @@ const TapperPlanning = () => {
     const navigate = useNavigate();
     let { id } = useParams();
     const [detail, setDetail] = useState({});
-    const [listTapper, setListTapper] = useState([]);
-    const [listWorker, setListWorker] = useState([]);
+    const [listTapper, setListTapper] = useState([]); // untuk muncul list tapper
+    const [listWorker, setListWorker] = useState([]); // untuk nyimpan checked tapper
 
     const getAllData = async () => {
         let detailData;
@@ -86,10 +86,18 @@ const TapperPlanning = () => {
     }
 
     const handleListTapper = (e) => {
-        setListWorker([...listWorker, e.target.value])
+        if (listWorker.indexOf(e.target.value) > -1) {
+            console.log('di remove')
+            const newListWorker = listWorker.filter(item => item !== e.target.value)
+            setListWorker(newListWorker)
+        } else {
+            console.log('di add')
+            setListWorker([...listWorker, e.target.value])
+        }
     }
 
     const handleAssignWorker = async() => {
+        console.log('list', listWorker)
         await axios.post(`${url}penugasan/assign-pekerja`, {
             penugasan_id: id,
             pekerja: listWorker

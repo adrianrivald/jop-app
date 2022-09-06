@@ -30,7 +30,7 @@ const Mandor = () => {
     }, [selectedDate])
     
     const getLIst = async() => {
-        await axios.get(`${url}penugasan/by-mandor?filter[tanggal_tugas]=${selectedDate}&include=divisi,hancak,clone,sistem,mandor,field`, {
+        await axios.get(`${url}penugasan/by-mandor?filter[tanggal_tugas]=${selectedDate}&include=divisi,hancak,clone,sistem,mandor,field,wilayah_tugas`, {
             url: process.env.REACT_APP_API_URL,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ const Mandor = () => {
                     <div className="flex flex-col justify-center items-center mb-3" key={data.id}>
                         <div className="grid grid-cols-5 bg-white rounded-lg mb-4 w-full">
                             <div className="col-span-5 flex justify-between text-xs py-3 px-2 border-b-2 border-bgrey">
-                                <span>Estate: <b>{data.mandor.wilayah_tugas}</b></span> <b>{data.kode}</b>
+                                <span>Estate: <b>{data.wilayah_tugas.nama}</b></span> <b>{data.kode}</b>
                             </div>
                             <div className="flex flex-col text-left text-xs py-3 px-2 border-r-2 border-bgrey">
                                 <h1 className="mb-2">Divisi</h1>
