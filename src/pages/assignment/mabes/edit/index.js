@@ -53,6 +53,7 @@ function MabesEdit() {
     const [clone, setClone] = React.useState("")
     const [currentMandor, setCurrentMandor] = React.useState("")
     const [alertMessage, setAlertMessage] = React.useState("")
+    const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
     const recurringList = [
         {
             value: "harian",
@@ -313,8 +314,10 @@ function MabesEdit() {
             }, config).then((res) => {
                 setIsSuccess(true)
                 setAlertMessage("Sukses mengubah data !")
+                setIsButtonDisabled(true)
                 setIsSubmitted(true)
                 setTimeout(() => {
+                    setIsButtonDisabled(false)
                     setIsSubmitted(false)
                     navigate(`/assignment/mabes/detail/${id}`)
                 }, 3000);
@@ -381,8 +384,8 @@ function MabesEdit() {
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>
-                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => navigate(-1)} />
-                        <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
+                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() => navigate(-1)}  disabled={isButtonDisabled}/>
+                        <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit}  disabled={isButtonDisabled}/>
                     </div>
                     <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
                 </div>

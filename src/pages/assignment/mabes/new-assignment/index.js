@@ -42,6 +42,7 @@ function MabesAssignment() {
     const [dateTimeInput, setDateTimeInput] = React.useState({})
     const [isSubmitted, setIsSubmitted] = React.useState(false)
     const [isRecurring, setIsRecurring] = React.useState(false)
+    const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
     const [clone, setClone] = React.useState("")
 
     const recurringList = [
@@ -276,7 +277,9 @@ function MabesAssignment() {
             "is_recurring" : isRecurring === true ? 1 : 0
         }, config).then((res) => {
             setIsSubmitted(true)
+            setIsButtonDisabled(true)
             setTimeout(() => {
+                setIsButtonDisabled(false)
                 setIsSubmitted(false)
                 navigate('/assignment/mabes/list')
             }, 3000);
@@ -351,8 +354,8 @@ function MabesAssignment() {
                         </div>
                     </div>
                     <div className='flex justify-between gap-2 mt-11'>
-                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() =>  navigate(-1)} />
-                        <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} />
+                        <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() =>  navigate(-1)} disabled={isButtonDisabled} />
+                        <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} disabled={isButtonDisabled}/>
                     </div>
                     <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                     <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
