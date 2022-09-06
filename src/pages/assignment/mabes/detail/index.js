@@ -108,7 +108,7 @@ function MabesDetail() {
     }
 
     const onClickWorkerList = (id_tapper) => {
-        navigate(`/assignment/tapper/${id_tapper}`)
+        navigate(`/absence/tapper/${id_tapper}`)
     }
 
     const onSwitch = () => {
