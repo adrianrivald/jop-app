@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import FlatButton from '../../../../components/button/flat';
+import Toast from '../../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -15,6 +16,8 @@ const TapperPlanning = () => {
     const [detail, setDetail] = useState({});
     const [listTapper, setListTapper] = useState([]); // untuk muncul list tapper
     const [listWorker, setListWorker] = useState([]); // untuk nyimpan checked tapper
+    const [alertMessage, setAlertMessage] = React.useState("");
+    const [isSubmitted, setIsSubmitted] = React.useState(false);
 
     const getAllData = async () => {
         let detailData;
@@ -98,21 +101,27 @@ const TapperPlanning = () => {
 
     const handleAssignWorker = async() => {
         console.log('list', listWorker)
-        await axios.post(`${url}penugasan/assign-pekerja`, {
-            penugasan_id: id,
-            pekerja: listWorker
-        }, {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json'
-            }
-        }).then((response) => {
-            console.log('response', response)
-            if(response.data.code === 200) {
+        try {
+            await axios.post(`${url}penugasan/assign-pekerja`, {
+                penugasan_id: id,
+                pekerja: listWorker
+            }, {
+                url: process.env.REACT_APP_API_URL,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json'
+                }
+            }).then((response) => {
+                console.log('response', response)
                 return navigate(`/assignment/mandor/list`)
-            }
-        })
+            })
+        } catch (error) {
+            setIsSubmitted(true)
+            setAlertMessage(error?.response?.data?.message)
+            setTimeout(() => {
+                setIsSubmitted(false)
+            }, 3000);
+        }
     }
 
     const goToDetailTapper = (id) => {
@@ -172,6 +181,7 @@ const TapperPlanning = () => {
                     </ul>
                 </div>
                 {detail.approved_by_mabes_at === null && <FlatButton className={'w-full mb-2 text-sm font-bold mt-6'} text={'Simpan'} onClick={handleAssignWorker}/>}
+                <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={false} />
             </section>
        </div>
     )

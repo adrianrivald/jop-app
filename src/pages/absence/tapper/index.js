@@ -17,7 +17,6 @@ const DetailTapper = () =>{
     const token = cookies.get('token');
     const [tapperDetail, setTapperDetail] = React.useState({})
     const [openedId, setOpenedId] = React.useState({})
-    const [tapperHistory, setTapperHistory] = React.useState([])
     const [absenceHistory, setAbsenceHistory] = React.useState([])
 
     React.useEffect(() => {
@@ -37,7 +36,6 @@ const DetailTapper = () =>{
         }).then((res) => {
             const data = res.data.data
             setTapperDetail(data)
-            setTapperHistory(data.riwayat_penugasan)
         })
     }
 
