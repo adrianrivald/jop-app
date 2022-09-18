@@ -41,7 +41,6 @@ const MandorAcceptAssignment = () => {
 
     const handleEnterTapper = () => {
         navigate(`/assignment/mandor/tapper/${id}`)
-        console.log('test')
     }
 
     return(

@@ -24,6 +24,8 @@ import AbsenceList from './pages/absence/list';
 import AbsenceIn from './pages/absence/scan/in';
 import AbsenceOut from './pages/absence/scan/out';
 import TapperPlanning from './pages/assignment/mandor/tapper';
+import Balanced from './pages/balanced/index';
+import AddBalanced from './pages/balanced/add';
 
 function App() {
   const cookies = new Cookies();
@@ -64,6 +66,9 @@ function App() {
         <Route path="/absence/:id_tugas/out" exact element={<AbsenceOut />} />
         <Route path="/absence/tapper/:id" exact element={<DetailTapper />} />
         <Route path="/storybook" exact element={<Storybook/>} />
+        {/* timbang */}
+        <Route path="/balanced" exact element={<Balanced />} />
+        <Route path="/balanced/add" exact element={<AddBalanced />} />
       </Routes>
     </Router>
   );
