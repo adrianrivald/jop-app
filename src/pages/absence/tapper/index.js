@@ -49,7 +49,6 @@ const DetailTapper = () =>{
             }
         }).then((res) => {
             const data = res.data.data
-            console.log(data)
             setAbsenceHistory(data.data)
         })
     }

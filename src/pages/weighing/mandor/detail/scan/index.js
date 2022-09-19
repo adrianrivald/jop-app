@@ -20,20 +20,18 @@ function WeighingScan() {
     const [isSubmitted, setIsSubmitted] = React.useState(false);
     
     const onResult = async(result, error) => {
-        console.log(id,'id_tugas')
-        // try {
+        try {
             if (result) {
-                    navigate(`/weighing/mandor/detail/${id}/tapper`)
+                    navigate(`/weighing/mandor/detail/${id}/tapper/${result?.text}`)
                     localStorage.setItem('scanned_tapper', result?.text)
                 } 
-        // } catch (error){
-        //     console.log(error.message)
-        //     setIsSubmitted(true)
-        //     setAlertMessage(error?.response?.data?.error?.message)
-        //     setTimeout(() => {
-        //         setIsSubmitted(false)
-        //     }, 3000);
-        // }
+        } catch (error){
+            setIsSubmitted(true)
+            setAlertMessage(error?.response?.data?.error?.message)
+            setTimeout(() => {
+                setIsSubmitted(false)
+            }, 3000);
+        }
     }
     
     return (

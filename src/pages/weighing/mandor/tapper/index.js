@@ -2,8 +2,7 @@ import axios from "axios";
 import moment from "moment";
 import React from "react";
 import './tapper.css';
-import { useParams } from "react-router-dom";
-import DropDown from "../../../../components/forms/Dropdown";
+import { useNavigate, useParams } from "react-router-dom";
 import Title from "../../../../components/title/Title";
 import Header from "../../../../components/ui/Header";
 import Fallback from "../../../../assets/images/fallback-ava.png"
@@ -11,20 +10,18 @@ import FlatButton from "../../../../components/button/flat";
 import Cookies from "universal-cookie";
 import Divider from "../../../../components/ui/Divider";
 import { CameraFeed } from "../detail/camera";
-import { isMobile } from "react-device-detect";
+import Toast from "../../../../components/ui/Toast";
 
 const url = process.env.REACT_APP_API_URL;
 
 const WeighingTapper = () =>{
     const { id } = useParams();
+    const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
     const [tapperDetail, setTapperDetail] = React.useState({})
-    const [weighingDetail, setWeighingDetail] = React.useState([]);
-    const [absenceHistory, setAbsenceHistory] = React.useState([])
-    const [openedId, setOpenedId] = React.useState({})
-    const [rawWeight, setRawWeight] = React.useState()
     const scanned_tapper = localStorage.getItem('scanned_tapper')
+    const weighing_id = localStorage.getItem('weighing_id')
     const weighing_code = localStorage.getItem('weighing_code')
     const [weighingPayload, setWeighingPayload] = React.useState({})
     const stored_data = JSON.parse(localStorage.getItem('selected_material'));
@@ -32,21 +29,62 @@ const WeighingTapper = () =>{
     const [photos, setPhotos] = React.useState([]);
     const [isCamera, setIsCamera] = React.useState(false);
     const [selectedImage, setSelectedImage] = React.useState(null);
-
+    const [isSubmitted, setIsSubmitted] = React.useState(false)
+    const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
+    const transaction_id = localStorage.getItem('transaction_id')
+    const weighing_data = JSON.parse(localStorage.getItem('weighing_data'))
+    const weighing_transaction = JSON.parse(localStorage.getItem('weighing_transaction'))
+    
     React.useEffect(() => {
         getDetailTapper();
-        getWeighingDetail();
         if (scanned_tapper && scanned_tapper !== undefined) {
             setWeighingPayload({
                 ...weighingPayload,
                 tapper_id: scanned_tapper,
-                tph_penimbangan_id: weighing_code
+                tph_penimbangan_id: weighing_id,
+                detail: stored_data.map(res => {
+                    return {
+                        jenis_bahan_baku_id: res.id
+                    }
+
+                })
             })
         }
-        console.log(weighingPayload)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
+    React.useEffect(() => {
+        if (weighing_data && weighing_data !== undefined){
+            getInputWeight();
+            getPhotos();
+        }
+    }, [])
+
+    const getPhotos = () => {
+        // setPhotos([
+        //     ...photos,
+        //     {
+        //         blob: e.target.files[0],
+        //         file: URL.createObjectURL(e.target.files[0])
+        //     }
+        // ])
+        const photo_data = weighing_transaction?.foto?.map((res, idx) => {
+            return {
+                file : res?.path
+            }
+        })
+        setPhotos(photo_data)
+    }
+
+    const getInputWeight = () => {
+        const weighing_data_reduced = weighing_data.reduce((prev, next) => {
+            return {
+                [prev?.kode] : parseInt(prev?.berat_wet),
+                [next?.kode] : parseInt(next?.berat_wet)
+            }
+        })
+        setInputWeight(weighing_data_reduced)
+    }
 
     const getDetailTapper = async() => {
         await axios.get(`${url}absensi/scan-by-tapper-uuid/${scanned_tapper}`,
@@ -59,53 +97,7 @@ const WeighingTapper = () =>{
         }).then((res) => {
             const data = res.data.data
             setTapperDetail(data)
-            console.log(data,'data')
         })
-    }
-
-    const getWeighingDetail = async(sort) => {
-        await axios.get(`${url}penimbangan/detail/${id}`,
-        {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json'
-            }
-        }).then((res) => {
-            const data = res.data.data
-            setWeighingDetail(data)
-            setRawWeight(data?.detail?.find((_, idx) => idx === 0).berat_total)
-        })
-    } 
-
-
-    const getAbsenceHistory = async(sort) => {
-        await axios.get(`${url}absensi/riwayat-by-tapper/${id}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`,
-        {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json'
-            }
-        }).then((res) => {
-            const data = res.data.data
-            console.log(data)
-            setAbsenceHistory(data.data)
-        })
-    }
-
-    const onExpand = (idx) => {
-        setOpenedId({
-            ...openedId,
-            [`item_${idx}`] : true
-        })
-    }
-
-    const onCollapse = (idx) => {
-        setOpenedId({
-            ...openedId,
-            [`item_${idx}`] : false
-        })        
     }
 
     const avaImage = () => {
@@ -115,12 +107,15 @@ const WeighingTapper = () =>{
         return Fallback
     }
 
-    const onChangeWeight = (e, id) => {
+    const onChangeWeight = (e, id, idx) => {
         setInputWeight({
             ...inputWeight,
             [id] : parseInt(e.target.value)
         })
-        console.log(inputWeight,'inputweight')
+        weighingPayload.detail[idx] = {
+            ...weighingPayload.detail[idx],
+            berat_wet: parseInt(e.target.value)
+        }
     }
 
     const onSelectPhoto = (e) => {
@@ -141,20 +136,11 @@ const WeighingTapper = () =>{
                 file: URL.createObjectURL(e.target.files[0])
             }
         ])
+        setWeighingPayload({
+            ...weighingPayload,
+            foto: photos.map(res => res.file)
+        })
         setSelectedImage(e.target.files[0]);
-    }
-
-    React.useEffect(() => {
-        console.log(photos, 'photos')
-
-    }, [photos])
-
-    const onAddPhoto = () => {
-        if(isMobile) {
-            setIsCamera(true)
-        } else {
-            console.log('wew')
-        }
     }
 
     const uploadImage = async file => {
@@ -166,9 +152,26 @@ const WeighingTapper = () =>{
                 file
             }
         ]
-        console.log(formData,'captured')
-        // Connect to a seaweedfs instance
     };
+
+    const handleSubmit = async() => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }
+        await axios.post(`${url}penimbangan/transaksi/store
+        `, weighingPayload, config).then(() => {
+            setIsSubmitted(true)
+            setIsButtonDisabled(true)
+            setTimeout(() => {
+                setIsButtonDisabled(false)
+                setIsSubmitted(false)
+                navigate(`/weighing/mandor/detail/${id}`)
+            }, 3000);
+        })
+    }
     
 
     return (
@@ -232,20 +235,33 @@ const WeighingTapper = () =>{
                             <div className="mt-3">
                                 <Title text={localStorage.getItem('weighing_code')} />
                                 {
+                                    // weighing_data === undefined || !weighing_data ? 
                                     stored_data?.map((res, idx) => {
                                         return (
                                             <div className="my-3 flex justify-between items-center">
                                                 <p>{res.code} - {res.name}</p>
-                                                <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code)}/>
+                                                <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)} defaultValue={weighing_data[idx].berat_wet}/>
                                             </div>
                                         )
-                                    })
+                                    }) 
+                                    // : weighing_data.map((res, idx) => {
+                                    //     return (
+                                    //         <div className="my-3 flex justify-between items-center">
+                                    //             <p>{res.kode} - {res.nama}</p>
+                                    //             <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.kode, idx)} defaultValue={res?.berat_wet}/>
+                                    //         </div>
+                                    //     )
+                                    // })
                                 }
                                 <div className="mt-3 flex justify-between items-center">
                                     <p>Sub total</p>
                                     <p>
                                         <span className="font-bold">
-                                            {Object.values(inputWeight).reduce((a, b) => a + b, 0)}
+                                            {
+                                                // !weighing_data || weighing_data === undefined ? 
+                                                Object.values(inputWeight).reduce((a, b) => a + b, 0) 
+                                                // : weighing_data.map(res => res?.berat_wet).reduce((prev, next) => prev + next)
+                                            }
                                         </span> kg
                                     </p>
                                 </div>
@@ -256,7 +272,7 @@ const WeighingTapper = () =>{
                             {
                                 photos?.map((res, idx) => {
                                     return (
-                                            <img width="200" alt={`photo_${idx+1}`} src={URL.createObjectURL(res?.blob)} className="rounded-xl" />
+                                            <img width="200" alt={`photo_${idx+1}`} src={!weighing_transaction ? URL.createObjectURL(res?.blob) : photos[idx].file} className="rounded-xl" />
                                             )
                                         })
                                     }
@@ -277,13 +293,10 @@ const WeighingTapper = () =>{
                             <FlatButton 
                                 className='w-full rounded-xl' 
                                 role='green' text='Selesai' 
-                                onClick={() => window.scrollTo({
-                                    top: 0,
-                                    behavior: "smooth"
-                                    })
-                                }
+                                onClick={handleSubmit}
                             />
                         </div>
+                        <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                     </>
                 ) : (
                     <CameraFeed sendFile={uploadImage} setIsCamera={setIsCamera} isCamera={isCamera} />

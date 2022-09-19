@@ -92,7 +92,6 @@ function MandorWeighing() {
     }
 
     const getWeighing = (tph) => {
-        console.log(tph)
         axios.get(`${url}penimbangan/list?include=tph,divisi,petugas_penimbang`, {
             url: process.env.REACT_APP_API_URL,
             headers: {
@@ -183,7 +182,6 @@ function MandorWeighing() {
             })))
         }
         // dispatch(allActions.addMaterialCode(selectedMaterial));
-        console.log(state, 'statereduxxx')
     }
 
     const handleSubmit = () => {

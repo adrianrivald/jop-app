@@ -37,7 +37,6 @@ function AbsenceIn() {
                     })
                 } 
         } catch (error){
-            console.log(error.message)
             setIsSubmitted(true)
             setAlertMessage(error?.response?.data?.error?.message)
             setTimeout(() => {

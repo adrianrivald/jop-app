@@ -9,7 +9,6 @@ export class CameraFeed extends Component {
      */
     processDevices(devices) {
         devices.forEach(device => {
-            console.log(device.label);
             this.setDevice(device);
         });
     }
@@ -47,7 +46,6 @@ export class CameraFeed extends Component {
         const context = this.canvas.getContext('2d');
         context.drawImage(this.videoPlayer, 0, 0, 680, 360);
         this.canvas.toBlob(sendFile);
-        console.log( this.canvas.toBlob(sendFile), 'fotonya')
         this.props.setIsCamera(!this.props.isCamera);
     };
 

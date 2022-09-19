@@ -12,25 +12,6 @@ import DropDown from '../../../../components/forms/Dropdown';
 
 const url = process.env.REACT_APP_API_URL;
 
-function WorkerList (props) {
-    return (
-        <div className='flex justify-between items-center mt-3 pt-3'>
-            <p className='w-8 text-xxs mx-4'>{props.scheme}</p>
-            <div className='w-40'>
-                <p className='font-bold text-sm truncate'>{props.name}</p>
-                <p className='text-xxs'>{props.code}</p>
-            </div>
-            <p className='w-20 text-sm text-flora font-bold'>{props.status}</p>
-            <div onClick={props.onClick} className="cursor-pointer">
-                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <hr />
-        </div>
-    )
-}
-
 function DetailWeighing() {
     const {id} = useParams()
     const cookies = new Cookies();
@@ -40,6 +21,7 @@ function DetailWeighing() {
     const [isSubmitted, setIsSubmitted] = React.useState(false)
     const [openedId, setOpenedId] = React.useState({})
     const [alertMessage, setAlertMessage] = React.useState("")
+    const [sortedTapper, setSortedTapper] = React.useState("")
     const [rawWeight, setRawWeight] = React.useState()
     const stored_data = JSON.parse(localStorage.getItem('selected_material'));
     const navigate = useNavigate();
@@ -132,14 +114,13 @@ function DetailWeighing() {
     
     React.useEffect(() => {
         getWeighingDetail();
-        // getWeighingDetail();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
     
-    const getWeighingDetail = async(sort) => {
+    const getWeighingDetail = (sort) => {
         // setWeighingDetail(data)
 
-        await axios.get(`${url}penimbangan/detail/${id}?include=petugas_timbang`,
+        axios.get(`${url}penimbangan/detail/${id}?include=petugas_timbang`,
         {
             url: process.env.REACT_APP_API_URL,
             headers: {
@@ -153,8 +134,8 @@ function DetailWeighing() {
             setRawWeight(data?.detail?.find((_, idx) => idx === 0).berat_total)
             const tappers = data?.transaction.map((res) => {
                 return {
-                    value: res.kode,
-                    label: res.nama
+                    value: res?.tapper?.kode,
+                    label: res?.tapper?.nama
                 }
             })
             setTapperList(tappers)
@@ -175,13 +156,25 @@ function DetailWeighing() {
         })        
     }
     
+    
     const onSort = (e) => {
         const sort = e.target.value
+        setSortedTapper(e.target.value)
+    }
+    
+    const [selectedRaw, setSelectedRaw] = React.useState('P1')
+    const onChangeRaw = (e) => {
+        const value = e.target.value
+        setSelectedRaw(e.target.value)
+        setRawWeight(weighingDetail?.detail?.find((res) => res.kode === selectedRaw).berat_total)
     }
 
-    const onChangeRaw = (e) => {
-        const selectedRaw = e.target.value
-        setRawWeight(weighingDetail?.detail?.find((res) => res.kode === selectedRaw).berat_total)
+    const onClickDetail = (tapper_id, transaction_id, detail, transaction) => {
+        localStorage.setItem('transaction_id', transaction_id)
+        localStorage.setItem('scanned_tapper', tapper_id)
+        localStorage.setItem('weighing_data', JSON.stringify(detail))
+        localStorage.setItem('weighing_transaction', JSON.stringify(transaction))
+        navigate(`tapper/${tapper_id}`)
     }
 
     return (
@@ -202,10 +195,20 @@ function DetailWeighing() {
                                     }
                                 })}
                                 onChange={onChangeRaw}
+                                defaultValue={weighingDetail?.detail?.[0]?.nama}
                             />
                             <p className="text-4xl font-bold">{rawWeight} kg</p>  
                             <p className="text-xxs">Terakhir penimbangan:</p>        
-                            <p className="text-xxs font-bold">Roni Ahmad, Latek 84kg</p>        
+                            <p className="text-xxs font-bold">
+                                {   weighingDetail?.transaction?.length > 0 ?
+                                    <>
+                                        {weighingDetail?.transaction[0].tapper?.nama}, &nbsp;
+                                        {weighingDetail?.transaction[0].detail?.find(res => res.kode === selectedRaw)?.nama}&nbsp; 
+                                        {weighingDetail?.transaction[0].detail?.find(res => res.kode === selectedRaw)?.berat_wet} kg 
+                                    </>
+                                    : null
+                                }
+                            </p>        
 
                         </div>
                         <div className="p-3 rounded-xl border border-cloud w-full">
@@ -258,17 +261,17 @@ function DetailWeighing() {
                                 return (
                                     openedId[`item_${idx}`] === true ? (
                                         <div className="bg-white divide-y divide-cloud">
-                                            <div className='flex justify-between items-center p-3 transition-transform'>
+                                            <div className='flex justify-between items-center p-3 transition-transform cursor-pointer' onClick={() => onCollapse(idx)}>
                                                 <p className='text-xs'>Bulanan</p>
                                                 <div className='w-40'>
-                                                    <p className='font-bold text-sm truncate'>{res.nama}</p>
-                                                    <p className='text-xxs'>{res.kode}</p>
+                                                    <p className='font-bold text-sm truncate'>{res?.tapper?.nama}</p>
+                                                    <p className='text-xxs'>{res?.tapper?.kode}</p>
                                                 </div>
                                                 <div className=''>
                                                     <p className='text-xxs'>Sub Total</p>
                                                     <p className='font-bold text-sm truncate'>{res.berat_total} Kg</p>
                                                 </div>
-                                                <div onClick={() => onExpand(idx)} className="cursor-pointer">
+                                                <div className="cursor-pointer">
                                                     <svg className="rotate-90" width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                                     </svg>
@@ -278,27 +281,32 @@ function DetailWeighing() {
                                                 {
                                                     res?.detail?.map((res, idx) => {
                                                         return (
-                                                            <div className='flex justify-between items-center mt-3 w-full'>
-                                                                <p className="w-2/4">{res?.kode} - <span className="font-bold">{res?.nama}</span></p>
-                                                                <p className="w-2/4 font-bold text-right">{res?.berat_wet} kg</p>
-                                                            </div>
+                                                            <>
+                                                                <div className='flex justify-between items-center mt-3 w-full'>
+                                                                    <p className="w-2/4">{res?.kode} - <span className="font-bold">{res?.nama}</span></p>
+                                                                    <p className="w-2/4 font-bold text-right">{res?.berat_wet} kg</p>
+                                                                </div>
+                                                            </>
                                                         )
                                                     })
                                                 }
+                                                <div className='flex justify-center mt-3'>
+                                                    <Button isText text="Lihat Detail" onClick={() => onClickDetail(res?.tapper?.id, res?.id, res?.detail, weighingDetail?.transaction[idx])}/>
+                                                </div>
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className='flex justify-between items-center p-3 transition-transform'>
+                                        <div className='flex justify-between items-center p-3 transition-transform cursor-pointer' onClick={() => onExpand(idx)} >
                                             <p className='text-xs'>Bulanan</p>
                                             <div className='w-40'>
-                                                <p className='font-bold text-sm truncate'>{res.nama}</p>
-                                                <p className='text-xxs'>{res.kode}</p>
+                                                <p className='font-bold text-sm truncate'>{res?.tapper?.nama}</p>
+                                                <p className='text-xxs'>{res?.tapper?.kode}</p>
                                             </div>
                                             <div className=''>
                                                 <p className='text-xxs'>Sub Total</p>
                                                 <p className='font-bold text-sm truncate'>{res.berat_total} Kg</p>
                                             </div>
-                                            <div onClick={() => onExpand(idx)} className="cursor-pointer">
+                                            <div className="cursor-pointer">
                                                 <svg  width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                                 </svg>

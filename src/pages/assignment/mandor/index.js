@@ -38,13 +38,11 @@ const Mandor = () => {
             }
         }).then((res) => {
             const data = res.data.data.data
-            console.log('data', data)
             setListData(data)
         })
     }
 
     const handleAcceptAssignment = async (id) => {
-        console.log('id', id)
         await axios.get(`${url}penugasan/terima-tugas/${id}`, {
             url: process.env.REACT_APP_API_URL,
             headers: {
@@ -53,7 +51,6 @@ const Mandor = () => {
             }
         }).then((response) => {
             const data = response.data.data
-            console.log('data', response)
             return navigate(`/assignment/mandor/detail/${data.id}/accept`)
         })
     }

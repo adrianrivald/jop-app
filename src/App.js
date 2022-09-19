@@ -75,7 +75,7 @@ function App() {
           <Route path="/weighing/officer/list" exact element={<Officer />} />
           <Route path="/weighing/mandor/list" exact element={<MandorWeighing />} />
           <Route path="/weighing/mandor/detail/:id" exact element={<DetailWeighing />} />
-          <Route path="/weighing/mandor/detail/:id/tapper" exact element={<WeighingTapper />} />
+          <Route path="/weighing/mandor/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
           <Route path="/weighing/mandor/detail/:id/scan" exact element={<WeighingScan />} />
 
           <Route path="/storybook" exact element={<Storybook/>} />

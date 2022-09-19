@@ -8,7 +8,6 @@ export const addMaterialCode = (state) => async(dispatch) => {
 }
 
 export const addMaterialName = (state) => async(dispatch) => {
-    console.log(state,' state redux')
     dispatch({
         type: MATERIAL_NAME,
         payload: state
