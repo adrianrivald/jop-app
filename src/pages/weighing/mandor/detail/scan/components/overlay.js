@@ -11,7 +11,7 @@ const Overlay = () => {
 
     const [code ,setCode] = React.useState("");
     const [tapperDetail, setTapperDetail] = React.useState({});
-    const { id_tugas } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
@@ -32,6 +32,7 @@ const Overlay = () => {
         }).then((res) => {
             const data = res.data.data
             setTapperDetail(data)
+            localStorage.setItem('scanned_tapper', data?.id)
         })
     }
 
@@ -40,24 +41,8 @@ const Overlay = () => {
     }
 
     React.useEffect(() => {
-        const submit = async() => {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: 'application/json'
-                }
-            }
-            await axios.post(`${url}absensi/store`, {
-                "pekerja_id": tapperDetail?.id,
-                "penugasan_id": id_tugas,
-                "tipe_absen": absenceType === "in" ? "masuk" : "keluar"
-            }, config).then(() => {
-                navigate(`/absence/tapper/${tapperDetail?.id}`)
-            })
-        }
-
         if (tapperDetail?.id) {
-            submit();
+            navigate(`/weighing/mandor/detail/${id}/tapper/${tapperDetail?.id}`)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tapperDetail?.id])

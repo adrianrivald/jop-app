@@ -144,14 +144,15 @@ function MandorWeighing() {
     } 
 
     const state = useSelector((state) => state);
-    const onCheckMaterial = (code, name, id) => {
+    const onCheckMaterial = (code, name, id, id_bahan_baku) => {
         if (!selectedMaterial.find(val => val.id === id)) {
             setSelectedMaterial([
                 ...selectedMaterial,
                 {
                     id,
                     name,
-                    code
+                    code,
+                    id_bahan_baku
                 }
             ])
         dispatch(allActions.addMaterialCode([
@@ -159,7 +160,8 @@ function MandorWeighing() {
             {
                 id,
                 name,
-                code
+                code,
+                id_bahan_baku
             }
         ]));
         localStorage.setItem('selected_material', JSON.stringify([
@@ -167,7 +169,8 @@ function MandorWeighing() {
             {
                 id,
                 name,
-                code
+                code,
+                id_bahan_baku
             }
         ]))
         } else {
@@ -212,7 +215,7 @@ function MandorWeighing() {
                                             return (
                                                 <div className='flex justify-between gap-2 mt-4'>
                                                     <h2 className='text-left mb-1 font-bold'>{res.nama}</h2>
-                                                    <input checked={selectedMaterial.find(val => val.id === idx)} onClick={() => onCheckMaterial(res.kode, res.nama, idx) } type="checkbox" className="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
+                                                    <input checked={selectedMaterial.find(val => val.id === idx)} onClick={() => onCheckMaterial(res.kode, res.nama, idx, res?.id) } type="checkbox" className="accent-flora w-4 h-4 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600"/>
                                                 </div>
                                             )
                                         })

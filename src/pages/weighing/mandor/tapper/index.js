@@ -16,6 +16,7 @@ const url = process.env.REACT_APP_API_URL;
 
 const WeighingTapper = () =>{
     const { id } = useParams();
+    console.log(id, 'id')
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
@@ -44,9 +45,8 @@ const WeighingTapper = () =>{
                 tph_penimbangan_id: weighing_id,
                 detail: stored_data.map(res => {
                     return {
-                        jenis_bahan_baku_id: res.id
+                        jenis_bahan_baku_id: res?.id_bahan_baku
                     }
-
                 })
             })
         }
@@ -84,6 +84,17 @@ const WeighingTapper = () =>{
             }
         })
         setInputWeight(weighing_data_reduced)
+        // const payloadNew = weighing_data.map(((res, idx) => {
+        //     return {berat_wet: parseInt(res?.berat_wet)}
+        // }))
+        // setWeighingPayload({
+        //     ...weighingPayload,
+        //     detail: payloadNew.map((res, idx) => {
+        //         return {
+        //             berat_wet: payloadNew[idx].berat_wet
+        //         }
+        //     })
+        // })
     }
 
     const getDetailTapper = async() => {
@@ -240,7 +251,7 @@ const WeighingTapper = () =>{
                                         return (
                                             <div className="my-3 flex justify-between items-center">
                                                 <p>{res.code} - {res.name}</p>
-                                                <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)} defaultValue={weighing_data[idx].berat_wet}/>
+                                                <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)} defaultValue={weighing_data && weighing_data[idx].berat_wet}/>
                                             </div>
                                         )
                                     }) 
