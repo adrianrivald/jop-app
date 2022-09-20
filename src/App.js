@@ -26,6 +26,8 @@ import AbsenceList from './pages/absence/list';
 import AbsenceIn from './pages/absence/scan/in';
 import AbsenceOut from './pages/absence/scan/out';
 import TapperPlanning from './pages/assignment/mandor/tapper';
+import Balanced from './pages/balanced/index';
+import AddBalanced from './pages/balanced/add';
 import Officer from './pages/weighing/officer';
 import MandorWeighing from './pages/weighing/mandor';
 import DetailWeighing from './pages/weighing/mandor/detail';
@@ -77,7 +79,8 @@ function App() {
           <Route path="/weighing/mandor/detail/:id" exact element={<DetailWeighing />} />
           <Route path="/weighing/mandor/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
           <Route path="/weighing/mandor/detail/:id/scan" exact element={<WeighingScan />} />
-
+          <Route path="/balanced" exact element={<Balanced />} />
+          <Route path="/balanced/add" exact element={<AddBalanced />} />
           <Route path="/storybook" exact element={<Storybook/>} />
         </Routes>
       </Router>
