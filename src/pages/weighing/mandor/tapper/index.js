@@ -16,7 +16,6 @@ const url = process.env.REACT_APP_API_URL;
 
 const WeighingTapper = () =>{
     const { id } = useParams();
-    console.log(id, 'id')
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
@@ -39,6 +38,19 @@ const WeighingTapper = () =>{
     React.useEffect(() => {
         getDetailTapper();
         if (scanned_tapper && scanned_tapper !== undefined) {
+            setWeighingPayload({
+                ...weighingPayload,
+                tapper_id: scanned_tapper,
+                tph_penimbangan_id: weighing_id,
+                detail: weighing_transaction?.detail?.map(res => {
+                    return {
+                        jenis_bahan_baku_id: res?.id,
+                        berat_wet: res?.berat_wet
+                    }
+                }),
+                foto: weighing_transaction?.foto?.map(res => res?.path)
+            })
+        } else {
             setWeighingPayload({
                 ...weighingPayload,
                 tapper_id: scanned_tapper,
@@ -147,10 +159,11 @@ const WeighingTapper = () =>{
                 file: URL.createObjectURL(e.target.files[0])
             }
         ])
-        setWeighingPayload({
-            ...weighingPayload,
-            foto: photos.map(res => res.file)
-        })
+        // setWeighingPayload({
+        //     ...weighingPayload,
+        //     foto: photos.map(res => res.file)
+        // })
+        weighingPayload.foto = photos.map(res => res.file)
         setSelectedImage(e.target.files[0]);
     }
 
@@ -246,23 +259,23 @@ const WeighingTapper = () =>{
                             <div className="mt-3">
                                 <Title text={localStorage.getItem('weighing_code')} />
                                 {
-                                    // weighing_data === undefined || !weighing_data ? 
+                                    weighing_transaction === undefined || !weighing_transaction ? 
                                     stored_data?.map((res, idx) => {
                                         return (
                                             <div className="my-3 flex justify-between items-center">
                                                 <p>{res.code} - {res.name}</p>
-                                                <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)} defaultValue={weighing_data && weighing_data[idx].berat_wet}/>
+                                                <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)}/>
                                             </div>
                                         )
                                     }) 
-                                    // : weighing_data.map((res, idx) => {
-                                    //     return (
-                                    //         <div className="my-3 flex justify-between items-center">
-                                    //             <p>{res.kode} - {res.nama}</p>
-                                    //             <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.kode, idx)} defaultValue={res?.berat_wet}/>
-                                    //         </div>
-                                    //     )
-                                    // })
+                                    : weighing_transaction?.detail?.map((res, idx) => {
+                                        return (
+                                            <div className="my-3 flex justify-between items-center">
+                                                <p>{res.kode} - {res.nama}</p>
+                                                <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.kode, idx)} defaultValue={res?.berat_wet}/>
+                                            </div>
+                                        )
+                                    })
                                 }
                                 <div className="mt-3 flex justify-between items-center">
                                     <p>Sub total</p>
