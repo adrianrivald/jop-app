@@ -31,7 +31,6 @@ const TapperPlanning = () => {
         }).then((result) => {
             if(result.data.code === 200) {
                 const data = result.data.data
-                console.log('detail', data)
                 setListWorker(data.pekerja.map(data => data.id))
                 setDetail(data)
                 detailData = data
@@ -47,7 +46,6 @@ const TapperPlanning = () => {
         }).then((result) => {
             if(result.data.code === 200) {
                 const data = result.data.data.data
-                console.log('list dataaaaa', data)
                 const newData = data.map(listTapper => {
                     let newListTapper = {...listTapper, isChecked: false}
                     // eslint-disable-next-line array-callback-return
@@ -58,7 +56,6 @@ const TapperPlanning = () => {
                     })
                     return newListTapper
                 })
-                console.log('new data', newData)
                 setListTapper(newData)
             }
         }) 
@@ -90,17 +87,14 @@ const TapperPlanning = () => {
 
     const handleListTapper = (e) => {
         if (listWorker.indexOf(e.target.value) > -1) {
-            console.log('di remove')
             const newListWorker = listWorker.filter(item => item !== e.target.value)
             setListWorker(newListWorker)
         } else {
-            console.log('di add')
             setListWorker([...listWorker, e.target.value])
         }
     }
 
     const handleAssignWorker = async() => {
-        console.log('list', listWorker)
         try {
             await axios.post(`${url}penugasan/assign-pekerja`, {
                 penugasan_id: id,
@@ -112,7 +106,6 @@ const TapperPlanning = () => {
                     Accept: 'application/json'
                 }
             }).then((response) => {
-                console.log('response', response)
                 return navigate(`/assignment/mandor/list`)
             })
         } catch (error) {

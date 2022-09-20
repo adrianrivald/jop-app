@@ -10,8 +10,14 @@ export default function Button({
     disabled,
     className,
     isBack,
+    role,
     ...rest
 }) {
+
+
+    let roleStyle = 'bg-flora text-white'
+
+    if (role === 'white' ) roleStyle = 'bg-white text-flora border border-flora'
     return (
         <>
             {
@@ -19,14 +25,14 @@ export default function Button({
                     <button className={`text-xs bg-flora hover:bg-flora text-white font-bold p-2.5 rounded-xl w-32 ${disabled ? 'opacity-50 cursor-not-allowed	' : ''} ${className}`} {...rest}>
                         {text}
                     </button> : 
-                    <button className={`text-xs bg-white hover:bg-white text-flora font-bold p-2.5 rounded-xl w-32 border border-flora  ${className}`} {...rest}>
+                    <button className={`text-xs bg-white hover:bg-white text-flora font-bold p-2.5 rounded-xl w-32 border border-flora ${disabled ? 'opacity-50 cursor-not-allowed	' : ''}  ${className}`} {...rest}>
                         {text}
                     </button>
                     : null
             }
             {
                 isIcon ?
-                <button className={`bg-flora flex justify-center hover:bg-flora text-white font-bold p-2.5 rounded-xl ${className}`} {...rest}>
+                <button className={`${roleStyle} flex justify-center font-bold p-2.5 rounded-xl ${disabled ? 'opacity-50 cursor-not-allowed	' : ''} ${className}`} {...rest}>
                     <div className="mx-auto flex items-center ">
                         {icon}
                         {text && (
@@ -37,7 +43,7 @@ export default function Button({
             }
             {
                 isFilter ?
-                <button className={`bg-white text-xs shadow flex items-center justify-between text-black font-bold p-3 rounded-xl w-full ${className}`} {...rest}>
+                <button className={`bg-white text-xs shadow flex items-center justify-between text-black font-bold p-3 rounded-xl w-full ${disabled ? 'opacity-50 cursor-not-allowed	' : ''} ${className}`} {...rest}>
                     <div className="flex items-center">
                         <svg className="mr-2" width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5555 4C4.47519 4 5.24989 3.37924 5.48346 2.53385H11.7222C11.9983 2.53385 12.2222 2.31 12.2222 2.03385C12.2222 1.75771 11.9983 1.53385 11.7222 1.53385H5.50089C5.29086 0.654115 4.49957 0 3.5555 0C2.61143 0 1.82014 0.654115 1.61011 1.53385H0.722168C0.446026 1.53385 0.222168 1.75771 0.222168 2.03385C0.222168 2.31 0.446026 2.53385 0.722168 2.53385H1.62754C1.86112 3.37924 2.63582 4 3.5555 4ZM3.5555 3C4.10779 3 4.5555 2.55228 4.5555 2C4.5555 1.44772 4.10779 1 3.5555 1C3.00322 1 2.5555 1.44772 2.5555 2C2.5555 2.55228 3.00322 3 3.5555 3Z" fill="#332919"/>

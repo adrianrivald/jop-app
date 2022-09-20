@@ -1,18 +1,18 @@
 import axios from 'axios';
 import { useParams } from "react-router-dom";
-import Header from '../../../../components/ui/Header';
+import Header from '../../../../../components/ui/Header';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { QrReader } from 'react-qr-reader';
-import Overlay from '../components/overlay';
-import Toast from '../../../../components/ui/Toast';
+import Overlay from './components/overlay';
+import Toast from '../../../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
 
 
-function AbsenceIn() {
-    const { id_tugas } = useParams();
+function WeighingScan() {
+    const { id } = useParams();
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
@@ -22,19 +22,8 @@ function AbsenceIn() {
     const onResult = async(result, error) => {
         try {
             if (result) {
-                    const config = {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            Accept: 'application/json'
-                        }
-                    }
-                    await axios.post(`${url}absensi/store`, {
-                        "pekerja_id": result?.text,
-                        "penugasan_id": id_tugas,
-                        "tipe_absen": "masuk"
-                    }, config).then(() => {
-                        navigate(`/absence/tapper/${result?.text}`)
-                    })
+                    navigate(`/weighing/mandor/detail/${id}/tapper/${result?.text}`)
+                    localStorage.setItem('scanned_tapper', result?.text)
                 } 
         } catch (error){
             setIsSubmitted(true)
@@ -48,7 +37,7 @@ function AbsenceIn() {
     return (
         <>
             <div className="header" style={{position: 'relative', zIndex: '99'}}>
-                <Header title="Absensi" isWithBack  />
+                <Header title="Penimbangan" isWithBack  />
             </div>
             <div className='qr-area' style={{marginTop: '-10px'}}>
                 <QrReader
@@ -73,4 +62,4 @@ function AbsenceIn() {
     )
 }
 
-export default AbsenceIn;
+export default WeighingScan;

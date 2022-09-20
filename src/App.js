@@ -5,6 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { Provider} from "react-redux";
+import store from "./store"
 import HomePage from './pages/homepage';
 import SignIn from './pages/auth/login';
 import Sample from './pages/sample/Sample';
@@ -26,6 +28,11 @@ import AbsenceOut from './pages/absence/scan/out';
 import TapperPlanning from './pages/assignment/mandor/tapper';
 import Balanced from './pages/balanced/index';
 import AddBalanced from './pages/balanced/add';
+import Officer from './pages/weighing/officer';
+import MandorWeighing from './pages/weighing/mandor';
+import DetailWeighing from './pages/weighing/mandor/detail';
+import WeighingTapper from './pages/weighing/mandor/tapper';
+import WeighingScan from './pages/weighing/mandor/detail/scan';
 
 function App() {
   const cookies = new Cookies();
@@ -42,35 +49,42 @@ function App() {
   },[])
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" exact element={<Navigate to="/auth/login" replace />} />  {/* later add condition for auth */}
-        <Route path="/auth/login" exact element={<SignIn/>} />
-        <Route path="/homepage" exact element={<HomePage/>} />
-        <Route path="/sample" exact element={<Sample/>} />
-        {/* mandor */}
-        <Route path="/assignment/mandor/list" exact element={<Mandor />} />
-        <Route path="/assignment/mandor/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
-        <Route path="/assignment/mandor/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
-        <Route path="/assignment/mandor/tapper/:id" exact element={<TapperPlanning />} />
-        {/* mabes */}
-        <Route path="/assignment/mabes/list" exact element={<Mabes/>} />
-        <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />
-        <Route path="/assignment/mabes/detail/:id" exact element={<MabesDetail/>} />
-        <Route path="/assignment/mabes/detail/:id/edit" exact element={<MabesEdit/>} />
-        <Route path="/assignment/mabes/detail/action" exact element={<MabesDetailAction/>} />
-        {/* absensi */}
-        <Route path="/absence" exact element={<Absence />} />
-        <Route path="/absence/:id_tugas" exact element={<AbsenceList />} />
-        <Route path="/absence/:id_tugas/in" exact element={<AbsenceIn />} />
-        <Route path="/absence/:id_tugas/out" exact element={<AbsenceOut />} />
-        <Route path="/absence/tapper/:id" exact element={<DetailTapper />} />
-        <Route path="/storybook" exact element={<Storybook/>} />
-        {/* timbang */}
-        <Route path="/balanced" exact element={<Balanced />} />
-        <Route path="/balanced/add" exact element={<AddBalanced />} />
-      </Routes>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          <Route path="/" exact element={<Navigate to="/auth/login" replace />} />  {/* later add condition for auth */}
+          <Route path="/auth/login" exact element={<SignIn/>} />
+          <Route path="/homepage" exact element={<HomePage/>} />
+          <Route path="/sample" exact element={<Sample/>} />
+          {/* mandor */}
+          <Route path="/assignment/mandor/list" exact element={<Mandor />} />
+          <Route path="/assignment/mandor/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
+          <Route path="/assignment/mandor/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
+          <Route path="/assignment/mandor/tapper/:id" exact element={<TapperPlanning />} />
+          {/* mabes */}
+          <Route path="/assignment/mabes/list" exact element={<Mabes/>} />
+          <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />
+          <Route path="/assignment/mabes/detail/:id" exact element={<MabesDetail/>} />
+          <Route path="/assignment/mabes/detail/:id/edit" exact element={<MabesEdit/>} />
+          <Route path="/assignment/mabes/detail/action" exact element={<MabesDetailAction/>} />
+          {/* absensi */}
+          <Route path="/absence" exact element={<Absence />} />
+          <Route path="/absence/:id_tugas" exact element={<AbsenceList />} />
+          <Route path="/absence/:id_tugas/in" exact element={<AbsenceIn />} />
+          <Route path="/absence/:id_tugas/out" exact element={<AbsenceOut />} />
+          <Route path="/absence/tapper/:id" exact element={<DetailTapper />} />
+          {/* penimbangan */}
+          <Route path="/weighing/officer/list" exact element={<Officer />} />
+          <Route path="/weighing/mandor/list" exact element={<MandorWeighing />} />
+          <Route path="/weighing/mandor/detail/:id" exact element={<DetailWeighing />} />
+          <Route path="/weighing/mandor/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
+          <Route path="/weighing/mandor/detail/:id/scan" exact element={<WeighingScan />} />
+          <Route path="/balanced" exact element={<Balanced />} />
+          <Route path="/balanced/add" exact element={<AddBalanced />} />
+          <Route path="/storybook" exact element={<Storybook/>} />
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 
