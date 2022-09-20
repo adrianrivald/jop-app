@@ -37,7 +37,7 @@ const WeighingTapper = () =>{
     
     React.useEffect(() => {
         getDetailTapper();
-        if (scanned_tapper && scanned_tapper !== undefined) {
+        if (weighing_transaction && weighing_transaction !== undefined) {
             setWeighingPayload({
                 ...weighingPayload,
                 tapper_id: scanned_tapper,
@@ -70,6 +70,7 @@ const WeighingTapper = () =>{
             getInputWeight();
             getPhotos();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const getPhotos = () => {
@@ -135,10 +136,19 @@ const WeighingTapper = () =>{
             ...inputWeight,
             [id] : parseInt(e.target.value)
         })
-        weighingPayload.detail[idx] = {
-            ...weighingPayload.detail[idx],
-            berat_wet: parseInt(e.target.value)
-        }
+        // weighingPayload.detail[idx] = {
+        //     ...weighingPayload.detail[idx],
+        //     berat_wet: parseInt(e.target.value)
+        // }
+        setWeighingPayload(prevState => ({
+            ...prevState,
+            detail: prevState?.detail?.map((res => {
+                return {
+                    ...res,
+                    berat_wet: parseInt(e.target.value)
+                }
+            }))
+        }))
     }
 
     const onSelectPhoto = (e) => {
