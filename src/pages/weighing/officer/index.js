@@ -1,43 +1,56 @@
-import axios from "axios";
-import moment from "moment";
-import React from "react";
-import { useParams } from "react-router-dom";
-import DropDown from "../../../components/forms/Dropdown";
-import Title from "../../../components/title/Title";
-import Header from "../../../components/ui/Header";
-import Fallback from "../../../assets/images/fallback-ava.png"
-import FlatButton from "../../../components/button/flat";
-import Cookies from "universal-cookie";
+import React from 'react';
+import axios from 'axios';
+import moment from 'moment';
+import { useNavigate, useParams, createSearchParams } from 'react-router-dom';
+import Button from '../../../components/button/Button';
+import Subtitle from '../../../components/title/Subtitle';
+import Title from '../../../components/title/Title';
+import Header from '../../../components/ui/Header';
+import Table from '../../../components/ui/Table';
+import Cookies from 'universal-cookie';
+import Toast from '../../../components/ui/Toast';
+import warning from '../../../assets/icons/warning.svg'
+import FlatButton from '../../../components/button/flat';
+import DropDown from '../../../components/forms/Dropdown';
+// import FlatButton from '../../../../components/button/flat';
+
 
 const url = process.env.REACT_APP_API_URL;
 
-const DetailTapper = () =>{
-    const { id } = useParams();
+function WorkerList (props) {
+    return (
+        <div className='flex justify-between items-center mt-3 pt-3'>
+            <p className='w-8 text-xxs mx-4'>{props.scheme}</p>
+            <div className='w-40'>
+                <p className='font-bold text-sm truncate'>{props.name}</p>
+                <p className='text-xxs'>{props.code}</p>
+            </div>
+            <p className='w-20 text-sm text-flora font-bold'>{props.status}</p>
+            <div onClick={props.onClick} className="cursor-pointer">
+                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002" stroke="#A7A29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <hr />
+        </div>
+    )
+}
+
+function Officer() {
+    const {id} = useParams()
     const cookies = new Cookies();
     const token = cookies.get('token');
-    const [tapperDetail, setTapperDetail] = React.useState({})
-    const [openedId, setOpenedId] = React.useState({})
+    const navigate = useNavigate();
     const [absenceHistory, setAbsenceHistory] = React.useState([])
-
+    const [detailData, setDetailData] = React.useState({})
+    const [workerList, setWorkerList] = React.useState([])
+    const [isSubmitted, setIsSubmitted] = React.useState(false)
+    const [openedId, setOpenedId] = React.useState({})
+    const [alertMessage, setAlertMessage] = React.useState("")
     React.useEffect(() => {
-        getDetail();
         getAbsenceHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
-
-    const getDetail = async() => {
-        await axios.get(`${url}absensi/scan-by-tapper-uuid/${id}`,
-        {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json'
-            }
-        }).then((res) => {
-            const data = res.data.data
-            setTapperDetail(data)
-        })
-    }
 
     const getAbsenceHistory = async(sort) => {
         await axios.get(`${url}absensi/riwayat-by-tapper/${id}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`,
@@ -53,6 +66,8 @@ const DetailTapper = () =>{
         })
     }
 
+
+
     const onExpand = (idx) => {
         setOpenedId({
             ...openedId,
@@ -66,73 +81,54 @@ const DetailTapper = () =>{
             [`item_${idx}`] : false
         })        
     }
-
-    const avaImage = () => {
-        if (tapperDetail?.foto && tapperDetail?.foto !== null){
-            return tapperDetail?.foto
-        }
-        return Fallback
-    }
-
+    
     const onSort = (e) => {
         const sort = e.target.value
-        getAbsenceHistory(sort);
     }
 
     return (
         <>
             <div className="header">
-                <Header title="Detail Tapper" isWithBack />
+                <Header title="Penimbangan TPH" isWithBack />
             </div>
             <div className="container">
-                <div className="bio flex">
-                    <div className="flex-auto w-2/5 mr-5 shadow">
-                        <div className="rounded-lg bg-white p-1">
-                            <img src={avaImage()}
-                                className="rounded-lg"
-                                alt="ava-tapper" 
-                            />
-                        </div>
-                    </div>
-                    <div className="flex-auto w-3/5 ...">
-                        <h2 className="font-bold text-sm">{tapperDetail?.nama}</h2>
-                        <p className="text-xs">{tapperDetail?.tipe}</p>
-                        <div className="w-4/5">
-                            <div className="mt-5 flex justify-between justify-items-start">
-                                <p>NIK</p>
-                                <p className="font-bold">{tapperDetail?.kode}</p>
-                            </div>
-                            <div className="mt-1 flex justify-between justify-items-start">
-                                <p>Status</p>
-                                <p className="font-bold">{tapperDetail?.skema_kerja}</p>
-                            </div>
-                            <div className="mt-1 flex justify-between justify-items-start">
-                                <p>Tahun Masuk</p>
-                                <p className="font-bold">{tapperDetail?.tahun_masuk}</p>
-                            </div>
-                        </div>
-                    </div>
+                <p className='text-xs'>Mulai Penimbangan Baru</p>
+                <Button
+                        role="white"
+                        className="w-full"
+                        isIcon 
+                        icon={
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                        }
+                        onClick={()=> navigate('/assignment/mabes/new-assignment')}
+                    />
+                <div className='mt-6'>
+                    <Title text="Penimbangan yang berlangsung"/>
+                    <span>-</span>
                 </div>
-                <div className="performance mt-5">
-                    <div className="flex justify-between items-center">
-                        <Title text={'Performa'} className="text-sm" />
-                        <DropDown option={[{label: '30 Hari Terakhir'},{label: '7 Hari Terakhir'}]} />
+                <Table  
+                    divisi_item={detailData?.divisi?.kode}
+                    hancak_item={detailData?.hancak?.kode}
+                    block_item={detailData?.field?.nama}
+                    clone_item={detailData?.clone?.nama}
+                    sistem_item={detailData?.sistem?.nama}
+                    borderColor='border border-cloud'
+                    backgroundColor='bg-bgrey'
+                    cellBorder='border border-cloud'
+                    // tbListFooter={tbListFooter}
+                />
+                <div className='flex justify-between items-center mt-3'>
+                    <div>
+                        <p className='text-xs'>{detailData?.mandor?.level}</p>
+                        <p className='text-sm font-bold'>{detailData?.mandor?.nama}</p>
                     </div>
-                    <div className="flex justify-between mt-3 gap-3">
-                        <div className="p-3 rounded-xl border border-cloud w-full">
-                            <p className="text-xxs">Total Kerja</p>
-                            <p className="text-4xl font-bold">{tapperDetail?.stat_absensi?.masuk}</p>
-                        </div>
-                        <div className="p-3 rounded-xl border border-cloud w-full">
-                            <p className="text-xxs">Total Izin</p>
-                            <p className="text-4xl font-bold">{tapperDetail?.stat_absensi?.izin}</p>
-                        </div>
-                        <div className="p-3 rounded-xl border border-cloud w-full">
-                            <p className="text-xxs">Total Mangkir</p>
-                            <p className="text-4xl font-bold">{tapperDetail?.stat_absensi?.mangkir}</p>
-                        </div>
+                    <div>
+                        <p className='text-xs'>{moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('D MMMM, YYYY')}</p>
+                        <p className='text-xs'>{moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} - selesai</p>
                     </div>
-                </div>
+                </div>   
                 <div className="history mt-5">
                     <div className="flex justify-between items-center mb-4">
                         <Title text={'Riwayat Absensi'} className="text-sm" />
@@ -190,34 +186,10 @@ const DetailTapper = () =>{
                         }
                     </div>
                 </div>
+                <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted}/> 
             </div>
-                <div className="button-area p-3" 
-                    // style={{
-                    //     background: 'linear-gradient(180deg, rgba(242, 245, 247, 0) 0%, #F2F5F7 31.25%)',
-                    //     display: 'flex',
-                    //     flexDirection: 'row',
-                    //     justifyContent: 'center',
-                    //     alignItems: 'flex-end',
-                    //     padding: '12px 20px',
-                    //     gap: '12px',
-                    //     position: 'fixed',
-                    //     width: '480px',
-                    //     bottom: '0'
-                    //     }
-                    // }
-                >
-                    <FlatButton 
-                        className='w-full rounded-xl' 
-                        role='white' text='Kembali ke atas' 
-                        onClick={() => window.scrollTo({
-                            top: 0,
-                            behavior: "smooth"
-                            })
-                        }
-                    />
-                </div>
         </>
     )
 }
 
-export default DetailTapper;
+export default Officer;

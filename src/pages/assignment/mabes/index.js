@@ -64,7 +64,6 @@ function Mabes() {
 
 
     const getList = (sort) => {
-        console.log(sort,'sort')
         if (!selectedTask && !selectedEstate && !selectedDate) {
             setIsNoFilter(true)
         } else if (selectedTask || selectedDate || selectedEstate) {
@@ -77,7 +76,6 @@ function Mabes() {
             })
             .then((res) => {
                const data = res.data.data.data
-               console.log(data)
                setListData(data)
                setIsEmpty(false)
                setIsNoFilter(false)
