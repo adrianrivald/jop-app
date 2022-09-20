@@ -164,9 +164,8 @@ function DetailWeighing() {
     
     const [selectedRaw, setSelectedRaw] = React.useState('P1')
     const onChangeRaw = (e) => {
-        const value = e.target.value
         setSelectedRaw(e.target.value)
-        setRawWeight(weighingDetail?.detail?.find((res) => res.kode === selectedRaw).berat_total)
+        setRawWeight(weighingDetail?.detail?.find((res) => res.kode === e.target.value).berat_total)
     }
 
     const onClickDetail = (tapper_id, transaction_id, detail, transaction) => {
