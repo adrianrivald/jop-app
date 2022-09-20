@@ -114,6 +114,11 @@ function DetailWeighing() {
     
     React.useEffect(() => {
         getWeighingDetail();
+
+        localStorage.removeItem('transaction_id')
+        localStorage.removeItem('scanned_tapper')
+        localStorage.removeItem('weighing_data')
+        localStorage.removeItem('weighing_transaction')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
     
