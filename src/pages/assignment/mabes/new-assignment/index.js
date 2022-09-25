@@ -358,7 +358,6 @@ function MabesAssignment() {
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} disabled={isButtonDisabled}/>
                     </div>
                     <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
-                    <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                 </div>
             </div>
         </>
