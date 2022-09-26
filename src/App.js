@@ -9,12 +9,9 @@ import { Provider} from "react-redux";
 import store from "./store"
 import HomePage from './pages/homepage';
 import SignIn from './pages/auth/login';
-import Sample from './pages/sample/Sample';
 import Storybook from './pages/storybook';
-import Mandor from './pages/assignment/mandor';
 import MandorAcceptAssignment from './pages/assignment/mandor/accept';
 import MandorDiversionAssignment from './pages/assignment/mandor/diversion';
-import Mabes from './pages/assignment/mabes';
 import MabesAssignment from './pages/assignment/mabes/new-assignment';
 import MabesDetail from './pages/assignment/mabes/detail';
 import MabesDetailAction from './pages/assignment/mabes/detail/action';
@@ -26,14 +23,13 @@ import AbsenceList from './pages/absence/list';
 import AbsenceIn from './pages/absence/scan/in';
 import AbsenceOut from './pages/absence/scan/out';
 import TapperPlanning from './pages/assignment/mandor/tapper';
-import Balanced from './pages/balanced/index';
 import AddBalanced from './pages/balanced/add';
-import MandorWeighing from './pages/weighing/mandor';
 import DetailWeighing from './pages/weighing/mandor/detail';
 import WeighingTapper from './pages/weighing/mandor/tapper';
 import WeighingScan from './pages/weighing/mandor/detail/scan';
 import Assignment from './pages/assignment';
 import Weighing from './pages/weighing';
+import Logistic from './pages/logistic';
 
 function App() {
   const cookies = new Cookies();
@@ -57,11 +53,9 @@ function App() {
           <Route path="/" exact element={<Navigate to="/auth/login" replace />} />  {/* later add condition for auth */}
           <Route path="/auth/login" exact element={<SignIn/>} />
           <Route path="/homepage" exact element={<HomePage/>} />
-          <Route path="/sample" exact element={<Sample/>} />
           
           {/* penugasan */}
           <Route path="/assignment" element={<Assignment />} />
-          {/* <Route path="/assignment" element={role === "mandor" ? <Mandor /> : <Mabes/>} /> */}
           <Route path="/assignment/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
           <Route path="/assignment/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
           <Route path="/assignment/tapper/:id" exact element={<TapperPlanning />} />
@@ -80,11 +74,13 @@ function App() {
           
           {/* penimbangan */}
           <Route path="/weighing" exact element={<Weighing />} />
-          {/* <Route path="/weighing" exact element={role === "mandor" ?  <MandorWeighing /> : <Balanced />} /> */}
           <Route path="/weighing/add" exact element={<AddBalanced />} />
           <Route path="/weighing/detail/:id" exact element={<DetailWeighing />} />
           <Route path="/weighing/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
           <Route path="/weighing/detail/:id/scan" exact element={<WeighingScan />} />
+
+          {/* pengiriman */}
+          <Route path="/logistic" exact element={<Logistic />} />
               
           <Route path="/storybook" exact element={<Storybook/>} />
           <Route path="*" exact element={<div className='flex justify-center p-10'>Route not found</div>} />
