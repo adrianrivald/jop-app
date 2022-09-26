@@ -32,6 +32,8 @@ import MandorWeighing from './pages/weighing/mandor';
 import DetailWeighing from './pages/weighing/mandor/detail';
 import WeighingTapper from './pages/weighing/mandor/tapper';
 import WeighingScan from './pages/weighing/mandor/detail/scan';
+import Assignment from './pages/assignment';
+import Weighing from './pages/weighing';
 
 function App() {
   const cookies = new Cookies();
@@ -58,7 +60,8 @@ function App() {
           <Route path="/sample" exact element={<Sample/>} />
           
           {/* penugasan */}
-          <Route path="/assignment" element={role === "mandor" ? <Mandor /> : <Mabes/>} />
+          <Route path="/assignment" element={<Assignment />} />
+          {/* <Route path="/assignment" element={role === "mandor" ? <Mandor /> : <Mabes/>} /> */}
           <Route path="/assignment/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
           <Route path="/assignment/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
           <Route path="/assignment/tapper/:id" exact element={<TapperPlanning />} />
@@ -76,7 +79,8 @@ function App() {
           <Route path="/absence/tapper/:id" exact element={<DetailTapper />} />
           
           {/* penimbangan */}
-          <Route path="/weighing" exact element={role === "mandor" ?  <MandorWeighing /> : <Balanced />} />
+          <Route path="/weighing" exact element={<Weighing />} />
+          {/* <Route path="/weighing" exact element={role === "mandor" ?  <MandorWeighing /> : <Balanced />} /> */}
           <Route path="/weighing/add" exact element={<AddBalanced />} />
           <Route path="/weighing/detail/:id" exact element={<DetailWeighing />} />
           <Route path="/weighing/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />

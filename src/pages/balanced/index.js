@@ -252,7 +252,16 @@ const Balanced = () => {
                             )
                         }
                     </div>
-                <FlatButton role="white" className="mt-10 mb-3 w-full" text="Kembali ke atas" />
+                    <FlatButton 
+                        role="white"   
+                        className="mt-10 mb-3 w-full" 
+                        text="Kembali ke atas"  
+                        onClick={() => window.scrollTo({
+                            top: 0,
+                            behavior: "smooth"
+                            })
+                        } 
+                    />
             </section>
             <Toast text={toastText} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
         </div>
