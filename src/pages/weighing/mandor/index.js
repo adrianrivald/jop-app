@@ -189,7 +189,7 @@ function MandorWeighing() {
 
     const handleSubmit = () => {
         if (weighing.length > 0) {
-            navigate(`/weighing/mandor/detail/${weighing}`);
+            navigate(`/weighing/detail/${weighing}`);
             localStorage.setItem('weighing_id', weighing)
         }
     }

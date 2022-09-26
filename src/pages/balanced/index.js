@@ -6,15 +6,18 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 import moment from 'moment';
 import Toast from '../../components/ui/Toast';
+import DropDown from '../../components/forms/Dropdown';
 
 const url = process.env.REACT_APP_API_URL;
 
 const Balanced = () => {
     const [showDetail, setShowDetail] = useState(false);
+    const user = JSON.parse(localStorage.getItem('userData'))
     const navigate = useNavigate();
     const cookies = new Cookies();
     const token = cookies.get('token');
     const [weighingList, setWeighingList] = React.useState([])
+    const [weighingHistory, setWeighingHistory] = React.useState([])
     const [isSubmitted, setIsSubmitted] = React.useState(false)
     const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
     const [toastText, setToastText] = React.useState("")
@@ -22,10 +25,11 @@ const Balanced = () => {
 
     React.useEffect(() => {
         getWeighing();
+        getWeighingHistory();
     },[])
 
 
-    const getWeighing = (tph) => {
+    const getWeighing = () => {
         axios.get(`${url}penimbangan/list?include=tph,divisi,petugas_penimbang`, {
             url: process.env.REACT_APP_API_URL,
             headers: {
@@ -35,6 +39,20 @@ const Balanced = () => {
         }).then((res) => {
             const data = res.data.data.data
             setWeighingList(data)
+        })
+    }
+
+
+    const getWeighingHistory = (sort) => {
+        axios.get(`${url}penimbangan/riwayat/by-penimbang?include=tph,divisi,petugas_penimbang&sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_penimbangan&filter[penimbang]=${user?.id}`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            const data = res.data.data.data
+            setWeighingHistory(data)
         })
     }
 
@@ -102,6 +120,11 @@ const Balanced = () => {
         })        
     }
 
+    const onSort = (e) => {
+        console.log(e.target.value)
+        getWeighingHistory(e.target.value)
+    }
+
     return(
         <div className="App">
             <Header title="Penimbangan TPH" isWithBack />
@@ -141,7 +164,7 @@ const Balanced = () => {
                 <div className="border-b border-flora"/>
                 <div className="flex justify-between my-5">
                     <h1 className="font-black">Riwayat</h1>
-                    <button className="flex items-center text-xs font-bold px-4 py-2 drop-shadow-md bg-white rounded-xl">Latest &nbsp; &nbsp; {chevronDown}</button>
+                    <DropDown onChange={onSort} option={[{label: 'Terbaru', value:'asc'},{label: 'Terlama', value:'desc'}]} />
                 </div>
                 {/* <div className="flex flex-col justify-center items-center">
                     <div className="w-full flex justify-between items-center py-3 border-b border-flora cursor-pointer" onClick={() => { setShowDetail(!showDetail) }}>
@@ -176,7 +199,7 @@ const Balanced = () => {
                 </div> */}
                 <div className={`accordion divide-y divide-cloud`}>
                         {
-                            weighingList?.length > 0 ? weighingList?.map((res, idx) => {
+                            weighingHistory?.length > 0 ? weighingHistory?.map((res, idx) => {
                                 return (
                                     openedId[`item_${idx}`] === true ? (
                                         <div className="bg-white divide-y divide-cloud">

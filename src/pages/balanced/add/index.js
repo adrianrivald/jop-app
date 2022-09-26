@@ -12,7 +12,7 @@ const url = process.env.REACT_APP_API_URL;
 function Dropdown (props) {
     return (
         <div className={`mt-5 ${props.customClass} w-full`}>
-            <h2 className='text-left mb-1 font-bold'>{props.title}</h2>
+            <h2 className='text-left mb-1'>{props.title}</h2>
             <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
         </div>
     )
@@ -234,7 +234,7 @@ const AddBalanced = () => {
                 <div className="my-4 flex justify-between w-full">
                     <div className="flex-1 flex flex-col mr-4">
                         <div className='mt-5'>
-                            <h2 className='text-left mb-1 font-bold'>Curah hujan</h2>
+                            <h2 className='text-left mb-1'>Curah hujan</h2>
                             <div className='w-full relative'>
                                 <span className='absolute inset-y-2 right-1'>mm</span>
                                 <input className="p-2 rounded-lg shadow flex justify-start w-full font-bold"  type="number" onChange={(e) => onChangeHandler(e, "curah_hujan")} />

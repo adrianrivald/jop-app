@@ -51,16 +51,16 @@ const Mandor = () => {
             }
         }).then((response) => {
             const data = response.data.data
-            return navigate(`/assignment/mandor/detail/${data.id}/accept`)
+            return navigate(`/assignment/detail/${data.id}/accept`)
         })
     }
 
     const handleDetailAssignment = (id) => {
-        return navigate(`/assignment/mandor/detail/${id}/accept`)
+        return navigate(`/assignment/detail/${id}/accept`)
     }
 
     const handleDiversionAssignment = (id) => {
-        return navigate(`/assignment/mandor/detail/${id}/diversion`)
+        return navigate(`/assignment/detail/${id}/diversion`)
     }
 
     return(

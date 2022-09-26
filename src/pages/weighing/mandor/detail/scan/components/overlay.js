@@ -42,7 +42,7 @@ const Overlay = () => {
 
     React.useEffect(() => {
         if (tapperDetail?.id) {
-            navigate(`/weighing/mandor/detail/${id}/tapper/${tapperDetail?.id}`)
+            navigate(`/weighing/detail/${id}/tapper/${tapperDetail?.id}`)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tapperDetail?.id])

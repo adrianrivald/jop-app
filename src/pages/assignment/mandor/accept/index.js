@@ -39,7 +39,7 @@ const MandorAcceptAssignment = () => {
     }, [id])
 
     const handleEnterTapper = () => {
-        navigate(`/assignment/mandor/tapper/${id}`)
+        navigate(`/assignment/tapper/${id}`)
     }
 
     return(

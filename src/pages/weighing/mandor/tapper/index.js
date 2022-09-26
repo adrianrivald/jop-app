@@ -18,13 +18,12 @@ const WeighingTapper = () =>{
     const cookies = new Cookies();
     const token = cookies.get('token');
     const [transactionData, setTransactionData] = React.useState({})
+    const [photos, setPhotos] = React.useState([])
     const scanned_tapper = localStorage.getItem('scanned_tapper')
     const weighing_id = localStorage.getItem('weighing_id')
     const [tapperDetail, setTapperDetail] = React.useState({})
     const [weighingPayload, setWeighingPayload] = React.useState({})
     const stored_data = JSON.parse(localStorage.getItem('selected_material'));
-    const [photos, setPhotos] = React.useState([]);
-    const [selectedImage, setSelectedImage] = React.useState(null);
     const [isSubmitted, setIsSubmitted] = React.useState(false)
     const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
     const transaction_id = localStorage.getItem('transaction_id')
@@ -32,33 +31,6 @@ const WeighingTapper = () =>{
     
     React.useEffect(() => {
         getData();
-        if (weighing_transaction && weighing_transaction !== undefined) {
-            setWeighingPayload({
-                ...weighingPayload,
-                tapper_id: scanned_tapper,
-                tph_penimbangan_id: weighing_id,
-                detail: weighing_transaction?.detail?.map(res => {
-                    return {
-                        jenis_bahan_baku_id: res?.id,
-                        berat_wet: res?.berat_wet
-                    }
-                }),
-                foto: []
-            })
-        } else {
-            setWeighingPayload({
-                ...weighingPayload,
-                tapper_id: scanned_tapper,
-                tph_penimbangan_id: weighing_id,
-                detail: stored_data.map(res => {
-                    return {
-                        jenis_bahan_baku_id: res?.id_bahan_baku
-                    }
-                }),
-                foto: []
-            })
-            
-        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
@@ -75,6 +47,18 @@ const WeighingTapper = () =>{
                 const data = res.data.data
                 setTransactionData(data)
                 setTapperDetail(data.tapper)
+                setWeighingPayload({
+                    ...weighingPayload,
+                    tapper_id: scanned_tapper,
+                    tph_penimbangan_id: weighing_id,
+                    detail: weighing_transaction?.detail?.map(res => {
+                        return {
+                            jenis_bahan_baku_id: res?.id,
+                            berat_wet: res?.berat_wet
+                        }
+                    }),
+                    foto: []
+                })
             })
         } else {
             await axios.get(`${url}absensi/scan-by-tapper-uuid/${scanned_tapper}`,
@@ -86,12 +70,28 @@ const WeighingTapper = () =>{
                 }
             }).then((res) => {
                 const data = res.data.data
-                console.log(data)
                 setTapperDetail(data)
                 setTransactionData(data)
+
+                setWeighingPayload({
+                    ...weighingPayload,
+                    tapper_id: scanned_tapper,
+                    tph_penimbangan_id: weighing_id,
+                    detail: stored_data.map(res => {
+                        return {
+                            jenis_bahan_baku_id: res?.id_bahan_baku
+                        }
+                    }),
+                    foto: []
+                })
             })
         }
     }
+
+    React.useEffect(() => {
+        console.log(weighingPayload)
+    },[weighingPayload])
+
 
     const avaImage = () => {
         if (tapperDetail?.foto && tapperDetail.foto !== null){
@@ -105,53 +105,41 @@ const WeighingTapper = () =>{
             ...weighingPayload.detail[idx],
             berat_wet: parseInt(e.target.value)
         }
-    
-        console.log(weighingPayload,'weighingpayloadd')
-
-        // setWeighingPayload(prevState => ({
-        //     ...prevState,
-        //     detail: prevState?.detail?.map((res => {
-        //         return {
-        //             ...res,
-        //             berat_wet: parseInt(e.target.value)
-        //         }
-        //     }))
-        // }))
-    }
-
-    function getBase64File(img) {
-        const reader = new FileReader();
-        reader.readAsDataURL(img);
-        return reader
     }
     const onSelectPhoto = (e) => {
-        setPhotos([
-            ...photos,
-            {
-                blob: e.target.files,
-                file: URL.createObjectURL(e.target.files)
-            }
-        ])
-        console.log(URL.createObjectURL(e.target.files), 'urll')
-        setWeighingPayload({
-            ...weighingPayload,
-            foto: photos.map(res => res.file)
-        })
-        weighingPayload.foto = photos.map(res => res.file)
-        setSelectedImage(e.target.files);
+        let formData = new FormData();
+        formData.append('file', e.target.files[0])
+        formData.append('path', 'public/transaksi/timbang')
+        void uploadPhoto(formData);
     }
 
-    const uploadImage = async file => {
-        const formData = new FormData();
-        formData.append('file', file);
-        const captured = [
-            ...photos,
-            {
-                file
+    const uploadPhoto = async(formData) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                // 'Content-Type': 'image/jpeg',
+                Accept: 'application/json'
             }
-        ]
-    };
-
+        }
+        await axios.post(`${url}upload-foto
+        `, formData, config).then((res) => {
+            console.log('uplot')
+                const data = res?.data?.data
+                setPhotos([
+                    ...photos,
+                    data?.path
+                ])
+                setWeighingPayload({
+                    ...weighingPayload,
+                    foto: [
+                        ...photos,
+                        data?.path
+                    ]
+                })
+            }
+        )
+    }
+    
     const handleSubmit = async() => {
         const config = {
             headers: {
@@ -166,7 +154,7 @@ const WeighingTapper = () =>{
             setTimeout(() => {
                 setIsButtonDisabled(false)
                 setIsSubmitted(false)
-                navigate(`/weighing/mandor/detail/${id}`)
+                navigate(`/weighing/detail/${id}`)
             }, 3000);
         })
     }
@@ -233,16 +221,22 @@ const WeighingTapper = () =>{
                         stored_data?.map((res, idx) => {
                             return (
                                 <div className="my-3 flex justify-between items-center">
-                                    <p>{res.code} - {res.name}</p>
-                                    <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)}/>
+                                    <p>{res.code} - {res.name}</p>     
+                                    <div className='relative'>
+                                        <span className='absolute inset-y-3 right-2'>kg</span>
+                                        <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)}/>
+                                    </div>
                                 </div>
                             )
                         }) 
                         : transactionData?.detail?.map((res, idx) => {
                             return (
                                 <div className="my-3 flex justify-between items-center">
-                                    <p>{res.kode} - {res.nama}</p>
-                                    <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.kode, idx)} defaultValue={res?.berat_wet}/>
+                                    <p>{res.kode} - {res.nama}</p>        
+                                    <div className='relative'>
+                                        <span className='absolute inset-y-2 right-1'>kg</span>
+                                        <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.kode, idx)} defaultValue={res?.berat_wet}/>
+                                    </div>
                                 </div>
                             )
                         })
@@ -252,9 +246,11 @@ const WeighingTapper = () =>{
                         <p>
                             <span className="font-bold">
                                 {
+                                    weighingPayload?.detail?.find(res => res?.berat_wet !== undefined) ? 
                                     weighingPayload?.detail?.reduce((accumulator, object) => {
                                         return accumulator + object.berat_wet;
-                                      }, 0)
+                                    }, 0) 
+                                    : 0
                                 }
                             </span> kg
                         </p>
@@ -263,14 +259,40 @@ const WeighingTapper = () =>{
             </div>
             <div className="button-area p-3" >
                 <div className="photos-container overflow-x-auto flex gap-3">
-                {
-                    photos?.map((res, idx) => {
-                        return (
-                                <img width="200" alt={`photo_${idx+1}`} src={!weighing_transaction ? URL.createObjectURL(res?.blob) : photos[idx].file} className="rounded-xl" />
+                        {/* {
+                            photos?.map((res, idx) => {
+                                return (
+                                    <img width="200" alt={`photo_${idx+1}`} src={!weighing_transaction ? URL.createObjectURL(res?.blob) : photos[idx].file} className="rounded-xl" />
                                 )
                             })
-                        }
-                        </div>
+                        } */}
+                    {
+                        transactionData?.foto?.map((res, idx) => {
+                            console.log(res,'ress')
+                            return(
+                                <img 
+                                    width="200" 
+                                    alt={`photo_${idx+1}`} 
+                                    src={res}
+                                    className="rounded-xl" />
+                            )
+                        })
+                    }
+                    {
+                        photos?.map((res, idx) => {
+                            console.log(res,'ress')
+                            return(
+                                <img 
+                                    width="200" 
+                                    alt={`photo_${idx+1}`} 
+                                    // src={`${'https://jop.dudyali.com/storage/'}${res}`} 
+                                    src={res.includes("/storage") ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
+                                    // src={res}
+                                    className="rounded-xl" />
+                            )
+                        })
+                    }
+                </div>
                 {/* <input type="file" multiple onChange={onSelectPhoto} /> */}
             </div>
             <div className="p-3 mt-1">
@@ -280,7 +302,7 @@ const WeighingTapper = () =>{
                     </svg>
                     Tambah Foto
                 </label>
-                <input id="file-upload" multiple type="file" onChange={onSelectPhoto} style={{display: 'none'}} />
+                <input id="file-upload" type="file" onChange={onSelectPhoto} style={{display: 'none'}} />
             </div>
             
             <div className="button-area p-3 mt-5" >
@@ -288,6 +310,7 @@ const WeighingTapper = () =>{
                     className='w-full rounded-xl' 
                     role='green' text='Selesai' 
                     onClick={handleSubmit}
+                    disabled={isButtonDisabled}
                 />
             </div>
             <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />

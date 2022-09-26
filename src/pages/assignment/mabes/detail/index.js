@@ -78,7 +78,7 @@ function MabesDetail() {
                 setAlertMessage('Sukses izinkan tugas')
                 setTimeout(() => {
                     setIsSubmitted(false)
-                    navigate('/assignment/mabes/list')
+                    navigate('/assignment')
                 }, 3000);
             })
         }
@@ -104,7 +104,7 @@ function MabesDetail() {
 
     const onEdit = () => {
         if (detailData?.status_tugas === "menunggu-persetujuan" || detailData?.status_tugas === "dialihkan") {
-            navigate(`/assignment/mabes/detail/${id}/edit`)
+            navigate(`/assignment/detail/${id}/edit`)
         }
     }
 
@@ -114,7 +114,7 @@ function MabesDetail() {
 
     const onSwitch = () => {
         navigate({
-            pathname: `/assignment/mabes/detail/${id}/edit`,
+            pathname: `/assignment/detail/${id}/edit`,
             search: createSearchParams({
                 isSwitch: "true"
             }).toString()
