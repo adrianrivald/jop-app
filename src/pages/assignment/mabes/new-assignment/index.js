@@ -281,7 +281,7 @@ function MabesAssignment() {
             setTimeout(() => {
                 setIsButtonDisabled(false)
                 setIsSubmitted(false)
-                navigate('/assignment/mabes/list')
+                navigate('/assignment')
             }, 3000);
         })
     }
@@ -357,7 +357,6 @@ function MabesAssignment() {
                         <FlatButton className='w-6/12 rounded-xl' role='white' text='Kembali' onClick={() =>  navigate(-1)} disabled={isButtonDisabled} />
                         <FlatButton className='w-6/12 rounded-xl' role='green' text='Buat' onClick={handleSubmit} disabled={isButtonDisabled}/>
                     </div>
-                    <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                     <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                 </div>
             </div>

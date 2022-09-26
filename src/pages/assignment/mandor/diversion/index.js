@@ -55,7 +55,7 @@ const MandorDiversionAssignment = () => {
             }
         }).then((response) => {
             if(response.data.code === 200) {
-                return navigate(`/assignment/mandor/list`)
+                return navigate(`/assignment`)
             }
         })
     }

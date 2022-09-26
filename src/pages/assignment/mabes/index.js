@@ -152,7 +152,7 @@ function Mabes() {
     }
 
     const onListClick = (id) => {
-        navigate(`/assignment/mabes/detail/${id}`)
+        navigate(`/assignment/detail/${id}`)
     }
 
     // const onClickFilter = () => {
@@ -181,7 +181,7 @@ function Mabes() {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         }
-                        onClick={()=> navigate('/assignment/mabes/new-assignment')}
+                        onClick={()=> navigate('/assignment/add')}
                     />
                 </div>
                 <div>

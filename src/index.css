@@ -49,6 +49,14 @@ body {
   padding: 16px 20px;
 }
 
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
 @media only screen and (max-width: 360px) {
   body {
     width: 100%;

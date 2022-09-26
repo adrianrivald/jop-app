@@ -28,15 +28,17 @@ import AbsenceOut from './pages/absence/scan/out';
 import TapperPlanning from './pages/assignment/mandor/tapper';
 import Balanced from './pages/balanced/index';
 import AddBalanced from './pages/balanced/add';
-import Officer from './pages/weighing/officer';
 import MandorWeighing from './pages/weighing/mandor';
 import DetailWeighing from './pages/weighing/mandor/detail';
 import WeighingTapper from './pages/weighing/mandor/tapper';
 import WeighingScan from './pages/weighing/mandor/detail/scan';
+import Assignment from './pages/assignment';
+import Weighing from './pages/weighing';
 
 function App() {
   const cookies = new Cookies();
   const path = window.location.pathname;
+  const role = JSON.parse(localStorage.getItem('userData'))?.level
 
   React.useEffect(() => {
     if (!cookies.get('token') && path !== '/auth/login') {
@@ -56,32 +58,36 @@ function App() {
           <Route path="/auth/login" exact element={<SignIn/>} />
           <Route path="/homepage" exact element={<HomePage/>} />
           <Route path="/sample" exact element={<Sample/>} />
-          {/* mandor */}
-          <Route path="/assignment/mandor/list" exact element={<Mandor />} />
-          <Route path="/assignment/mandor/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
-          <Route path="/assignment/mandor/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
-          <Route path="/assignment/mandor/tapper/:id" exact element={<TapperPlanning />} />
-          {/* mabes */}
-          <Route path="/assignment/mabes/list" exact element={<Mabes/>} />
-          <Route path="/assignment/mabes/new-assignment" exact element={<MabesAssignment/>} />
-          <Route path="/assignment/mabes/detail/:id" exact element={<MabesDetail/>} />
-          <Route path="/assignment/mabes/detail/:id/edit" exact element={<MabesEdit/>} />
-          <Route path="/assignment/mabes/detail/action" exact element={<MabesDetailAction/>} />
+          
+          {/* penugasan */}
+          <Route path="/assignment" element={<Assignment />} />
+          {/* <Route path="/assignment" element={role === "mandor" ? <Mandor /> : <Mabes/>} /> */}
+          <Route path="/assignment/detail/:id/accept" exact element={<MandorAcceptAssignment />} />
+          <Route path="/assignment/detail/:id/diversion" exact element={<MandorDiversionAssignment />} />
+          <Route path="/assignment/tapper/:id" exact element={<TapperPlanning />} />
+
+          <Route path="/assignment/add" exact element={<MabesAssignment/>} />
+          <Route path="/assignment/detail/:id" exact element={<MabesDetail/>} />
+          <Route path="/assignment/detail/:id/edit" exact element={<MabesEdit/>} />
+          <Route path="/assignment/detail/action" exact element={<MabesDetailAction/>} />
+             
           {/* absensi */}
           <Route path="/absence" exact element={<Absence />} />
           <Route path="/absence/:id_tugas" exact element={<AbsenceList />} />
           <Route path="/absence/:id_tugas/in" exact element={<AbsenceIn />} />
           <Route path="/absence/:id_tugas/out" exact element={<AbsenceOut />} />
           <Route path="/absence/tapper/:id" exact element={<DetailTapper />} />
+          
           {/* penimbangan */}
-          <Route path="/weighing/officer/list" exact element={<Officer />} />
-          <Route path="/weighing/mandor/list" exact element={<MandorWeighing />} />
-          <Route path="/weighing/mandor/detail/:id" exact element={<DetailWeighing />} />
-          <Route path="/weighing/mandor/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
-          <Route path="/weighing/mandor/detail/:id/scan" exact element={<WeighingScan />} />
-          <Route path="/balanced" exact element={<Balanced />} />
-          <Route path="/balanced/add" exact element={<AddBalanced />} />
+          <Route path="/weighing" exact element={<Weighing />} />
+          {/* <Route path="/weighing" exact element={role === "mandor" ?  <MandorWeighing /> : <Balanced />} /> */}
+          <Route path="/weighing/add" exact element={<AddBalanced />} />
+          <Route path="/weighing/detail/:id" exact element={<DetailWeighing />} />
+          <Route path="/weighing/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
+          <Route path="/weighing/detail/:id/scan" exact element={<WeighingScan />} />
+              
           <Route path="/storybook" exact element={<Storybook/>} />
+          <Route path="*" exact element={<div className='flex justify-center p-10'>Route not found</div>} />
         </Routes>
       </Router>
     </Provider>

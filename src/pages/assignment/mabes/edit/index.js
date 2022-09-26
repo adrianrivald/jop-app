@@ -115,7 +115,6 @@ function MabesEdit() {
             if (data?.is_recurring === 1 ){
                 setIsRecurring(true)
             } 
-            console.log(addInput.mandor_id, 'manodorid')
         })
     }
     
@@ -319,7 +318,7 @@ function MabesEdit() {
                 setTimeout(() => {
                     setIsButtonDisabled(false)
                     setIsSubmitted(false)
-                    navigate(`/assignment/mabes/detail/${id}`)
+                    navigate(`/assignment/detail/${id}`)
                 }, 3000);
             })
         } else {
