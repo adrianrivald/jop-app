@@ -91,6 +91,7 @@ function Logistic () {
         if (dateFrom && dateTo) {
             getBatchReadyToDeliver();
             getBatchOnDelivery();
+            getBatchDelivered();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dateFrom,dateTo,selectedTph])
@@ -135,6 +136,10 @@ function Logistic () {
         })
     }
 
+    const onClickBatch = (id) => {
+        navigate(`detail/${id}`)
+    }
+
     return (
         <>
             <div className="header">
@@ -176,10 +181,10 @@ function Logistic () {
                         batchReadyToDeliver?.length > 0 ? batchReadyToDeliver?.map((res, idx) => {
                             return (
                                 <div className="flex justify-between items-center mt-3">
-                                    <div className="w-2/4">
+                                    <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
                                         <div className="flex items-center">
                                             <span>{res?.kode.split("-")[0]}</span>
-                                            <input className="ml-2 rounded-lg p-2 text-xs  focus:outline-none focus:shadow-outline" type="text" readOnly value={res?.batch}/>
+                                            <input className="cursor-pointer ml-2 rounded-lg p-2 text-xs  focus:outline-none focus:shadow-outline" type="text" readOnly value={res?.batch}/>
                                         </div>
                                     </div>
                                     <div className="w-2/4">

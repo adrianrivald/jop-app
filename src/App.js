@@ -30,6 +30,7 @@ import WeighingScan from './pages/weighing/mandor/detail/scan';
 import Assignment from './pages/assignment';
 import Weighing from './pages/weighing';
 import Logistic from './pages/logistic';
+import LogisticDetail from './pages/logistic/detail';
 
 function App() {
   const cookies = new Cookies();
@@ -81,6 +82,7 @@ function App() {
 
           {/* pengiriman */}
           <Route path="/logistic" exact element={<Logistic />} />
+          <Route path="/logistic/detail/:id" exact element={<LogisticDetail />} />
               
           <Route path="/storybook" exact element={<Storybook/>} />
           <Route path="*" exact element={<div className='flex justify-center p-10'>Route not found</div>} />
