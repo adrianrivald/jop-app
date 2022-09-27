@@ -31,6 +31,9 @@ import Assignment from './pages/assignment';
 import Weighing from './pages/weighing';
 import Logistic from './pages/logistic';
 import LogisticDetail from './pages/logistic/detail';
+import LogisticLoading from './pages/logistic/loading';
+import LogisticScan from './pages/logistic/scan';
+import LogisticShipment from './pages/logistic/shipment';
 
 function App() {
   const cookies = new Cookies();
@@ -83,6 +86,9 @@ function App() {
           {/* pengiriman */}
           <Route path="/logistic" exact element={<Logistic />} />
           <Route path="/logistic/detail/:id" exact element={<LogisticDetail />} />
+          <Route path="/logistic/loading/:id" exact element={<LogisticLoading />} />
+          <Route path="/logistic/loading/:id/scan" exact element={<LogisticScan />} />
+          <Route path="/logistic/loading/:id/shipment" exact element={<LogisticShipment />} />
               
           <Route path="/storybook" exact element={<Storybook/>} />
           <Route path="*" exact element={<div className='flex justify-center p-10'>Route not found</div>} />

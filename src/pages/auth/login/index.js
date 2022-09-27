@@ -73,11 +73,11 @@ const Login = () => {
             <h1 className="text-center text-3xl font-extrabold text-gray-900">LOGIN</h1>
             <div className="flex flex-col items-center p-12 w-full">
                 {/* username */}
-                <input className="w-full rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Username" value={username} onChange={(e) => {setUsername(e.target.value)}} />
+                <input className="w-full rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Username" value={username} onChange={(e) => {setUsername(e.target.value)}} onKeyDown={(e) => {if(e.key === "Enter") handleSubmit()}}/>
                 <div className="text-red text-xs text-left w-full mb-3">{errorMessage.username}</div>
                 {/* password */}
                 <label className="relative block flex justify-between w-full bg-white rounded-lg p-3">
-                    <input className="text-xs leading-tight w-full mr-2 focus:outline-none focus:shadow-outline" type={showPassword ? 'password' : 'text'} placeholder="Kata Sandi" value={password} onChange={(e) => {setPassword(e.target.value)}}/>
+                    <input className="text-xs leading-tight w-full mr-2 focus:outline-none focus:shadow-outline" type={showPassword ? 'password' : 'text'} placeholder="Kata Sandi" value={password} onChange={(e) => {setPassword(e.target.value)}} onKeyDown={(e) => {if(e.key === "Enter") handleSubmit()}}/>
                     {/* icons */}
                     {showPassword ? hidePasswordIcon : showPasswordIcon}
                 </label>
