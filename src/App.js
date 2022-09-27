@@ -73,6 +73,8 @@ function App() {
           <Route path="/weighing/detail/:id" exact element={<DetailWeighing />} />
           <Route path="/weighing/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
           <Route path="/weighing/detail/:id/scan" exact element={<WeighingScan />} />
+          <Route path="/storybook" exact element={<Storybook />} />
+          <Route path="*" exact element={<div className="flex justify-center p-10">Route not found</div>} />
           {/* pengiriman */}
           <Route path="/logistic" exact element={<Logistic />} />
           <Route path="/logistic/detail/:id" exact element={<LogisticDetail />} />
