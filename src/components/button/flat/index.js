@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const FlatButton = ({ role, text, className, onClick, disabled }) => {
+const FlatButton = ({ role, text, className, onClick, disabled, type }) => {
     let roleStyle = 'bg-flora text-white'
 
     if (role === 'white' ) roleStyle = 'bg-white text-flora border border-flora'
 
     return(
-        <button disabled={disabled} className={`${roleStyle} font-bold rounded-lg p-3 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`} onClick={onClick}>{text}</button>
+        <button type={type} disabled={disabled} className={`${roleStyle} font-bold rounded-lg p-3 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`} onClick={onClick}>{text}</button>
     )
 }
 
