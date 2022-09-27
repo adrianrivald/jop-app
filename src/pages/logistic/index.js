@@ -183,8 +183,8 @@ function Logistic () {
                                 <div className="flex justify-between items-center mt-3">
                                     <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
                                         <div className="flex items-center">
-                                            <span>{res?.kode.split("-")[0]}</span>
-                                            <input className="cursor-pointer ml-2 rounded-lg p-2 text-xs  focus:outline-none focus:shadow-outline" type="text" readOnly value={res?.batch}/>
+                                            <span className="font-bold">{res?.kode.split("-")[0]}</span>
+                                            <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">{res?.kode.split("/")[1]}-{res?.batch}</div>
                                         </div>
                                     </div>
                                     <div className="w-2/4">
