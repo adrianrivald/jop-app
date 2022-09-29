@@ -41,12 +41,21 @@ body {
   color: #332919;
 }
 
+p,
+h2,
+span,
+label {
+  font-size: 0.75rem;
+}
+
 .header {
   width: auto;
 }
 
 .container {
   padding: 16px 20px;
+  /* height: 90vh;
+  position: relative; */
 }
 
 @layer base {

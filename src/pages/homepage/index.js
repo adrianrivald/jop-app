@@ -32,7 +32,7 @@ const UserMenu = (props) => {
         return (
             <Link to={!props.isDisabled && `${props.url}`}>
                 <div className={`p-2 bg-white text-black rounded-md shadow-lg ${props.isDisabled && ('cursor-not-allowed opacity-50	')}`}>
-                    <p className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</p>
+                    <h3 className='text-center my-12 text-xl font-bold text-ellipsis overflow-hidden'>{props.cardTitle}</h3>
                     <span className='block my-1 text-xs text-left'>Upcoming Appointment :</span>
                     <div className='flex items-center justify-between'>
                         <span className='text-xs'>
@@ -47,10 +47,11 @@ const UserMenu = (props) => {
 
     return (
         <div className="grid grid-cols-2 gap-4 mt-6">
-            <Card cardTitle="Tugas" url={`/assignment`}/>
-            <Card cardTitle="Absensi" isDisabled={props.level === 'mabes'} url='/absence'/>
-            <Card cardTitle="Timbang" isDisabled={props.level === 'mabes'} url='/weighing'/>
+            <Card cardTitle="Tugas" isDisabled={props.level === 'timbang' || props.level === 'transport' || props.level === 'krani'} url={`/assignment`}/>
+            <Card cardTitle="Absensi" isDisabled={props.level === 'mabes' || props.level === 'timbang' || props.level === 'transport' || props.level === 'krani'} url='/absence'/>
+            <Card cardTitle="Timbang" isDisabled={props.level === 'mabes' || props.level === 'transport' || props.level === 'krani'} url='/weighing'/>
             <Card cardTitle="Logistik" isDisabled={props.level !== 'transport'} url='/logistic'/>
+            <Card cardTitle="Gudang" isDisabled={props.level !== 'krani'} url='/warehouse'/>
             <Card cardTitle="Laporan" isDisabled/>
             <Card cardTitle="Pengaturan" isDisabled/>
         </div>
@@ -106,7 +107,7 @@ export default function HomePage() {
 
     const onLogout = () => {
         cookies.remove('token', {path: '/'});
-        localStorage.removeItem('userData')
+        localStorage.clear();
         window.location.href = `${window.location.origin}/auth/login`
     }
 

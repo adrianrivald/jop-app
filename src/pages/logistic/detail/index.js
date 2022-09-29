@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Button from "../../../components/button/Button";
+import SubmitButton from "../../../components/button/submit";
 import Divider from "../../../components/ui/Divider";
 import Header from "../../../components/ui/Header"
 
@@ -35,20 +36,30 @@ function LogisticDetail () {
         })
     }
 
+    const onClickBatch = (id, weight, code, name, batchCode) => {
+        localStorage.setItem('batch_item', JSON.stringify({
+            weight,
+            code,
+            name,
+            batchCode
+        }))
+        navigate(`/logistic/loading/${id}`)
+    }
+
     return (
         <>
             <div className="header">
                 <Header title="Logistik" isWithBack/>
             </div>
-            <div className="container">
+            <div className="container h-screen relative">
                <div className="flex justify-between">
                     <div>
                         <p>Kode Kelompok Barang</p>
-                        <p className="font-bold">TP1-01/02-12-B.007</p>
+                        <p className="font-bold">{batchDetail?.kode}</p>
                     </div>
                     <div>
                         <p>Total Berat Barang</p>
-                        <p className="font-bold">1255 Kg</p>
+                        <p className="font-bold">{batchDetail?.total_berat} kg</p>
                     </div>
                </div>
                <Divider />
@@ -59,72 +70,12 @@ function LogisticDetail () {
                                 <div className="detail my-3">
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <span>Slab</span> - <span>{res?.berat} kg</span>
-                                            <p>TP1-01/02-12-B.007/P1</p>
+                                            <span>{res?.nama}</span> - <span>{res?.berat} kg</span>
+                                            <p>{batchDetail?.kode}/{res?.kode}</p>
                                         </div>
                                         <div>
-                                            <Button isText text="Load" onClick={() => navigate(`/logistic/loading/${id}`)}/>
+                                            <Button className="text-xs w-16" isText text="Load" onClick={() => onClickBatch(res?.id, res?.berat, res?.kode, res?.nama, batchDetail?.kode)}/>
                                         </div>
-                                    </div>
-                                    {
-                                        idx === 0 && (
-                                            <>
-                                                <div className="flex justify-between items-center gap-3 mt-4">
-                                                    <div className="flex rounded-md bg-white p-1 gap-1 w-2/4 h-8">
-                                                        <div className="rounded-l-md bg-sun w-1/5 h-6" />
-                                                        <div className="rounded-r-md bg-earth w-4/5 h-6" />
-                                                    </div>
-                                                    <div>
-                                                        <p>14:19</p>
-                                                        <p className="text-md font-bold">Ojek 01-1</p>
-                                                    </div>
-                                                    <p className='flex-auto text-right text-sun font-bold'>Perjalanan</p>
-                                                </div>
-                                                <div className="flex justify-between items-center gap-3 mt-4">
-                                                    <div className="flex rounded-md bg-white p-1 gap-1 w-2/4 h-8">
-                                                        <div className="rounded-l-md bg-seed w-1/5 h-6" />
-                                                        <div className="bg-sun w-2/4 h-6" />
-                                                        <div className="rounded-r-md bg-earth w-1/3 h-6" />
-                                                    </div>
-                                                    <div>
-                                                        <p>14:19</p>
-                                                        <p className="text-md font-bold">Ojek 01-1</p>
-                                                    </div>
-                                                    <p className='flex-auto text-right text-flora font-bold'>Sampai</p>
-                                                </div>
-                                                <div className="flex justify-between items-center gap-3 mt-4">
-                                                    <div className="flex rounded-md bg-white p-1 gap-1 w-2/4 h-8">
-                                                        <div className="rounded-l-md bg-seed w-3/4 h-6" />
-                                                        <div className="rounded-r-md bg-sun w-1/4 h-6" />
-                                                    </div>
-                                                    <div>
-                                                        <p>14:19</p>
-                                                        <p className="text-md font-bold">Ojek 01-1</p>
-                                                    </div>
-                                                    <p className='flex-auto text-right text-flora font-bold'>Sampai</p>
-                                                </div>
-                                            </>
-                                        )
-                                    }
-                                    {
-                                        idx === 1 && (
-                                            <>
-                                                <div className="flex justify-between items-center gap-3 mt-4">
-                                                    <div className="flex rounded-md bg-white p-1 gap-1 w-2/4 h-8">
-                                                        <div className="rounded-l-md bg-sun w-1/5 h-6" />
-                                                        <div className="rounded-r-md bg-earth w-4/5 h-6" />
-                                                    </div>
-                                                    <div>
-                                                        <p>14:19</p>
-                                                        <p className="text-md font-bold">Ojek 01-1</p>
-                                                    </div>
-                                                    <p className='flex-auto text-right text-sun font-bold'>Perjalanan</p>
-                                                </div>
-                                            </>
-                                        )
-                                    }
-                                    <div className="view-detail my-5">
-                                        <p className="text-flora underline underline-offset-2 cursor-pointer">Lihat Detail Pengiriman</p>
                                     </div>
                                     <Divider /> 
                                 </div>
@@ -133,25 +84,30 @@ function LogisticDetail () {
                     }
                </div>
                <div className="batch-delivered">
-                    <p className="font-bold">Batch selesai dikirim</p>
-                    <div className="flex justify-between mt-5 relative">
-                        <div>
-                            <p>LOAD 1: Slab - 105 Kg</p>
-                            <p className="font-bold">TP1-01/02-12-B.007/P1</p>
-                        </div>
-                        <p className="font-bold absolute right-0 bottom-0">Slab</p>
-                    </div>
-                    <div className="flex justify-between mt-5 relative">
-                        <div>
-                            <p>LOAD 1: Slab - 105 Kg</p>
-                            <p className="font-bold">TP1-01/02-12-B.007/P1</p>
-                        </div>
-                        <p className="font-bold absolute right-0 bottom-0">Cup Lump</p>
-                    </div>
+                    <p className="font-bold">List Pengiriman</p>
+                    {
+                        batchDetail?.pengiriman?.length > 0 ? (
+                            <div className="flex justify-between mt-5 relative">
+                                <div>
+                                    <p>LOAD 1: Slab - 105 Kg</p>
+                                    <p className="font-bold">TP1-01/02-12-B.007/P1</p>
+                                </div>
+                                <p className="font-bold absolute right-0 bottom-0">Slab</p>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center p-10">
+                                Belum ada pengiriman
+                            </div>
+                        )
+                    }
                </div>
-               <div className="submit-area mt-11">
-                    <Button isText text="Deliver" className="w-full text-md" />
-               </div>
+               {/* <div className="submit-area mt-11">
+                    <Button isText text="Deliver" className="w-full text-md" onClick={() => navigate(`/logistic/shipment/${id}`)}/>
+               </div> */}
+               <SubmitButton
+                    text="Deliver"
+                    onClick={() => navigate(`/logistic/shipment/${id}`)}
+               />
             </div>
         </>
         

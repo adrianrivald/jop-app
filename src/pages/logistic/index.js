@@ -225,7 +225,7 @@ function Logistic () {
                                 </div>
                             )
                         }) : (
-                            <div className="flex justify-center mt-3">No Data</div>
+                            <span className="flex justify-center mt-3">No Data</span>
                         )
                     }
                 </div>
@@ -252,10 +252,10 @@ function Logistic () {
                         batchOnDelivery?.length > 0 ? batchOnDelivery?.map((res, idx) => {
                             return (
                                 <div className="flex justify-between items-center mt-3">
-                                    <div className="w-2/4">
+                                    <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
                                         <div className="flex items-center">
                                             <span>{res?.kode.split("-")[0]}</span>
-                                            <input className="ml-2 rounded-lg p-2 text-xs  focus:outline-none focus:shadow-outline" type="text" readOnly value={res?.batch}/>
+                                            <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">{res?.kode.split("/")[1]}-{res?.batch}</div>
                                         </div>
                                     </div>
                                     <div className="w-2/4">
@@ -296,7 +296,7 @@ function Logistic () {
                                 </div>
                             )
                         }) : (
-                            <div className="flex justify-center mt-3">No Data</div>
+                            <span className="flex justify-center mt-3">No Data</span>
                         )
                     }
                 <Divider />
@@ -323,10 +323,10 @@ function Logistic () {
                         batchDelivered?.length > 0 ? batchDelivered?.map((res, idx) => {
                             return (
                                 <div className="flex justify-between items-center mt-3">
-                                    <div className="w-2/4">
+                                    <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
                                         <div className="flex items-center">
                                             <span>{res?.kode.split("-")[0]}</span>
-                                            <input className="ml-2 rounded-lg p-2 text-xs  focus:outline-none focus:shadow-outline" type="text" readOnly value={res?.batch}/>
+                                            <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">{res?.kode.split("/")[1]}-{res?.batch}</div>
                                         </div>
                                     </div>
                                     <div className="w-2/4">
@@ -367,7 +367,7 @@ function Logistic () {
                                 </div>
                             )
                         }) : (
-                            <div className="flex justify-center mt-3">No Data</div>
+                            <span className="flex justify-center mt-3">No Data</span>
                         )
                     }
                 </div>

@@ -220,9 +220,9 @@ function Mabes() {
                             </div>
                         )
                     }) : isNoFilter && !isEmpty ?
-                    <div className='flex my-4 justify-center'> Please select filter first </div>
+                    <div className='flex my-4 justify-center'><span>Please select filter first</span></div>
                     :
-                    <div className='flex my-4 justify-center'> No Data </div>
+                    <div className='flex my-4 justify-center'><span>No Data</span></div>
                 }
             </div>
         </>

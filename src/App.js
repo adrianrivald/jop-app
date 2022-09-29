@@ -34,6 +34,8 @@ import LogisticDetail from './pages/logistic/detail';
 import LogisticLoading from './pages/logistic/loading';
 import LogisticScan from './pages/logistic/scan';
 import LogisticShipment from './pages/logistic/shipment';
+import Warehouse from './pages/warehouse';
+import LogisticShipmentDetail from './pages/logistic/shipment/detail';
 
 function App() {
   const cookies = new Cookies();
@@ -88,8 +90,13 @@ function App() {
           <Route path="/logistic/detail/:id" exact element={<LogisticDetail />} />
           <Route path="/logistic/loading/:id" exact element={<LogisticLoading />} />
           <Route path="/logistic/loading/:id/scan" exact element={<LogisticScan />} />
-          <Route path="/logistic/loading/:id/shipment" exact element={<LogisticShipment />} />
+          <Route path="/logistic/shipment/:id/" exact element={<LogisticShipment />} />
+          <Route path="/logistic/shipment/detail/:id/" exact element={<LogisticShipmentDetail />} />
               
+          {/* gudang */}
+          <Route path="/warehouse" exact element={<Warehouse />} />
+          
+          {/* misc */}
           <Route path="/storybook" exact element={<Storybook/>} />
           <Route path="*" exact element={<div className='flex justify-center p-10'>Route not found</div>} />
         </Routes>

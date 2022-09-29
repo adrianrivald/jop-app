@@ -237,7 +237,7 @@ const AddBalanced = () => {
                             <h2 className='text-left mb-1'>Curah hujan</h2>
                             <div className='w-full relative'>
                                 <span className='absolute inset-y-2 right-1'>mm</span>
-                                <input className="p-2 rounded-lg shadow flex justify-start w-full font-bold"  type="number" onChange={(e) => onChangeHandler(e, "curah_hujan")} />
+                                <input className="p-2 rounded-lg shadow flex justify-start w-full font-bold"  type="text" pattern="\d*" onChange={(e) => onChangeHandler(e, "curah_hujan")} />
                             </div>
                         </div>
                     </div>

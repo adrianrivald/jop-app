@@ -98,7 +98,7 @@ const Absence = () => {
                         </div>
                         </div>
                     </div>
-                )) : <div className="flex items-center justify-center" style={{ height: '60vh'}}>Tidak ada tugas di tanggal ini</div>}
+                )) : <div className="flex items-center justify-center" style={{ height: '60vh'}}><span>Tidak ada tugas di tanggal ini</span></div>}
             </section>
         </div>
     )

@@ -224,7 +224,7 @@ const WeighingTapper = () =>{
                                     <p>{res.code} - {res.name}</p>     
                                     <div className='relative'>
                                         <span className='absolute inset-y-3 right-2'>kg</span>
-                                        <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.code, idx)}/>
+                                        <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="text" pattern="\d*" onChange={(e) => onChangeWeight(e, res.code, idx)}/>
                                     </div>
                                 </div>
                             )
@@ -235,7 +235,7 @@ const WeighingTapper = () =>{
                                     <p>{res.kode} - {res.nama}</p>        
                                     <div className='relative'>
                                         <span className='absolute inset-y-2 right-1'>kg</span>
-                                        <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="number" onChange={(e) => onChangeWeight(e, res.kode, idx)} defaultValue={res?.berat_wet}/>
+                                        <input className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline" type="text" pattern="\d*" onChange={(e) => onChangeWeight(e, res.kode, idx)} defaultValue={res?.berat_wet}/>
                                     </div>
                                 </div>
                             )
@@ -257,7 +257,7 @@ const WeighingTapper = () =>{
                     </div>
                 </div>
             </div>
-            <div className="button-area p-3" >
+            <div className="button-area p-3">
                 <div className="photos-container overflow-x-auto flex gap-3">
                         {/* {
                             photos?.map((res, idx) => {
@@ -304,7 +304,6 @@ const WeighingTapper = () =>{
                 </label>
                 <input id="file-upload" type="file" onChange={onSelectPhoto} style={{display: 'none'}} />
             </div>
-            
             <div className="button-area p-3 mt-5" >
                 <FlatButton 
                     className='w-full rounded-xl' 
