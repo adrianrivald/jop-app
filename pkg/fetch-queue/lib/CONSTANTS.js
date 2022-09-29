@@ -1,0 +1,12 @@
+export const MESSAGE_TYPE = {
+  SW_LISTENER_INIT: 11,
+  NETWORK_STATE: 12,
+  FETCH_RESPONSE: 13,
+};
+
+export const NETWORK_STATE = {
+  OFFLINE: 20,
+  ONLINE: 21,
+};
+
+export const PENDING_STATUS_CODE = 202;

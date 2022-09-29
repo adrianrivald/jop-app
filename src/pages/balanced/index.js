@@ -229,22 +229,22 @@ const Balanced = () => {
                         <div className="flex justify-between items-center">
                             <div className="flex-1 text-left"> P1 - <b>Slab</b> </div>
                             <div className="flex-1"> <b>0</b> kg </div>
-                            <div className="flex-1 font-bold text-right"> Menimbang </div>                
+                            <div className="flex-1 font-bold text-right"> Menimbang </div>
                         </div>
                         <div className="flex justify-between items-center">
                             <div className="flex-1 text-left"> P2 - <b>Cup Lump</b> </div>
                             <div className="flex-1"> <b>31</b> kg </div>
-                            <div className="flex-1 font-bold text-right"> Menimbang </div>                
+                            <div className="flex-1 font-bold text-right"> Menimbang </div>
                         </div>
                         <div className="flex justify-between items-center">
                             <div className="flex-1 text-left"> P3 - <b>Latek</b> </div>
                             <div className="flex-1"> <b>4</b> kg </div>
-                            <div className="flex-1 font-bold text-right"> Menimbang </div>                
+                            <div className="flex-1 font-bold text-right"> Menimbang </div>
                         </div>
                         <div className="flex justify-between items-center">
                             <div className="flex-1 text-left"> P4 - <b>Tree Leace</b> </div>
                             <div className="flex-1"> <b>12</b> kg </div>
-                            <div className="flex-1 font-bold text-right"> Selesai </div>                
+                            <div className="flex-1 font-bold text-right"> Selesai </div>
                         </div>
                     </div>
                 </div> */}

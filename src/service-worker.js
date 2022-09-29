@@ -12,6 +12,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import { FetchQueueSW } from 'fetch-queue/sw';
 
 clientsClaim();
 
@@ -64,9 +65,12 @@ registerRoute(
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+  if (event.data && event.data.type) {
+    if (event.data.type === 'SKIP_WAITING') {
+      self.skipWaiting();
+    }
   }
 });
 
 // Any other custom service worker logic can go here.
+FetchQueueSW.register();
