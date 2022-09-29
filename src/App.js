@@ -31,6 +31,7 @@ import LogisticScan from './pages/logistic/scan';
 import LogisticShipment from './pages/logistic/shipment';
 import { FetchQueueHOC } from 'fetch-queue/hoc';
 import './services/axios';
+import Sample from './pages/sample/Sample';
 
 function App() {
   const cookies = new Cookies();
@@ -52,7 +53,8 @@ function App() {
       <Provider store={store}>
         <Router>
           <Routes>
-            <Route path="/" exact element={<Navigate to="/auth/login" replace />} /> {/* later add condition for auth */}
+            <Route path="/" exact element={<Navigate to="/auth/login" replace />} />{' '}
+            {/* later add condition for auth */}
             <Route path="/auth/login" exact element={<SignIn />} />
             <Route path="/homepage" exact element={<HomePage />} />
             <Route path="/sample" exact element={<Sample />} />
@@ -74,11 +76,16 @@ function App() {
             <Route path="/absence/tapper/:id" exact element={<DetailTapper />} />
             {/* penimbangan */}
             <Route path="/weighing" exact element={<Weighing />} />
-            {/* <Route path="/weighing" exact element={role === "mandor" ?  <MandorWeighing /> : <Balanced />} /> */}
             <Route path="/weighing/add" exact element={<AddBalanced />} />
             <Route path="/weighing/detail/:id" exact element={<DetailWeighing />} />
             <Route path="/weighing/detail/:id/tapper/:id_tapper" exact element={<WeighingTapper />} />
             <Route path="/weighing/detail/:id/scan" exact element={<WeighingScan />} />
+            {/* pengiriman */}
+            <Route path="/logistic" exact element={<Logistic />} />
+            <Route path="/logistic/detail/:id" exact element={<LogisticDetail />} />
+            <Route path="/logistic/loading/:id" exact element={<LogisticLoading />} />
+            <Route path="/logistic/loading/:id/scan" exact element={<LogisticScan />} />
+            <Route path="/logistic/loading/:id/shipment" exact element={<LogisticShipment />} />
             <Route path="/storybook" exact element={<Storybook />} />
             <Route path="*" exact element={<div className="flex justify-center p-10">Route not found</div>} />
           </Routes>
