@@ -1,8 +1,8 @@
-import { addMaterialCode, addMaterialName } from "./materialAction";
+import { addMaterialCode, addMaterialName } from './materialAction';
 
 const allActions = {
-    addMaterialCode,
-    addMaterialName
+  addMaterialCode,
+  addMaterialName,
 };
 
 export default allActions;

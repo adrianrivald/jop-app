@@ -11,222 +11,228 @@ import Cookies from 'universal-cookie';
 
 const url = process.env.REACT_APP_API_URL;
 
-
-function Dropdown (props)  {
-    return (
-        <div className='mt-1 w-3/6'>
-            <h2 className='text-left text-xs mb-1'>{props.title}</h2>
-            <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
-        </div>
-    )
+function Dropdown(props) {
+  return (
+    <div className="mt-1 w-3/6">
+      <h2 className="text-left text-xs mb-1">{props.title}</h2>
+      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+    </div>
+  );
 }
 
-
 function Mabes() {
-    const navigate = useNavigate();
-    const cookies = new Cookies();
-    const token = cookies.get('token');
-    const [listData, setListData] = React.useState([]);
-    const [estateList, setEstateList] = React.useState([])
-    const [taskList, setTaskList] = React.useState([])
-    const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
-    const [selectedEstate, setSelectedEstate] = React.useState("")
-    const [selectedTask, setSelectedTask] = React.useState("")
-    // const [filterCount, setFilterCount] = React.useState(0)
-    const [isEmpty, setIsEmpty] = React.useState(false)
-    const [isNoFilter, setIsNoFilter] = React.useState(false)
-    const [selectedFilter, setSelectedFilter] = React.useState({})
-    const sortOption = [
-        {
-            value: 'asc',
-            label: 'Latest'
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+  const token = cookies.get('token');
+  const [listData, setListData] = React.useState([]);
+  const [estateList, setEstateList] = React.useState([]);
+  const [taskList, setTaskList] = React.useState([]);
+  const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
+  const [selectedEstate, setSelectedEstate] = React.useState('');
+  const [selectedTask, setSelectedTask] = React.useState('');
+  // const [filterCount, setFilterCount] = React.useState(0)
+  const [isEmpty, setIsEmpty] = React.useState(false);
+  const [isNoFilter, setIsNoFilter] = React.useState(false);
+  const [selectedFilter, setSelectedFilter] = React.useState({});
+  const sortOption = [
+    {
+      value: 'asc',
+      label: 'Latest',
+    },
+    {
+      value: 'desc',
+      label: 'Oldest',
+    },
+  ];
+
+  React.useEffect(() => {
+    getEstate();
+    getTask();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    getList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, selectedEstate, selectedTask]);
+
+  // React.useEffect(() => {
+  //     setFilterCount(Object.keys(selectedFilter).length)
+  // }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
+
+  const getList = (sort) => {
+    if (!selectedTask && !selectedEstate && !selectedDate) {
+      setIsNoFilter(true);
+    } else if (selectedTask || selectedDate || selectedEstate) {
+      axios
+        .get(
+          `${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${
+            sort === 'asc' || !sort ? '-' : ''
+          }tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`,
+          {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          }
+        )
+        .then((res) => {
+          const data = res.data.data.data;
+          setListData(data);
+          setIsEmpty(false);
+          setIsNoFilter(false);
+          if (data.length === 0) {
+            setIsEmpty(true);
+          }
+        });
+    }
+  };
+
+  const getTask = () => {
+    axios
+      .get(`${url}jenis-tugas/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
         },
-        {
-            value: 'desc',
-            label: 'Oldest'
-        }
-    ]
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const taskData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setTaskList(taskData);
+      });
+  };
 
-    React.useEffect(() => {
-        getEstate();
-        getTask();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+  const getEstate = () => {
+    axios
+      .get(`${url}wilayah-tugas/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const estateData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setEstateList(estateData);
+      });
+  };
 
-    React.useEffect(() => {
-        getList()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[selectedDate, selectedEstate, selectedTask])
+  const onChangeDate = (e) => {
+    setSelectedDate(e.target.value);
+    setSelectedFilter({
+      ...selectedFilter,
+      selected_date: true,
+    });
+  };
 
-    // React.useEffect(() => {
-    //     setFilterCount(Object.keys(selectedFilter).length)
-    // }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
+  const onChangeEstate = (e) => {
+    setSelectedEstate(e.target.value);
+    setSelectedFilter({
+      ...selectedFilter,
+      selected_estate: true,
+    });
+  };
 
+  const onChangeTask = (e) => {
+    setSelectedTask(e.target.value);
+    setSelectedFilter({
+      ...selectedFilter,
+      selected_task: true,
+    });
+  };
 
-    const getList = (sort) => {
-        if (!selectedTask && !selectedEstate && !selectedDate) {
-            setIsNoFilter(true)
-        } else if (selectedTask || selectedDate || selectedEstate) {
-            axios.get(`${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${sort === 'asc' || !sort ? '-' : ''}tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`, {
-                url: process.env.REACT_APP_API_URL,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: 'application/json'
-                }
-            })
-            .then((res) => {
-               const data = res.data.data.data
-               setListData(data)
-               setIsEmpty(false)
-               setIsNoFilter(false)
-               if (data.length === 0 ) {
-                    setIsEmpty(true)
-               }
-           })
-        }
-    }
+  const onListClick = (id) => {
+    navigate(`/assignment/detail/${id}`);
+  };
 
-    const getTask = () => {
-        axios.get(`${url}jenis-tugas/list`, {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json'
+  // const onClickFilter = () => {
+  //     setSelectedFilter({})
+  //     setIsNoFilter(true)
+  // }
+
+  const onChangeSort = (e) => {
+    const sort = e.target.value;
+    getList(sort);
+  };
+
+  return (
+    <>
+      <div className="header">
+        <Header title="Penugasan" isWithBack />
+      </div>
+      <div className="container">
+        <p className="text-xs">Penugasan</p>
+        <div className="flex justify-between items-center">
+          <p className="text-sm font-bold">Wilayah & Kerja</p>
+          <Button
+            isIcon
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
             }
-        })
-        .then((res) => {
-            const data = res.data.data.data
-            const taskData = data.map((res) => {
-                return {
-                    value: res.id,
-                    label: res.nama
-                }
-            })
-            setTaskList(taskData)
-        })
-
-    }
-
-    const getEstate = () => {
-        axios.get(`${url}wilayah-tugas/list`, {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json'
-            }
-        })
-        .then((res) => {
-            const data = res.data.data.data
-            const estateData = data.map((res) => {
-                return {
-                    value: res.id,
-                    label: res.nama
-                }
-            })
-            setEstateList(estateData)
-        })
-    }
-
-    const onChangeDate = (e) => {
-        setSelectedDate(e.target.value)
-        setSelectedFilter({
-            ...selectedFilter,
-            selected_date: true
-        })
-    }
-
-    const onChangeEstate = (e) => {
-        setSelectedEstate(e.target.value)
-        setSelectedFilter({
-            ...selectedFilter,
-            selected_estate: true
-        })
-    }
-
-    const onChangeTask = (e) => {
-        setSelectedTask(e.target.value)
-        setSelectedFilter({
-            ...selectedFilter,
-            selected_task: true
-        })
-    }
-
-    const onListClick = (id) => {
-        navigate(`/assignment/detail/${id}`)
-    }
-
-    // const onClickFilter = () => {
-    //     setSelectedFilter({})
-    //     setIsNoFilter(true)
-    // }
-
-    const onChangeSort = (e) => {
-        const sort = e.target.value
-        getList(sort)
-    }
-
-    return (
-        <>
-            <div className="header">
-                <Header title="Penugasan" isWithBack  />
+            onClick={() => navigate('/assignment/add')}
+          />
+        </div>
+        <div>
+          <div className="flex justify-between items-center gap-2">
+            <Dropdown title="Estate" defaultValue="Pilih estate" option={estateList} onChange={onChangeEstate} />
+            <Dropdown title="Jenis Tugas" defaultValue="Pilih jenis tugas" option={taskList} onChange={onChangeTask} />
+          </div>
+          <div className="flex justify-between items-center gap-2 mt-2">
+            <div className="flex-auto w-64">
+              <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
             </div>
-            <div className="container">
-                <p className='text-xs'>Penugasan</p>
-                <div className='flex justify-between items-center'>
-                    <p className='text-sm font-bold'>Wilayah & Kerja</p>
-                    <Button 
-                        isIcon 
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
-                        }
-                        onClick={()=> navigate('/assignment/add')}
-                    />
-                </div>
-                <div>
-                    <div className='flex justify-between items-center gap-2'>
-                        <Dropdown title="Estate" defaultValue="Pilih estate" option={estateList} onChange={onChangeEstate} />
-                        <Dropdown title="Jenis Tugas" defaultValue="Pilih jenis tugas" option={taskList} onChange={onChangeTask} />
-                    </div>
-                    <div className='flex justify-between items-center gap-2 mt-2'>
-                        <div className='flex-auto w-64'>
-                            <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
-                        </div>
-                        {/* <div className='flex-auto'>
+            {/* <div className='flex-auto'>
                             <Button filterCount={filterCount} onClick={onClickFilter} isFilter={true} text='Filter'/>
                         </div> */}
-                        <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
-                    </div>
-                </div>
-                {
-                    !isNoFilter && !isEmpty ? listData.map((result) => {
-                        return (
-                            <div className='my-4'>
-                                <Table  
-                                    onClick={() => onListClick(result.id)}
-                                    isWithFooter
-                                    divisi_item={result.divisi.kode}
-                                    hancak_item={result.hancak.kode}
-                                    block_item={result.field.nama}
-                                    clone_item={result.clone.nama}
-                                    sistem_item={result.sistem.nama}
-                                    mandor_item={result.mandor.nama}
-                                    status_tugas_item={result.status_tugas === 'menunggu-persetujuan' ? 'menunggu' : result.status_tugas}
-                                    tapper_item={result.hancak.jumlah_rekomendasi_tapper}
-                                    tanggal_tugas_item={moment(result.tanggal_status, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')}
-                                    worker_total={result.pekerja.length}
-                                />
-                            </div>
-                        )
-                    }) : isNoFilter && !isEmpty ?
-                    <div className='flex my-4 justify-center'> Please select filter first </div>
-                    :
-                    <div className='flex my-4 justify-center'> No Data </div>
-                }
+            <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
+          </div>
+        </div>
+        {!isNoFilter && !isEmpty ? (
+          listData.map((result) => (
+            <div className="my-4">
+              <Table
+                onClick={() => onListClick(result.id)}
+                isWithFooter
+                divisi_item={result.divisi.kode}
+                hancak_item={result.hancak.kode}
+                block_item={result.field.nama}
+                clone_item={result.clone.nama}
+                sistem_item={result.sistem.nama}
+                mandor_item={result.mandor.nama}
+                status_tugas_item={result.status_tugas === 'menunggu-persetujuan' ? 'menunggu' : result.status_tugas}
+                tapper_item={result.hancak.jumlah_rekomendasi_tapper}
+                tanggal_tugas_item={moment(result.tanggal_status, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')}
+                worker_total={result.pekerja.length}
+              />
             </div>
-        </>
-    )
+          ))
+        ) : isNoFilter && !isEmpty ? (
+          <div className="flex my-4 justify-center"> Please select filter first </div>
+        ) : (
+          <div className="flex my-4 justify-center"> No Data </div>
+        )}
+      </div>
+    </>
+  );
 }
 
 export default Mabes;
