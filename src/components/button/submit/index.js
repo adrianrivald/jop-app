@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/react-in-jsx-scope */
 import Button from "../Button";
 
 function SubmitButton ({text, disabled, onClick}) {

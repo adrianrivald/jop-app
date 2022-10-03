@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/react-in-jsx-scope */
 export default function TimePicker({value, onChange, defaultValue}) {
     return (
         <div className="relative">

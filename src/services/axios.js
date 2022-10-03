@@ -1,39 +1,8 @@
 import axios from 'axios';
-import Cookies from 'universal-cookie';
+import { AxiosInterceptor } from 'fetch-queue/hoc';
 
-const API_URL = process.env.REACT_API_URL
-const cookies = new Cookies();
-const token = cookies.get('token');
+const API_URL = process.env.REACT_APP_API_URL;
 
-const axiosInstance = axios.create({
-  baseURL: `${API_URL}`,
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization' : `Bearer ${token}`
-  },
-});
+axios.defaults.baseURL = API_URL;
 
-axiosInstance.interceptors.request.use(
-  config => {
-
-    if (!token) { // negated condition , will be used when there is stored token
-      config.headers.Authorization = `Bearer ${token}`; // variable token will be used here
-    } else {
-      delete axiosInstance.defaults.headers.common.Authorization;
-    }
-    return config;
-  },
-
-  error => Promise.reject(error)
-);
-
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const { data: response} = error.response ?? {};
-    const message = response.message ?? error.message;
-      return Promise.reject(new Error(message))
-  }
-)
-
-export default axiosInstance;
+axios.interceptors.response.use(AxiosInterceptor.ResponseInterceptorFullfiled);
