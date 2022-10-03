@@ -8,6 +8,8 @@ import DropDown from '../../../components/forms/Dropdown';
 import DatePicker from '../../../components/forms/DatePicker';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
+import { getAssignmentByMabes } from '../../../store/actions/assignmentAction';
+import { useSelector } from 'react-redux';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -21,10 +23,10 @@ function Dropdown(props) {
 }
 
 function Mabes() {
+  const { data: listData, fetching: listDataFetching } = useSelector(({ assignment_mabes }) => assignment_mabes);
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
-  const [listData, setListData] = React.useState([]);
   const [estateList, setEstateList] = React.useState([]);
   const [taskList, setTaskList] = React.useState([]);
   const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
@@ -45,47 +47,24 @@ function Mabes() {
     },
   ];
 
-  React.useEffect(() => {
-    getEstate();
-    getTask();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  React.useEffect(() => {
-    getList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, selectedEstate, selectedTask]);
-
   // React.useEffect(() => {
   //     setFilterCount(Object.keys(selectedFilter).length)
   // }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
 
   const getList = (sort) => {
+    if (listDataFetching) {
+      return;
+    }
+
     if (!selectedTask && !selectedEstate && !selectedDate) {
       setIsNoFilter(true);
     } else if (selectedTask || selectedDate || selectedEstate) {
-      axios
-        .get(
-          `${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${
-            sort === 'asc' || !sort ? '-' : ''
-          }tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`,
-          {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: 'application/json',
-            },
-          }
-        )
-        .then((res) => {
-          const data = res.data.data.data;
-          setListData(data);
-          setIsEmpty(false);
-          setIsNoFilter(false);
-          if (data.length === 0) {
-            setIsEmpty(true);
-          }
-        });
+      getAssignmentByMabes({
+        tanggalTugas: selectedDate,
+        wilayahTugas: selectedEstate,
+        jenisTugas: selectedTask,
+        sort,
+      });
     }
   };
 
@@ -126,6 +105,23 @@ function Mabes() {
         setEstateList(estateData);
       });
   };
+
+  React.useEffect(() => {
+    if (listDataFetching) {
+      return;
+    }
+
+    getEstate();
+    getTask();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(getList, [selectedDate, selectedEstate, selectedTask]);
+
+  React.useEffect(() => {
+    setIsEmpty(listData.length === 0);
+    setIsNoFilter(false);
+  }, [listData]);
 
   const onChangeDate = (e) => {
     setSelectedDate(e.target.value);
@@ -206,7 +202,9 @@ function Mabes() {
             <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
           </div>
         </div>
-        {!isNoFilter && !isEmpty ? (
+        {listDataFetching ? (
+          <div className="flex my-4 justify-center">Sedang meminta data...</div>
+        ) : !isNoFilter && !isEmpty ? (
           listData.map((result) => (
             <div className="my-4">
               <Table

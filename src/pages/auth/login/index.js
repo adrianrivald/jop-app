@@ -68,7 +68,7 @@ const Login = () => {
     setErrorMessage({ ...errorMessage });
 
     if (valid) {
-      return await axios
+      return axios
         .post(`${url}login`, {
           username: username,
           password: password,
