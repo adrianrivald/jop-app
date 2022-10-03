@@ -40,6 +40,10 @@ function LogisticShipment () {
   React.useEffect(() => {
     getLogisticType();
     getWH();
+    setAddInput({
+      ...addInput,
+      loading_id: loaded_data?.loading_id
+    })
   },[])
 
   const getLogisticType = () => {

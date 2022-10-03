@@ -18,7 +18,6 @@ function LogisticDetail () {
 
     React.useEffect(() => {
         getBatchDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     
@@ -50,7 +49,8 @@ function LogisticDetail () {
     const handleDeliver = () => {
       localStorage.setItem("loaded_data", JSON.stringify({
         detail: batchDetail?.detail,
-        kode: batchDetail?.kode
+        kode: batchDetail?.kode,
+        loading_id: batchDetail?.loading?.id
       }))
       navigate(`/logistic/shipment/${id}`)
     }
@@ -76,7 +76,7 @@ function LogisticDetail () {
                     {
                         batchDetail?.detail?.map((res, idx) => {
                             return (
-                                <div className="detail my-3">
+                                <div className="detail my-3" key={idx}>
                                     <div className="flex justify-between items-center">
                                         <div>
                                             <span>{res?.nama}</span> - <span><b>{res?.berat_kirim} kg</b> / {res?.berat_total} kg</span>
