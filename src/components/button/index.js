@@ -1,3 +1,3 @@
-export IconButton from "./icon"
-export FlatButton from "./flat"
-export SubmitButton from "./submit"
+export { default as IconButton } from './icon';
+export { default as FlatButton } from './flat';
+export { default as SubmitButton } from './submit';

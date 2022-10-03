@@ -1,5 +1,3 @@
-export default function IconButton () {
-    return (
-        <div></div>
-    )
+export default function IconButton() {
+  return <div></div>;
 }
