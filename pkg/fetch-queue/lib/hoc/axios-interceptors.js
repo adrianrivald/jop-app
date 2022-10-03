@@ -12,7 +12,7 @@ export function ResponseInterceptorFullfiled(response) {
   if (response.status === PENDING_STATUS_CODE) {
     return new Promise((resolve, reject) => {
       EE.once(
-        FetchResponseEventName.create({ url: response.config.url, method: response.config.method }).toString(),
+        FetchResponseEventName.create({ url: response.request.responseURL, method: response.config.method }).toString(),
         async (res) => {
           const fetchRes = FetchResponseMessageData.fromObject(res);
           switch (fetchRes.contentType) {
@@ -25,9 +25,10 @@ export function ResponseInterceptorFullfiled(response) {
           }
           response.status = fetchRes.status;
 
-          if (res.status !== 200) {
+          if (fetchRes.status !== 200) {
             return reject(new AxiosError('error', null, response.config, response.request, response));
           }
+
           return resolve(response);
         }
       );

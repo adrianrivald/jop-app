@@ -92,7 +92,7 @@ export class FetchQueue {
       try {
         this._queue.push(e.request);
         return e.respondWith(
-          new Response('queued', {
+          new Response(null, {
             status: PENDING_STATUS_CODE,
             statusText: 'pending',
           })

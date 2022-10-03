@@ -1,3 +1,5 @@
+import md5 from 'md5';
+
 export default class FetchResponseEventName {
   /**
    * @type {string}
@@ -29,6 +31,6 @@ export default class FetchResponseEventName {
   }
 
   toString() {
-    return `${this.method.toLowerCase()} ${this.url}`;
+    return md5(`${this.method.toLowerCase()} ${this.url}`);
   }
 }

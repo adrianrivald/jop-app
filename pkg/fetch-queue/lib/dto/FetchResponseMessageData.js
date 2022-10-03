@@ -64,7 +64,7 @@ export default class FetchResponseMessageData {
     return new FetchResponseMessageData({
       url,
       method,
-      status: status || '',
+      status: status || 500,
       body: body || '',
       contentType: contentType || '',
       error,
