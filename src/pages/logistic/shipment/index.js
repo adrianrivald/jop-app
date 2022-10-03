@@ -1,11 +1,12 @@
 import axios from "axios";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Button from "../../../components/button/Button";
 import DropDown from "../../../components/forms/Dropdown";
 import Divider from "../../../components/ui/Divider";
 import Header from "../../../components/ui/Header"
+import Toast from "../../../components/ui/Toast";
 
 
 
@@ -21,70 +22,177 @@ function Dropdown (props) {
 }
 
 function LogisticShipment () {
-    const navigate = useNavigate();
-    const cookies = new Cookies();
-    const token = cookies.get('token');
-    const [tphList, setTphList] = React.useState([]);
-    const [photos, setPhotos] = React.useState([])
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+  const token = cookies.get('token');
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const [tphList, setTphList] = React.useState([]);
+  const [photos, setPhotos] = React.useState([]);
+  const loaded_data = JSON.parse(localStorage.getItem("loaded_data"));
+  const [logisticType, setLogisticType] = React.useState([]);
+  const [vehicleList, setVehicleList] = React.useState([]);
+  const [whList, setWHList] = React.useState([]);
+  const [addInput, setAddInput] = React.useState({});
+  const [isSubmitted, setIsSubmitted] = React.useState(false)
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
 
-    const onSelectPhoto = (e) => {
-        let formData = new FormData();
-        formData.append('file', e.target.files[0])
-        formData.append('path', 'public/logistik/kirim')
-        void uploadPhoto(formData);
-    }
+  React.useEffect(() => {
+    getLogisticType();
+    getWH();
+  },[])
 
-    const uploadPhoto = async(formData) => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                // 'Content-Type': 'image/jpeg',
-                Accept: 'application/json'
-            }
+  const getLogisticType = () => {
+    axios.get(`${url}jenis-logistik/list?sort=nama`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json'
         }
-        await axios.post(`${url}upload-foto
-        `, formData, config).then((res) => {
-                const data = res?.data?.data
-                setPhotos([
-                    ...photos,
-                    data?.path
-                ])
-                // setWeighingPayload({
-                //     ...weighingPayload,
-                //     foto: [
-                //         ...photos,
-                //         data?.path
-                //     ]
-                // })
+    }).then((res) => {
+        const data = res.data.data.data
+        const logisticTypeData = data.map((res) => {
+            return {
+                value: res.id,
+                label: res.nama
             }
-        )
+        })
+        setLogisticType(logisticTypeData)
+    })
+  }
+
+  const getVehicle = (val) => {
+    axios.get(`${url}armada/list?sort=kode&filter[jenis_logistik]=${val}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json'
+        }
+    }).then((res) => {
+        const data = res.data.data.data
+        const vehicleData = data.map((res) => {
+            return {
+                value: res.id,
+                label: res.plat_nomor
+            }
+        })
+        setVehicleList(vehicleData)
+    })
+  }
+
+  const getWH = (val) => {
+    axios.get(`${url}warehouse/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json'
+        }
+    }).then((res) => {
+        const data = res.data.data.data
+        const whData = data.map((res) => {
+            return {
+                value: res.id,
+                label: res.nama
+            }
+        })
+        setWHList(whData)
+    })
+  }
+
+  const onChangeHandler = (e, id) => {
+    setAddInput({
+      ...addInput,
+      [id]: e.target.value
+    })
+
+    if (id === "jenis_logistik_id") {
+      getVehicle(e.target.value)
     }
+
+  }
+
+  const onSelectPhoto = (e) => {
+      let formData = new FormData();
+      formData.append('file', e.target.files[0])
+      formData.append('path', 'public/logistik/kirim')
+      void uploadPhoto(formData);
+  }
+
+  const uploadPhoto = async(formData) => {
+      const config = {
+          headers: {
+              Authorization: `Bearer ${token}`,
+              // 'Content-Type': 'image/jpeg',
+              Accept: 'application/json'
+          }
+      }
+      await axios.post(`${url}upload-foto
+      `, formData, config).then((res) => {
+              const data = res?.data?.data
+              setPhotos([
+                  ...photos,
+                  data?.path
+              ])
+              // setWeighingPayload({
+              //     ...weighingPayload,
+              //     foto: [
+              //         ...photos,
+              //         data?.path
+              //     ]
+              // })
+          }
+      )
+  }
+
+  const handleSubmit = async() => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json'
+        }
+    }
+    await axios.post(`${url}pengiriman/store
+    `, addInput, config).then(() => {
+        setIsSubmitted(true)
+        setIsButtonDisabled(true)
+        setTimeout(() => {
+            setIsButtonDisabled(false)
+            setIsSubmitted(false)
+            navigate(-1)
+        }, 3000);
+        localStorage.removeItem("loaded_data");
+        navigate(`/logistic/detail/${id}`)
+    })
+  }
     return (
         <>
             <div className="header">
                 <Header title="Logistik" isWithBack/>
             </div>
             <div className="container">
-                <div>
-                    <p>LOAD 1: Slab - 105 Kg</p>
-                    <p className="font-bold">TP1-01/02-12/B.007/P1 (Slab)</p>
-                </div>
-                <Divider />
-                <div>
-                    <p>LOAD 1: Slab - 105 Kg</p>
-                    <p className="font-bold">TP1-01/02-12/B.007/P2 (Cup Lump)</p>
-                </div>
-                <Divider />
+                {
+                  loaded_data?.detail?.map((res, idx) => {
+                    return (
+                      <>
+                        <div>
+                            <p>LOAD {idx + 1}: {res?.nama} - {res?.berat_kirim} Kg</p>
+                            <p className="font-bold">{loaded_data?.kode}/{res?.kode} ({res?.nama})</p>
+                        </div>
+                        <Divider />
+                      </>
+                    )
+                  })
+                }
                 <div className="load-detail">
-                    <Dropdown title="Jenis logistik" defaultValue="Pilih jenis logistik" className="mt-3" option={tphList} onChange={(e) =>{}} />
-                    <Dropdown title="Armada yang digunakan" defaultValue="F 1702 CJ" className="mt-3" option={tphList} onChange={(e) =>{}}/>
+                    <Dropdown title="Jenis logistik" defaultValue="Pilih jenis logistik" className="mt-3" option={logisticType} onChange={(e) => onChangeHandler(e, "jenis_logistik_id")} />
+                    <Dropdown title="Armada yang digunakan" defaultValue="Pilih armada yang digunakan" className="mt-3" option={vehicleList} onChange={(e) => onChangeHandler(e, "armada_id")}/>
                     <div className="flex gap-3">
-                        <Dropdown title="Alamat / fasilitas tujuan" defaultValue="Pilih jenis logistik" className="mt-3" option={tphList} onChange={(e) =>{}}/>
-                        <Dropdown title="Kode lokasi gudang" defaultValue="F 1702 CJ" className="mt-3" option={tphList} onChange={(e) =>{}}/>
+                        <Dropdown title="Alamat / fasilitas tujuan" defaultValue="Pilih alamat / fasilitas tujuan" className="mt-3" option={[{value: "wh", label: "WH"},{value: "klien", label: "Klien"}]} onChange={(e) => onChangeHandler(e, "alamat_fasilitas_id")}/>
+                        <Dropdown title="Kode lokasi gudang" defaultValue="Pilih kode lokasi gudang" className="mt-3" option={whList} onChange={(e) => onChangeHandler(e, "warehouse_id")}/>
                     </div>
                     <div className="flex flex-col items-start w-full mb-4 mt-3">
                         <label className='text-left mb-1'>Alamat / fasilitas tujuan lain (optional)</label>
-                        <textarea rows="4" className="flex justify-between w-full font-bold bg-white dark:bg-white shadow border-none text-xs rounded-lg focus:ring-flora-500 focus:border-flora-500 block w-full p-3 resize-none" placeholder="Tulis alamat lengkap di box ini apabila tujuan pengiriman tidak ada dalam pilihan diatas.." />
+                        <textarea onChange={(e) => onChangeHandler(e, "alamat_pengiriman")} rows="4" className="flex justify-between w-full font-bold bg-white dark:bg-white shadow border-none text-xs rounded-lg focus:ring-flora-500 focus:border-flora-500 block w-full p-3 resize-none" placeholder="Tulis alamat lengkap di box ini apabila tujuan pengiriman tidak ada dalam pilihan diatas.." />
                     </div>
                     <Divider />
                     <div className="driver">
@@ -130,16 +238,9 @@ function LogisticShipment () {
                             </div>
                         </div>
                         <Divider />
-                        <div className="button-area mt-3">
+                        {/* <div className="button-area mt-3">
                             <div className="photos-container overflow-x-auto flex gap-3">
-                                    {/* {
-                                        photos?.map((res, idx) => {
-                                            return (
-                                                <img width="200" alt={`photo_${idx+1}`} src={!weighing_transaction ? URL.createObjectURL(res?.blob) : photos[idx].file} className="rounded-xl" />
-                                            )
-                                        })
-                                    } */}
-                                {/* {
+                                {
                                     transactionData?.foto?.map((res, idx) => {
                                         console.log(res,'ress')
                                         return(
@@ -150,7 +251,7 @@ function LogisticShipment () {
                                                 className="rounded-xl" />
                                         )
                                     })
-                                } */}
+                                }
                                 {
                                     photos?.map((res, idx) => {
                                         return(
@@ -165,7 +266,6 @@ function LogisticShipment () {
                                     })
                                 }
                             </div>
-                            {/* <input type="file" multiple onChange={onSelectPhoto} /> */}
                         </div>
                         <div className="mt-3">
                             <label for="file-upload" class="w-full rounded-lg bg-flora text-white font-bold p-3 block text-center flex justify-center items-center gap-2 cursor-pointer">
@@ -175,8 +275,18 @@ function LogisticShipment () {
                                 Tambah Foto
                             </label>
                             <input id="file-upload" type="file" onChange={onSelectPhoto} style={{display: 'none'}} />
+                        </div> */}
+                        <div className="button-area mt-5">
+                          <Button
+                            className="w-full"
+                            isText
+                            text="Deliver"
+                            onClick={handleSubmit}
+                            disabled={isButtonDisabled}
+                          />
                         </div>
                     </div>
+                    <Toast text="Sukses mengirim data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
                 </div>
             </div>
         </>

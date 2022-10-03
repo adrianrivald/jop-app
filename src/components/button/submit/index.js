@@ -1,6 +1,6 @@
 import Button from "../Button";
 
-function SubmitButton ({text, isButtonDisabled, onClick}) {
+function SubmitButton ({text, disabled, onClick}) {
     return (
 
         <div className="button-area mt-10 absolute bottom-20 left-1/2 transform -translate-x-1/2" style={{width: "92%"}}>
@@ -9,7 +9,7 @@ function SubmitButton ({text, isButtonDisabled, onClick}) {
                 isText
                 text={text}
                 onClick={onClick}
-                disabled={isButtonDisabled}
+                disabled={disabled}
             />
         </div>
     )

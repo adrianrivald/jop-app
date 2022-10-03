@@ -34,7 +34,7 @@ function OutlinedCircle () {
     return (
         <div className="w-1/4">
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12.2227" cy="12" r="11" stroke="#A7A29A" stroke-width="2"/>
+                <circle cx="12.2227" cy="12" r="11" stroke="#A7A29A" strokeWidth="2"/>
             </svg>
         </div>
     )

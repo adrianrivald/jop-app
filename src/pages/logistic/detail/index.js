@@ -36,14 +36,23 @@ function LogisticDetail () {
         })
     }
 
-    const onClickBatch = (id, weight, code, name, batchCode) => {
+    const onClickBatch = (id, weight, remain_weight, code, name, batchCode) => {
         localStorage.setItem('batch_item', JSON.stringify({
             weight,
+            remain_weight,
             code,
             name,
             batchCode
         }))
         navigate(`/logistic/loading/${id}`)
+    }
+
+    const handleDeliver = () => {
+      localStorage.setItem("loaded_data", JSON.stringify({
+        detail: batchDetail?.detail,
+        kode: batchDetail?.kode
+      }))
+      navigate(`/logistic/shipment/${id}`)
     }
 
     return (
@@ -70,11 +79,11 @@ function LogisticDetail () {
                                 <div className="detail my-3">
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <span>{res?.nama}</span> - <span>{res?.berat} kg</span>
+                                            <span>{res?.nama}</span> - <span><b>{res?.berat_kirim} kg</b> / {res?.berat_total} kg</span>
                                             <p>{batchDetail?.kode}/{res?.kode}</p>
                                         </div>
                                         <div>
-                                            <Button className="text-xs w-16" isText text="Load" onClick={() => onClickBatch(res?.id, res?.berat, res?.kode, res?.nama, batchDetail?.kode)}/>
+                                            <Button className="text-xs w-16" isText text="Load" onClick={() => onClickBatch(res?.id, res?.berat_total, res?.berat_sisa, res?.kode, res?.nama, batchDetail?.kode)}/>
                                         </div>
                                     </div>
                                     <Divider /> 
@@ -106,7 +115,7 @@ function LogisticDetail () {
                </div> */}
                <SubmitButton
                     text="Deliver"
-                    onClick={() => navigate(`/logistic/shipment/${id}`)}
+                    onClick={handleDeliver}
                />
             </div>
         </>
