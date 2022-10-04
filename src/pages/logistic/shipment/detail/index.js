@@ -1,6 +1,7 @@
 import axios from 'axios';
+import moment from 'moment';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Button from '../../../../components/button/Button';
 import DatePicker from '../../../../components/forms/DatePicker';
@@ -11,51 +12,35 @@ import Header from '../../../../components/ui/Header';
 const url = process.env.REACT_APP_API_URL;
 
 function LogisticShipmentDetail() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
-  const [shipmentData, setShipmentData] = React.useState([
-    {
-      status: 'Perjalanan',
-      date: 'Rabu, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P1',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (120 Kg)',
-        armada: 'B 3355 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Kamis, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Jumat, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-  ]);
+  const [shipmentData, setShipmentData] = React.useState([]);
   const [openedId, setOpenedId] = React.useState({});
+  const shipmentIndex = localStorage.getItem('shipment_index');
+
+  React.useEffect(() => {
+    getShipmentDetail();
+  }, []);
+
+  const getShipmentDetail = () => {
+    axios
+      .get(`${url}pengiriman/detail-pengiriman/${id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        console.log(data, 'resdata');
+        setShipmentData(data);
+      });
+  };
+
+  console.log(shipmentData, 'shipmentdata');
 
   const onExpand = (idx) => {
     setOpenedId({
@@ -78,18 +63,18 @@ function LogisticShipmentDetail() {
       </div>
       <div className="container">
         <div>
-          <p>Pengiriman ke- 3</p>
-          <p className="font-bold">TP1-01/02-12/B.007/P1 (Slab)</p>
+          <p>Pengiriman ke- {shipmentIndex}</p>
+          <p className="font-bold">{shipmentData?.kode_pengiriman}</p>
         </div>
         <div className="load-detail">
           <div className="flex justify-between mt-3 gap-3">
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Jumlah pengiriman</p>
-              <span className="text-4xl font-bold">335</span>
+              <span className="text-4xl font-bold">{shipmentData?.jumlah_loading}</span>
             </div>
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Total berat produk</p>
-              <span className="text-4xl font-bold">105</span>
+              <span className="text-4xl font-bold">{shipmentData?.total_berat}</span>
               <span> kg</span>
             </div>
             <div className="p-3 rounded-xl border border-cloud w-full">
@@ -100,23 +85,25 @@ function LogisticShipmentDetail() {
           </div>
           <Divider />
           <div className="">
-            {shipmentData?.length > 0 ? (
-              shipmentData?.map((res, idx) =>
+            {shipmentData?.loading?.length > 0 ? (
+              shipmentData?.loading?.map((res, idx) =>
                 openedId[`item_${idx}`] === true ? (
                   <div className="bg-white p-3">
                     <div className="flex justify-between items-center text-sun">
-                      <p>Pengiriman ke - {idx + 1}</p>
+                      <p>Load ke - {idx + 1}</p>
                       <p>{res?.status}</p>
                     </div>
-                    <p className="text-xs">{res?.date}</p>
+                    <p className="text-xs">{moment(res?.date).format('dddd, DD MMMM YYYY, hh:mm')}</p>
 
                     <div
                       className="flex justify-between items-center mt-2 transition-transform cursor-pointer"
                       onClick={() => onCollapse(idx)}
                     >
                       <div>
-                        <p className="font-bold">{res?.code}</p>
-                        <span>Slab – 105 kg (wet)</span>
+                        <p className="font-bold">{res?.kode_produk}</p>
+                        <span>
+                          {res?.nama_produk} – {res?.berat} kg (wet)
+                        </span>
                       </div>
                       <div className="cursor-pointer">
                         <svg
@@ -140,32 +127,63 @@ function LogisticShipmentDetail() {
                     <div className=" p-3 ">
                       <div className="flex gap-3 my-1">
                         <p className="w-2/4">Jenis Logistik</p>
-                        <p className="w-2/4 font-bold">{res?.detail?.jenis_logistik}</p>
+                        <p className="w-2/4 font-bold">{shipmentData?.jenis_logistik}</p>
                       </div>
                       <div className="flex gap-3 my-1">
                         <p className="w-2/4">Armada</p>
-                        <p className="w-2/4 font-bold">{res?.detail?.armada}</p>
+                        <p className="w-2/4 font-bold">{shipmentData?.armada}</p>
                       </div>
                       <div className="flex gap-3 my-1">
                         <p className="w-2/4">Alamat / fasilitas tujuan</p>
                         <div className="w-2/4 ">
-                          <p className="font-bold">{res?.detail?.alamat.split('-')[0]}</p>
-                          <p className="font-bold">{res?.detail?.alamat.split('-')[1]}</p>
+                          <p className="font-bold">{shipmentData?.tujuan}</p>
+                          <p className="font-bold">{shipmentData?.gudang}</p>
                         </div>
                       </div>
                       <div className="flex gap-3 my-1">
                         <p className="w-2/4">Supir / pengendara</p>
                         <div className="w-2/4 ">
-                          <p className="font-bold">{res?.detail?.supir.split('-')[0]}</p>
-                          <p className="font-bold">{res?.detail?.supir.split('-')[1]}</p>
+                          <p className="font-bold">
+                            {shipmentData?.supir?.nama} / {shipmentData?.supir?.kode}
+                          </p>
+                          <p className="font-bold">{shipmentData?.supir?.skema}</p>
                         </div>
                       </div>
                       <div className="flex gap-3 my-1">
                         <p className="w-2/4">Pengawal</p>
                         <div className="w-2/4 ">
-                          <p className="font-bold">{res?.detail?.pengawal.split('-')[0]}</p>
-                          <p className="font-bold">{res?.detail?.pengawal.split('-')[1]}</p>
+                          <p className="font-bold">
+                            {shipmentData?.pengawal?.nama} / {shipmentData?.pengawal?.kode}
+                          </p>
+                          <p className="font-bold">{shipmentData?.pengawal?.skema}</p>
                         </div>
+                      </div>
+                      <div className="photo-area mt-3">
+                        <div className="photos-container overflow-x-auto flex gap-3">
+                          {/* {
+                                transactionData?.foto?.map((res, idx) => {
+                                    console.log(res,'ress')
+                                    return(
+                                        <img 
+                                            width="200" 
+                                            alt={`photo_${idx+1}`} 
+                                            src={res}
+                                            className="rounded-xl" />
+                                    )
+                                })
+                            } */}
+                          {res?.foto?.map((res, idx) => (
+                            <img
+                              width="200"
+                              alt={`photo_${idx + 1}`}
+                              // src={`${'https://jop.dudyali.com/storage/'}${res}`}
+                              src={res}
+                              // src={res}
+                              className="rounded-xl"
+                            />
+                          ))}
+                        </div>
+                        {/* <input type="file" multiple onChange={onSelectPhoto} /> */}
                       </div>
                     </div>
                     <Divider />
@@ -173,18 +191,20 @@ function LogisticShipmentDetail() {
                 ) : (
                   <div className="p-3">
                     <div className="flex justify-between items-center text-sun">
-                      <p>Pengiriman ke - {idx + 1}</p>
+                      <p>Load ke - {idx + 1}</p>
                       <p>{res?.status}</p>
                     </div>
-                    <p className="text-xs">{res?.date}</p>
+                    <p className="text-xs">{moment(res?.date).format('dddd, DD MMMM YYYY, hh:mm')}</p>
 
                     <div
                       className="flex justify-between items-center mt-2 transition-transform cursor-pointer"
                       onClick={() => onExpand(idx)}
                     >
                       <div>
-                        <p className="font-bold">{res?.code}</p>
-                        <span>Slab – 105 kg (wet)</span>
+                        <p className="font-bold">{res?.kode_produk}</p>
+                        <span>
+                          {res?.nama_produk} – {res?.berat} kg (wet)
+                        </span>
                       </div>
                       <div className="cursor-pointer">
                         <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -206,9 +226,6 @@ function LogisticShipmentDetail() {
               <div className="flex justify-center">No Data</div>
             )}
           </div>
-        </div>
-        <div className="submit-area mt-11 pb-5">
-          <Button isText text="Selesai" className="w-full text-md" />
         </div>
       </div>
     </>

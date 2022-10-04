@@ -5,12 +5,24 @@ import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import Drawer from './Drawer';
 
-export default function Header({ title, isWithBack, isWithNotification, isWithBurgerMenu, handleNotification }) {
+export default function Header({
+  title,
+  isWithBack,
+  isWithNotification,
+  isWithBurgerMenu,
+  handleNotification,
+  moreAction,
+}) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleBurgerMenu = () => {
     setIsOpen(true);
+  };
+
+  const handleBack = () => {
+    navigate(-1);
+    moreAction();
   };
 
   return (
@@ -20,7 +32,7 @@ export default function Header({ title, isWithBack, isWithNotification, isWithBu
     >
       {isWithBack ? (
         <div className="flex-none w-8 h-auto">
-          <img className="cursor-pointer" onClick={() => navigate(-1)} src={back} alt="back" />
+          <img className="cursor-pointer" onClick={handleBack} src={back} alt="back" />
         </div>
       ) : null}
       <div className="flex-auto w-72 font-bold text-left">{title}</div>

@@ -27,6 +27,8 @@ function LogisticLoading() {
   const cookies = new Cookies();
   const token = cookies.get('token');
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
+  const [errorText, setErrorText] = React.useState('');
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [tphList, setTphList] = React.useState([]);
   const [photos, setPhotos] = React.useState([]);
@@ -82,23 +84,43 @@ function LogisticLoading() {
         Accept: 'application/json',
       },
     };
-    await axios
-      .post(
-        `${url}pengiriman/loading/store-new
-        `,
-        payload,
-        config
-      )
-      .then(() => {
-        setIsSubmitted(true);
+    if (payload['berat_kirim'] > batchItem?.remain_weight) {
+      setIsError(true);
+      setIsButtonDisabled(true);
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsError(false);
+      }, 3000);
+    } else {
+      try {
+        await axios
+          .post(
+            `${url}pengiriman/loading/store-new
+            `,
+            payload,
+            config
+          )
+          .then(() => {
+            setIsSubmitted(true);
+            setIsButtonDisabled(true);
+            setTimeout(() => {
+              setIsButtonDisabled(false);
+              setIsSubmitted(false);
+              navigate(-1);
+            }, 3000);
+            localStorage.removeItem('batch_item');
+          });
+      } catch (error) {
+        console.log(error, 'errormessage');
+        setIsError(true);
+        setErrorText(error?.response?.data?.message);
         setIsButtonDisabled(true);
         setTimeout(() => {
           setIsButtonDisabled(false);
-          setIsSubmitted(false);
-          navigate(-1);
+          setIsError(false);
         }, 3000);
-        localStorage.removeItem('batch_item');
-      });
+      }
+    }
   };
 
   return (
@@ -119,7 +141,6 @@ function LogisticLoading() {
             </div>
             <div className="flex-auto w-1/3 p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs mb-1">Berat sisa</p>
-              {/* <span className="text-4xl font-bold">{payload?.berat_kirim ? batchItem?.weight - payload?.berat_kirim : batchItem?.weight}</span><span> kg</span> */}
               <span className="text-4xl font-bold">{batchItem?.remain_weight}</span>
               <span> kg</span>
             </div>
@@ -139,18 +160,6 @@ function LogisticLoading() {
           </div>
           <div className="photo-area mt-3">
             <div className="photos-container overflow-x-auto flex gap-3">
-              {/* {
-                                transactionData?.foto?.map((res, idx) => {
-                                    console.log(res,'ress')
-                                    return(
-                                        <img 
-                                            width="200" 
-                                            alt={`photo_${idx+1}`} 
-                                            src={res}
-                                            className="rounded-xl" />
-                                    )
-                                })
-                            } */}
               {photos?.map((res, idx) => (
                 <img
                   width="200"
@@ -162,7 +171,6 @@ function LogisticLoading() {
                 />
               ))}
             </div>
-            {/* <input type="file" multiple onChange={onSelectPhoto} /> */}
           </div>
           <div className="mt-3">
             <label
@@ -189,6 +197,12 @@ function LogisticLoading() {
           <SubmitButton text="Selesai" onClick={handleSubmit} disabled={isButtonDisabled} />
         </div>
         <Toast text="Sukses mengubah data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
+        <Toast
+          text={errorText ?? 'Berat kirim tidak boleh lebih besar dari berat sisa !'}
+          onClose={() => setIsSubmitted(false)}
+          isShow={isError}
+          isSuccess={false}
+        />
       </div>
     </>
   );

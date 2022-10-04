@@ -12,28 +12,32 @@ export default function Button({
   className,
   isBack,
   role,
+  onClick,
   ...rest
 }) {
   let roleStyle = 'bg-flora text-white';
 
+  if (disabled === true) onClick = undefined;
   if (role === 'white') roleStyle = 'bg-white text-flora border border-flora';
   return (
     <>
       {isText ? (
         !isBack ? (
           <button
-            className={`bg-flora rounded-lg hover:bg-flora text-white font-bold p-2.5 w-32 ${className} ${
+            className={`${roleStyle} bg-flora rounded-lg text-white font-bold p-2.5 w-32 ${className} ${
               disabled ? 'opacity-50 cursor-not-allowed	' : ''
             }`}
+            onClick={onClick}
             {...rest}
           >
             <span>{text}</span>
           </button>
         ) : (
           <button
-            className={`bg-white rounded-lg hover:bg-white text-flora font-bold p-2.5 w-32 border border-flora ${className} ${
+            className={`${roleStyle} bg-white rounded-lg text-flora font-bold p-2.5 w-32 border border-flora ${className} ${
               disabled ? 'opacity-50 cursor-not-allowed	' : ''
             } `}
+            onClick={onClick}
             {...rest}
           >
             <span>{text}</span>
@@ -45,6 +49,7 @@ export default function Button({
           className={`${roleStyle} ${className} flex justify-center font-bold p-2.5 rounded-lg ${
             disabled ? 'opacity-50 cursor-not-allowed	' : ''
           }`}
+          onClick={onClick}
           {...rest}
         >
           <div className="mx-auto flex items-center ">

@@ -14,7 +14,8 @@ const Overlay = () => {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
-  const absenceType = window.location.pathname.split('/')[3];
+  const scan_type = localStorage.getItem('scan_type');
+  const saved_payload = JSON.parse(localStorage.getItem('saved_payload'));
 
   const onChange = (e) => {
     setCode(e.target.value);
@@ -31,21 +32,46 @@ const Overlay = () => {
       })
       .then((res) => {
         const data = res.data.data;
-        setTapperDetail(data);
-        localStorage.setItem('scanned_tapper', data?.id);
+        if (scan_type === 'supir') {
+          localStorage.setItem(
+            'saved_payload',
+            JSON.stringify({
+              ...saved_payload,
+              supir_id: data?.id,
+            })
+          );
+
+          localStorage.setItem(
+            'supir_data',
+            JSON.stringify({
+              name: data?.nama,
+              code: data?.kode,
+            })
+          );
+        } else {
+          localStorage.setItem(
+            'saved_payload',
+            JSON.stringify({
+              ...saved_payload,
+              pengawal_id: data?.id,
+            })
+          );
+
+          localStorage.setItem(
+            'pengawal_data',
+            JSON.stringify({
+              name: data?.nama,
+              code: data?.kode,
+            })
+          );
+        }
       });
+    navigate(-1);
   };
 
   const onSubmit = async () => {
     getDetail();
   };
-
-  React.useEffect(() => {
-    if (tapperDetail?.id) {
-      navigate(`shipment`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tapperDetail?.id]);
 
   return (
     <>

@@ -6,6 +6,8 @@ import Button from '../../../components/button/Button';
 import SubmitButton from '../../../components/button/submit';
 import Divider from '../../../components/ui/Divider';
 import Header from '../../../components/ui/Header';
+import Toast from '../../../components/ui/Toast';
+import { capitalize } from '../../../utils/strings';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -15,6 +17,8 @@ function LogisticDetail() {
   const cookies = new Cookies();
   const token = cookies.get('token');
   const [batchDetail, setBatchDetail] = React.useState({});
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
 
   React.useEffect(() => {
     getBatchDetail();
@@ -51,23 +55,56 @@ function LogisticDetail() {
   };
 
   const handleDeliver = () => {
-    localStorage.setItem(
-      'loaded_data',
-      JSON.stringify({
-        detail: batchDetail?.detail,
-        kode: batchDetail?.kode,
-        loading_id: batchDetail?.loading?.id,
-      })
-    );
-    navigate(`/logistic/shipment/${id}`);
+    if (!isButtonDisabled || !localStorage.getItem('delivered')) {
+      localStorage.setItem(
+        'loaded_data',
+        JSON.stringify({
+          detail: batchDetail?.detail,
+          kode: batchDetail?.kode,
+          loading_id: batchDetail?.loading?.id,
+        })
+      );
+      navigate(`/logistic/shipment/${id}`);
+    }
+  };
+
+  const onClickShipment = (id, index) => {
+    localStorage.setItem('shipment_index', index);
+    navigate(`/logistic/shipment/detail/${id}`);
+  };
+
+  const handleDone = () => {
+    if (!isButtonDisabled || !localStorage.getItem('delivered')) {
+      axios
+        .get(`${url}pengiriman/batch/done/${id}`, {
+          url: process.env.REACT_APP_API_URL,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        })
+        .then((res) => {
+          setIsSubmitted(true);
+          setIsButtonDisabled(true);
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsSubmitted(false);
+            navigate('/logistic');
+          }, 3000);
+        });
+    }
+  };
+
+  const handleBack = () => {
+    localStorage.removeItem('delivered');
   };
 
   return (
     <>
       <div className="header">
-        <Header title="Logistik" isWithBack />
+        <Header title="Logistik" isWithBack moreAction={handleBack} />
       </div>
-      <div className="container h-screen relative">
+      <div className="container">
         <div className="flex justify-between">
           <div>
             <p>Kode Kelompok Barang</p>
@@ -94,6 +131,7 @@ function LogisticDetail() {
                 </div>
                 <div>
                   <Button
+                    disabled={localStorage.getItem('delivered') !== undefined}
                     className="text-xs w-16"
                     isText
                     text="Load"
@@ -108,23 +146,61 @@ function LogisticDetail() {
           ))}
         </div>
         <div className="batch-delivered">
-          <p className="font-bold">List Pengiriman</p>
-          {batchDetail?.pengiriman?.length > 0 ? (
-            <div className="flex justify-between mt-5 relative">
-              <div>
-                <p>LOAD 1: Slab - 105 Kg</p>
-                <p className="font-bold">TP1-01/02-12-B.007/P1</p>
+          <p className="font-bold mb-4">List Pengiriman</p>
+          {batchDetail?.kirim?.length > 0 ? (
+            batchDetail?.kirim?.map((res, idx) => (
+              <div className="cursor-pointer" onClick={() => onClickShipment(res?.id, idx + 1)}>
+                <p>Pengiriman ke - {idx + 1}</p>
+                <p className="font-bold">{res?.kode}</p>
+                {res?.detail?.map((res, idx) => (
+                  <div className="my-2">
+                    <p>
+                      LOAD {idx + 1} : {res?.nama} - {res?.berat_kirim}
+                    </p>
+                    <div className="flex justify-between">
+                      <p className="font-bold">
+                        {batchDetail?.kode} / <span className="text-sun">{res?.kode}</span>
+                      </p>
+                      <p className="font-bold">{capitalize(res?.nama)}</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex justify-between items-center gap-3 mt-4">
+                  <div className="flex rounded-md bg-white p-1 gap-1 w-2/4 h-8">
+                    <div className="rounded-l-md bg-sun w-1/5 h-6" />
+                    <div className="rounded-r-md bg-earth w-4/5 h-6" />
+                  </div>
+                  <div>
+                    <p>14:19</p>
+                    <p className="text-md font-bold">Ojek 01-1</p>
+                  </div>
+                  <p className="flex-auto text-right text-sun font-bold">{capitalize(res?.status_pengiriman)}</p>
+                </div>
+                <Divider />
               </div>
-              <p className="font-bold absolute right-0 bottom-0">Slab</p>
-            </div>
+            ))
           ) : (
             <div className="flex justify-center p-10">Belum ada pengiriman</div>
           )}
         </div>
-        {/* <div className="submit-area mt-11">
-                    <Button isText text="Deliver" className="w-full text-md" onClick={() => navigate(`/logistic/shipment/${id}`)}/>
-               </div> */}
-        <SubmitButton text="Deliver" onClick={handleDeliver} />
+        <div className="submit-area mt-11">
+          <Button
+            disabled={isButtonDisabled || localStorage.getItem('delivered') !== undefined}
+            isText
+            text="Deliver"
+            className="w-full text-md"
+            onClick={handleDeliver}
+          />
+          <Button
+            disabled={isButtonDisabled || localStorage.getItem('delivered') !== undefined}
+            isText
+            text="Done"
+            role="white"
+            className="mt-2 w-full text-md"
+            onClick={handleDone}
+          />
+        </div>
+        <Toast text="Pengiriman telah diselesaikan !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
       </div>
     </>
   );

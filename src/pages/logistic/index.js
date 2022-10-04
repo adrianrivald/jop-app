@@ -157,7 +157,10 @@ function Logistic() {
       });
   };
 
-  const onClickBatch = (id) => {
+  const onClickBatch = (id, type) => {
+    if (type === 'delivered') {
+      localStorage.setItem('delivered', true);
+    }
     navigate(`detail/${id}`);
   };
 
@@ -298,7 +301,7 @@ function Logistic() {
           {batchDelivered?.length > 0 ? (
             batchDelivered?.map((res, idx) => (
               <div className="flex justify-between items-center mt-3">
-                <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
+                <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id, 'delivered')}>
                   <div className="flex items-center">
                     <span>{res?.kode.split('-')[0]}</span>
                     <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">

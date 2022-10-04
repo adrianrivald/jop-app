@@ -30,7 +30,7 @@ function LogisticShipment() {
   const loaded_data = JSON.parse(localStorage.getItem('loaded_data'));
   const [logisticType, setLogisticType] = React.useState([]);
   const [vehicleList, setVehicleList] = React.useState([]);
-  const [whList, setWHList] = React.useState([]);
+  const [storageList, setStorageList] = React.useState([]);
   const [addInput, setAddInput] = React.useState({});
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
@@ -39,7 +39,7 @@ function LogisticShipment() {
 
   React.useEffect(() => {
     getLogisticType();
-    getWH();
+    getStorage();
     setAddInput({
       ...addInput,
       loading_id: loaded_data?.loading_id,
@@ -100,9 +100,9 @@ function LogisticShipment() {
       });
   };
 
-  const getWH = (val) => {
+  const getStorage = (val) => {
     axios
-      .get(`${url}warehouse/list`, {
+      .get(`${url}gudang/list`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -111,11 +111,11 @@ function LogisticShipment() {
       })
       .then((res) => {
         const data = res.data.data.data;
-        const whData = data.map((res) => ({
+        const storageData = data.map((res) => ({
           value: res.id,
           label: res.nama,
         }));
-        setWHList(whData);
+        setStorageList(storageData);
       });
   };
 
@@ -158,10 +158,14 @@ function LogisticShipment() {
         setTimeout(() => {
           setIsButtonDisabled(false);
           setIsSubmitted(false);
+          localStorage.removeItem('loaded_data');
+          localStorage.removeItem('supir_data');
+          localStorage.removeItem('pengawal_data');
+          localStorage.removeItem('saved_payload');
+          localStorage.removeItem('scan_type');
+          localStorage.removeItem('scanned_tapper');
           navigate(-1);
         }, 3000);
-        localStorage.removeItem('loaded_data');
-        navigate(`/logistic/detail/${id}`);
       });
   };
 
@@ -177,10 +181,19 @@ function LogisticShipment() {
     return `Pilih ${id}`;
   };
 
+  const removeLocalStorage = () => {
+    localStorage.removeItem('loaded_data');
+    localStorage.removeItem('supir_data');
+    localStorage.removeItem('pengawal_data');
+    localStorage.removeItem('saved_payload');
+    localStorage.removeItem('scan_type');
+    localStorage.removeItem('scanned_tapper');
+  };
+
   return (
     <>
       <div className="header">
-        <Header title="Logistik" isWithBack />
+        <Header title="Logistik" isWithBack moreAction={removeLocalStorage} />
       </div>
       <div className="container">
         {loaded_data?.detail?.map((res, idx) => (
@@ -220,13 +233,13 @@ function LogisticShipment() {
                 { value: 'wh', label: 'WH' },
                 { value: 'klien', label: 'Klien' },
               ]}
-              onChange={(e) => onChangeHandler(e, 'wh_id')}
+              // onChange={(e) => onChangeHandler(e, 'wh_id')}
             />
             <Dropdown
               title="Kode lokasi gudang"
               defaultValue="Pilih kode lokasi gudang"
               className="mt-3"
-              option={whList}
+              option={storageList}
               onChange={(e) => onChangeHandler(e, 'gudang_id')}
             />
           </div>
@@ -247,9 +260,9 @@ function LogisticShipment() {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm">
-                    <b>{saved_payload && saved_payload['supir_id'] !== '' ? saved_payload['supir_id'] : '-'}</b>
+                    <b>{JSON.parse(localStorage.getItem('supir_data'))?.name ?? '-'}</b>
                   </p>
-                  <p>{saved_payload && saved_payload['supir_id'] !== '' ? saved_payload['supir_id'] : '-'}</p>
+                  <p>{JSON.parse(localStorage.getItem('supir_data'))?.code ?? '-'}</p>
                 </div>
                 <Button
                   isIcon
@@ -273,9 +286,9 @@ function LogisticShipment() {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm">
-                    <b>{saved_payload && saved_payload['pengawal_id'] !== '' ? saved_payload['pengawal_id'] : '-'}</b>
+                    <b>{JSON.parse(localStorage.getItem('pengawal_data'))?.name ?? '-'}</b>
                   </p>
-                  <p>{saved_payload && saved_payload['pengawal_id'] !== '' ? saved_payload['pengawal_id'] : '-'}</p>
+                  <p>{JSON.parse(localStorage.getItem('pengawal_data'))?.code ?? '-'}</p>
                 </div>
                 <Button
                   isIcon

@@ -23,40 +23,50 @@ function LogisticScan() {
   const onResult = (result) => {
     try {
       if (result) {
-        localStorage.setItem('scanned_driver', result?.text);
+        axios
+          .get(`${url}absensi/scan-by-tapper-uuid/${result?.text}`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          })
+          .then((res) => {
+            const data = res.data.data;
+            if (scan_type === 'supir') {
+              localStorage.setItem(
+                'saved_payload',
+                JSON.stringify({
+                  ...saved_payload,
+                  supir_id: data?.id,
+                })
+              );
+              localStorage.setItem(
+                'supir_data',
+                JSON.stringify({
+                  name: data?.nama,
+                  code: data?.kode,
+                })
+              );
+            } else {
+              localStorage.setItem(
+                'saved_payload',
+                JSON.stringify({
+                  ...saved_payload,
+                  pengawal_id: data?.id,
+                })
+              );
 
-        if (scan_type === 'supir') {
-          localStorage.setItem(
-            'saved_payload',
-            JSON.stringify({
-              ...saved_payload,
-              supir_id: result?.text,
-            })
-          );
-        } else {
-          localStorage.setItem(
-            'saved_payload',
-            JSON.stringify({
-              ...saved_payload,
-              pengawal_id: result?.text,
-            })
-          );
-        }
-        navigate(-1);
-        // await axios.get(`${url}absensi/scan-by-tapper-uuid/${result?.text}`,
-        // {
-        //     url: process.env.REACT_APP_API_URL,
-        //     headers: {
-        //         Authorization: `Bearer ${token}`,
-        //         Accept: 'application/json'
-        //     }
-        // }).then((res) => {
-        //     const data = res.data.data
-        //     console.log(data, 'resssdata')
-        //     if (data) {
-        //       navigate(-1)
-        //     }
-        // })
+              localStorage.setItem(
+                'pengawal_data',
+                JSON.stringify({
+                  name: data?.nama,
+                  code: data?.kode,
+                })
+              );
+            }
+            navigate(-1);
+          });
       }
     } catch (error) {
       setIsSubmitted(true);
