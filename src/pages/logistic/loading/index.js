@@ -197,7 +197,7 @@ function LogisticLoading() {
         </div>
         <Toast text="Sukses mengubah data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
         <Toast
-          text={errorText ?? 'Berat kirim tidak boleh lebih besar dari berat sisa !'}
+          text={errorText !== '' ? errorText : 'Berat kirim tidak boleh lebih besar dari berat sisa !'}
           onClose={() => setIsSubmitted(false)}
           isShow={isError}
           isSuccess={false}
