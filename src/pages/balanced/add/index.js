@@ -162,8 +162,6 @@ const AddBalanced = () => {
   };
 
   const onChangeHandler = (e, input_id) => {
-    console.log(e.target.value);
-
     if (input_id === 'bahan_baku_id') {
       setAddInput({
         ...addInput,
@@ -197,11 +195,6 @@ const AddBalanced = () => {
       }, 3000);
     });
   };
-
-  React.useEffect(() => {
-    console.log(addInput, 'addInput');
-    console.log(addInput['bahan_baku_id'], 'bahanbaku');
-  }, [addInput]);
 
   return (
     <div className="App min-h-screen h-full">
@@ -248,7 +241,8 @@ const AddBalanced = () => {
                 <span className="absolute inset-y-2 right-1">mm</span>
                 <input
                   className="p-2 rounded-lg shadow flex justify-start w-full font-bold"
-                  type="number"
+                  type="text"
+                  pattern="\d*"
                   onChange={(e) => onChangeHandler(e, 'curah_hujan')}
                 />
               </div>

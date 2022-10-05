@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/prop-types */
 export default function DatePicker({ onChange, defaultValue, ...rest }) {
   return (
     <div className="relative">

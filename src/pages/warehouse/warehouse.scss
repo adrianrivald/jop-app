@@ -1,0 +1,10 @@
+.glider {
+  position: absolute;
+  display: flex;
+  height: 39px;
+  width: 100px;
+  background-color: #1ebd73;
+  z-index: 1;
+  border-radius: 12px;
+  transition: 0.15s ease-out;
+}

@@ -57,11 +57,11 @@ const Overlay = () => {
         </p>
         <div className="flex items-center mt-2 justify-center">
           <input
-            className="text-coal font-bold w-2/4 rounded-lg py-2.5 px-2.5 text-xs leading-tight focus:outline-none focus:shadow-outline"
+            className="text-coal font-bold w-3/4 h-9 rounded-lg py-2.5 px-2.5 text-xs leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             onChange={(e) => onChange(e)}
           />
-          <Button isText text="Submit" className="text-xs ml-2" onClick={onSubmit} />
+          <Button isText text="Submit" className="h-9 py-0 ml-2" onClick={onSubmit} />
         </div>
       </div>
     </>

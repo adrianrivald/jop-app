@@ -150,7 +150,6 @@ const Balanced = () => {
   };
 
   const onSort = (e) => {
-    console.log(e.target.value);
     getWeighingHistory(e.target.value);
   };
 

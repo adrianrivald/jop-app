@@ -86,10 +86,6 @@ const WeighingTapper = () => {
     }
   };
 
-  React.useEffect(() => {
-    console.log(weighingPayload);
-  }, [weighingPayload]);
-
   const avaImage = () => {
     if (tapperDetail?.foto && tapperDetail.foto !== null) {
       return tapperDetail.foto;
@@ -126,7 +122,6 @@ const WeighingTapper = () => {
         config
       )
       .then((res) => {
-        console.log('uplot');
         const data = res?.data?.data;
         setPhotos([...photos, data?.path]);
         setWeighingPayload({
@@ -224,7 +219,8 @@ const WeighingTapper = () => {
                     <span className="absolute inset-y-3 right-2">kg</span>
                     <input
                       className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                      type="number"
+                      type="text"
+                      pattern="\d*"
                       onChange={(e) => onChangeWeight(e, res.code, idx)}
                     />
                   </div>
@@ -239,7 +235,8 @@ const WeighingTapper = () => {
                     <span className="absolute inset-y-2 right-1">kg</span>
                     <input
                       className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                      type="number"
+                      type="text"
+                      pattern="\d*"
                       onChange={(e) => onChangeWeight(e, res.kode, idx)}
                       defaultValue={res?.berat_wet}
                     />
@@ -268,30 +265,26 @@ const WeighingTapper = () => {
                                 )
                             })
                         } */}
-          {transactionData?.foto?.map((res, idx) => {
-            console.log(res, 'ress');
-            return <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />;
-          })}
-          {photos?.map((res, idx) => {
-            console.log(res, 'ress');
-            return (
-              <img
-                width="200"
-                alt={`photo_${idx + 1}`}
-                // src={`${'https://jop.dudyali.com/storage/'}${res}`}
-                src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                // src={res}
-                className="rounded-xl"
-              />
-            );
-          })}
+          {transactionData?.foto?.map((res, idx) => (
+            <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />
+          ))}
+          {photos?.map((res, idx) => (
+            <img
+              width="200"
+              alt={`photo_${idx + 1}`}
+              // src={`${'https://jop.dudyali.com/storage/'}${res}`}
+              src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
+              // src={res}
+              className="rounded-xl"
+            />
+          ))}
         </div>
         {/* <input type="file" multiple onChange={onSelectPhoto} /> */}
       </div>
       <div className="p-3 mt-1">
         <label
-          for="file-upload"
-          class="w-full rounded-xl bg-flora text-white font-bold p-3 block text-center flex justify-center items-center gap-2 cursor-pointer"
+          htmlFor="file-upload"
+          className="w-full rounded-xl bg-flora text-white font-bold p-3 block text-center flex justify-center items-center gap-2 cursor-pointer"
         >
           <svg
             className="block"
@@ -310,7 +303,6 @@ const WeighingTapper = () => {
         </label>
         <input id="file-upload" type="file" onChange={onSelectPhoto} style={{ display: 'none' }} />
       </div>
-
       <div className="button-area p-3 mt-5">
         <FlatButton
           className="w-full rounded-xl"

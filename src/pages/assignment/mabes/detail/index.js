@@ -28,9 +28,9 @@ function WorkerList(props) {
           <path
             d="M1.22217 1.00024L5.22217 6.00024L1.22217 11.0002"
             stroke="#A7A29A"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       </div>
