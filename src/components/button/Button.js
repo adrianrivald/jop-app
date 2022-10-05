@@ -17,6 +17,7 @@ export default function Button({
 }) {
   let roleStyle = 'bg-flora text-white';
 
+  // eslint-disable-next-line no-param-reassign
   if (disabled === true) onClick = undefined;
   if (role === 'white') roleStyle = 'bg-white text-flora border border-flora';
   return (
