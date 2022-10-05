@@ -131,7 +131,7 @@ function LogisticDetail() {
                 </div>
                 <div>
                   <Button
-                    disabled={localStorage.getItem('delivered') !== undefined}
+                    disabled={localStorage.getItem('delivered') === null ? false : true}
                     className="text-xs w-16"
                     isText
                     text="Load"
@@ -210,14 +210,14 @@ function LogisticDetail() {
         </div>
         <div className="submit-area mt-11">
           <Button
-            disabled={isButtonDisabled || localStorage.getItem('delivered') !== undefined}
+            disabled={isButtonDisabled || localStorage.getItem('delivered') === null ? false : true}
             isText
             text="Deliver"
             className="w-full text-md"
             onClick={handleDeliver}
           />
           <Button
-            disabled={isButtonDisabled || localStorage.getItem('delivered') !== undefined}
+            disabled={isButtonDisabled || localStorage.getItem('delivered') === null ? false : true}
             isText
             text="Done"
             role="white"

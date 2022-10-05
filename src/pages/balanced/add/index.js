@@ -191,7 +191,7 @@ const AddBalanced = () => {
       setTimeout(() => {
         setIsButtonDisabled(false);
         setIsSubmitted(false);
-        navigate('/balanced');
+        navigate('/weighing');
       }, 3000);
     });
   };
