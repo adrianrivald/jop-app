@@ -123,7 +123,7 @@ const Balanced = () => {
   );
 
   const handleAddBalanced = () => {
-    navigate(`/balanced/add`);
+    navigate(`/weighing/add`);
   };
 
   const onCopyCode = (weighing_code) => {
