@@ -30,7 +30,6 @@ function LogisticSample() {
         },
       })
       .then((res) => {
-        console.log(res, 'res');
         const data = res.data.data;
         setBatchDetail(data);
       });

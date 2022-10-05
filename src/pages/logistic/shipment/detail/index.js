@@ -35,12 +35,9 @@ function LogisticShipmentDetail() {
       })
       .then((res) => {
         const data = res.data.data;
-        console.log(data, 'resdata');
         setShipmentData(data);
       });
   };
-
-  console.log(shipmentData, 'shipmentdata');
 
   const onExpand = (idx) => {
     setOpenedId({
@@ -88,24 +85,21 @@ function LogisticShipmentDetail() {
             {shipmentData?.loading?.length > 0 ? (
               shipmentData?.loading?.map((res, idx) =>
                 openedId[`item_${idx}`] === true ? (
-                  <div className="bg-white p-3">
+                  <div className="bg-white p-3 cursor-pointer" onClick={() => onCollapse(idx)}>
                     <div className="flex justify-between items-center text-sun">
                       <p>Load ke - {idx + 1}</p>
                       <p>{res?.status}</p>
                     </div>
                     <p className="text-xs">{moment(res?.date).format('dddd, DD MMMM YYYY, hh:mm')}</p>
 
-                    <div
-                      className="flex justify-between items-center mt-2 transition-transform cursor-pointer"
-                      onClick={() => onCollapse(idx)}
-                    >
+                    <div className="flex justify-between items-center mt-2 transition-transform cursor-pointer">
                       <div>
                         <p className="font-bold">{res?.kode_produk}</p>
                         <span>
                           {res?.nama_produk} – {res?.berat} kg (wet)
                         </span>
                       </div>
-                      <div className="cursor-pointer">
+                      <div>
                         <svg
                           className="rotate-90"
                           width="7"
@@ -189,17 +183,14 @@ function LogisticShipmentDetail() {
                     <Divider />
                   </div>
                 ) : (
-                  <div className="p-3">
+                  <div className="p-3 cursor-pointer" onClick={() => onExpand(idx)}>
                     <div className="flex justify-between items-center text-sun">
                       <p>Load ke - {idx + 1}</p>
                       <p>{res?.status}</p>
                     </div>
                     <p className="text-xs">{moment(res?.date).format('dddd, DD MMMM YYYY, hh:mm')}</p>
 
-                    <div
-                      className="flex justify-between items-center mt-2 transition-transform cursor-pointer"
-                      onClick={() => onExpand(idx)}
-                    >
+                    <div className="flex justify-between items-center mt-2 transition-transform cursor-pointer">
                       <div>
                         <p className="font-bold">{res?.kode_produk}</p>
                         <span>

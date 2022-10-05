@@ -162,8 +162,6 @@ const AddBalanced = () => {
   };
 
   const onChangeHandler = (e, input_id) => {
-    console.log(e.target.value);
-
     if (input_id === 'bahan_baku_id') {
       setAddInput({
         ...addInput,
@@ -197,11 +195,6 @@ const AddBalanced = () => {
       }, 3000);
     });
   };
-
-  React.useEffect(() => {
-    console.log(addInput, 'addInput');
-    console.log(addInput['bahan_baku_id'], 'bahanbaku');
-  }, [addInput]);
 
   return (
     <div className="App min-h-screen h-full">

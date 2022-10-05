@@ -86,10 +86,6 @@ const WeighingTapper = () => {
     }
   };
 
-  React.useEffect(() => {
-    console.log(weighingPayload);
-  }, [weighingPayload]);
-
   const avaImage = () => {
     if (tapperDetail?.foto && tapperDetail.foto !== null) {
       return tapperDetail.foto;
@@ -126,7 +122,6 @@ const WeighingTapper = () => {
         config
       )
       .then((res) => {
-        console.log('uplot');
         const data = res?.data?.data;
         setPhotos([...photos, data?.path]);
         setWeighingPayload({
@@ -270,23 +265,19 @@ const WeighingTapper = () => {
                                 )
                             })
                         } */}
-          {transactionData?.foto?.map((res, idx) => {
-            console.log(res, 'ress');
-            return <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />;
-          })}
-          {photos?.map((res, idx) => {
-            console.log(res, 'ress');
-            return (
-              <img
-                width="200"
-                alt={`photo_${idx + 1}`}
-                // src={`${'https://jop.dudyali.com/storage/'}${res}`}
-                src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                // src={res}
-                className="rounded-xl"
-              />
-            );
-          })}
+          {transactionData?.foto?.map((res, idx) => (
+            <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />
+          ))}
+          {photos?.map((res, idx) => (
+            <img
+              width="200"
+              alt={`photo_${idx + 1}`}
+              // src={`${'https://jop.dudyali.com/storage/'}${res}`}
+              src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
+              // src={res}
+              className="rounded-xl"
+            />
+          ))}
         </div>
         {/* <input type="file" multiple onChange={onSelectPhoto} /> */}
       </div>

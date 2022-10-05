@@ -91,7 +91,6 @@ function Warehouse() {
   const tabList = ['Opname', 'Check-in', 'Stock', 'Check-out'];
 
   const onChangeTab = (id) => {
-    console.log(id, 'id');
     setSelectedTab(id);
   };
 

@@ -111,7 +111,6 @@ function LogisticLoading() {
             localStorage.removeItem('batch_item');
           });
       } catch (error) {
-        console.log(error, 'errormessage');
         setIsError(true);
         setErrorText(error?.response?.data?.message);
         setIsButtonDisabled(true);
