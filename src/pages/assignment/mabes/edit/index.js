@@ -53,6 +53,7 @@ function MabesEdit() {
   const [addInput, setAddInput] = React.useState({});
   const [isRecurring, setIsRecurring] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [clone, setClone] = React.useState('');
   const [currentMandor, setCurrentMandor] = React.useState('');
@@ -110,7 +111,7 @@ function MabesEdit() {
           jenis_tugas_id: data?.jenis_tugas?.id,
           mandor_id: data?.mandor?.id,
           sistem_id: data?.sistem?.id,
-          tanggal_tugas: moment(data?.tanggal_tugas, 'YYYY-MM-DD hh:mm').format('YYYY-MM-DD'),
+          tanggal_tugas: data?.tanggal_tugas,
           is_recurring: data?.is_recurring,
           tipe_recurring: data?.tipe_recurring,
           batas_recurring: data?.batas_recurring,
@@ -275,9 +276,10 @@ function MabesEdit() {
       ...dateTimeInput,
       date: e.target.value,
     });
+
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: `${e.target.value}` + ` ${addInput.tanggal_tugas.split(' ')[1]}`,
     });
   };
 
@@ -286,9 +288,10 @@ function MabesEdit() {
       ...dateTimeInput,
       time: e.target.value,
     });
+
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: `${addInput.tanggal_tugas.split(' ')[0]}` + ` ${e.target.value}`,
     });
   };
 
@@ -314,31 +317,40 @@ function MabesEdit() {
         Accept: 'application/json',
       },
     };
-    if ((isSwitch === 'true' && addInput.mandor_id !== currentMandor) || !isSwitch) {
-      axios
-        .put(
-          `${url}penugasan/update/${id}`,
-          {
-            ...addInput,
-            is_recurring: isRecurring === true ? 1 : 0,
-          },
-          config
-        )
-        .then((res) => {
-          setIsSuccess(true);
-          setAlertMessage('Sukses mengubah data !');
-          setIsButtonDisabled(true);
-          setIsSubmitted(true);
-          setTimeout(() => {
-            setIsButtonDisabled(false);
-            setIsSubmitted(false);
-            navigate(`/assignment/detail/${id}`);
-          }, 3000);
-        });
-    } else {
+    try {
+      if ((isSwitch === 'true' && addInput.mandor_id !== currentMandor) || !isSwitch) {
+        axios
+          .put(
+            `${url}penugasan/update/${id}`,
+            {
+              ...addInput,
+              is_recurring: isRecurring === true ? 1 : 0,
+            },
+            config
+          )
+          .then((res) => {
+            setIsSuccess(true);
+            setAlertMessage('Sukses mengubah data !');
+            setIsButtonDisabled(true);
+            setIsSubmitted(true);
+            setTimeout(() => {
+              setIsButtonDisabled(false);
+              setIsSubmitted(false);
+              navigate(`/assignment/detail/${id}`);
+            }, 3000);
+          });
+      } else {
+        setIsSuccess(false);
+        setAlertMessage('Mandor belum dialhikan, silakan ganti mandor');
+        setIsError(true);
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 3000);
+      }
+    } catch (error) {
       setIsSuccess(false);
-      setAlertMessage('Mandor belum dialhikan, silakan ganti mandor');
-      setIsSubmitted(true);
+      setAlertMessage('Gagal update data');
+      setIsError(true);
       setTimeout(() => {
         setIsSubmitted(false);
       }, 3000);
@@ -418,7 +430,7 @@ function MabesEdit() {
               <h2 className="text-left mb-1">Waktu Tugas</h2>
               {detailData?.tanggal_tugas && (
                 <TimePicker
-                  defaultValue={moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm').format('hh:mm')}
+                  defaultValue={moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm').format('hh:mm') ?? ''}
                   onChange={(e) => onChangeTime(e)}
                 />
               )}
@@ -463,6 +475,7 @@ function MabesEdit() {
             />
           </div>
           <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
+          <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isError} isSuccess={false} />
         </div>
       </div>
     </>

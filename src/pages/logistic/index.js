@@ -194,10 +194,16 @@ function Logistic() {
     navigate(`detail/${id}`);
   };
 
+  const handleBack = () => {
+    localStorage.removeItem('logistic_payload');
+    localStorage.removeItem('shipment_index');
+    localStorage.removeItem('loaded_data');
+  };
+
   return (
     <>
       <div className="header">
-        <Header title="Logistik" isWithBack />
+        <Header title="Logistik" isWithBack moreAction={handleBack} />
       </div>
       <div className="container">
         <Dropdown
