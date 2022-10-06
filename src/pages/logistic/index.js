@@ -11,9 +11,14 @@ const url = process.env.REACT_APP_API_URL;
 
 function Dropdown(props) {
   return (
-    <div className={`${props.customClass} w-full`}>
+    <div className={`${props.customClass} w-full mt-2`}>
       <h2 className="text-left mb-1">{props.title}</h2>
-      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+      <DropDown
+        selected={props.selected}
+        defaultValue={props.defaultValue}
+        onChange={props.onChange}
+        option={props.option}
+      />
     </div>
   );
 }
@@ -42,15 +47,28 @@ function Logistic() {
   const cookies = new Cookies();
   const token = cookies.get('token');
   const [tphList, setTphList] = React.useState([]);
-  const [selectedTph, setSelectedTph] = React.useState('');
-  const [dateFrom, setDateFrom] = React.useState('');
-  const [dateTo, setDateTo] = React.useState('');
+  const [input, setInput] = React.useState({});
   const [batchReadyToDeliver, setBatchReadyToDeliver] = React.useState([]);
   const [batchOnDelivery, setBatchOnDelivery] = React.useState([]);
   const [batchDelivered, setBatchDelivered] = React.useState([]);
-
+  const logistic_payload = JSON.parse(localStorage.getItem('logistic_payload'));
   React.useEffect(() => {
+    localStorage.removeItem('delivered');
+    localStorage.setItem(
+      'logistic_payload',
+      JSON.stringify({
+        ...logistic_payload,
+        lokasi: 'tph',
+      })
+    );
+    // if (logistic_payload?.lokasi === 'tph') {
     getTPH();
+    // }
+    // if (logistic_payload?.from !== null && logistic_payload?.to !== null) {
+    //   getBatchReadyToDeliver();
+    //   getBatchOnDelivery();
+    //   getBatchDelivered();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -73,34 +91,48 @@ function Logistic() {
       });
   };
 
-  const onChangeTph = (e) => {
-    setSelectedTph(e.target.value);
-  };
+  const onChangeHandler = (e, id) => {
+    localStorage.setItem(
+      'logistic_payload',
+      JSON.stringify({
+        ...logistic_payload,
+        [id]: e.target.value,
+      })
+    );
 
-  const onChangePeriod = (e, type) => {
-    if (type === 'from') {
-      setDateFrom(e.target.value);
-    } else {
-      setDateTo(e.target.value);
+    setInput({
+      ...input,
+      [id]: e.target.value,
+    });
+
+    if (id === 'lokasi' && e.target.value === 'tph') {
+      getTPH();
     }
+    // setSelectedTph(e.target.value);
   };
 
   React.useEffect(() => {
-    if (dateFrom && dateTo) {
-      getBatchReadyToDeliver();
-      getBatchOnDelivery();
-      getBatchDelivered();
+    if (logistic_payload) {
+      if (
+        'lokasi' in logistic_payload &&
+        'kode_lokasi' in logistic_payload &&
+        'from' in logistic_payload &&
+        'to' in logistic_payload
+      ) {
+        getBatchReadyToDeliver();
+        getBatchOnDelivery();
+        getBatchDelivered();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateFrom, dateTo, selectedTph]);
+  }, [input]);
 
   const getBatchReadyToDeliver = () => {
     axios
       .get(
-        `${url}pengiriman/batch-siap-kirim?filter[tph]=${selectedTph}&filter[periode_penimbangan]=${dateFrom.concat(
-          ',',
-          dateTo
-        )}`,
+        `${url}pengiriman/batch-siap-kirim?filter[tph]=${
+          logistic_payload?.kode_lokasi
+        }&filter[periode_penimbangan]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
           url: process.env.REACT_APP_API_URL,
           headers: {
@@ -118,10 +150,9 @@ function Logistic() {
   const getBatchOnDelivery = () => {
     axios
       .get(
-        `${url}pengiriman/batch-dalam-pengiriman?filter[tph]=${selectedTph}&filter[periode_penimbangan]=${dateFrom.concat(
-          ',',
-          dateTo
-        )}`,
+        `${url}pengiriman/batch-dalam-pengiriman?filter[tph]=${
+          logistic_payload?.kode_lokasi
+        }&filter[periode_penimbangan]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
           url: process.env.REACT_APP_API_URL,
           headers: {
@@ -139,10 +170,9 @@ function Logistic() {
   const getBatchDelivered = () => {
     axios
       .get(
-        `${url}pengiriman/batch-selesai-kirim?filter[tph]=${selectedTph}&filter[periode_penimbangan]=${dateFrom.concat(
-          ',',
-          dateTo
-        )}`,
+        `${url}pengiriman/batch-selesai-kirim?filter[tph]=${
+          logistic_payload?.kode_lokasi
+        }&filter[periode_penimbangan]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
           url: process.env.REACT_APP_API_URL,
           headers: {
@@ -171,19 +201,46 @@ function Logistic() {
       </div>
       <div className="container">
         <Dropdown
+          title="Masukan lokasi"
+          // defaultValue={!shipment_payload?.gudang_id ? 'Pilih kode lokasi gudang' : ''}
+          selected={logistic_payload?.lokasi !== null ? logistic_payload?.lokasi : 'tph'}
+          option={[
+            {
+              value: 'tph',
+              label: 'Tempat Penimbangan',
+            },
+            {
+              value: 'gudang',
+              label: 'Gudang',
+            },
+          ]}
+          onChange={(e) => onChangeHandler(e, 'lokasi')}
+        />
+        <Dropdown
           title="Masukan kode lokasi awal"
-          defaultValue="Pilih kode lokasi awal"
+          defaultValue={!logistic_payload?.kode_lokasi ? 'Pilih kode lokasi awal' : ''}
           option={tphList}
-          onChange={(e) => onChangeTph(e)}
+          selected={
+            logistic_payload?.kode_lokasi !== null && tphList !== []
+              ? logistic_payload?.kode_lokasi
+              : 'Pilih kode lokasi'
+          }
+          onChange={(e) => onChangeHandler(e, 'kode_lokasi')}
         />
         <div>
           <h2 className="text-left mt-5 mb-1">Atur Periode</h2>
           <div className="flex justify-between gap-2">
             <div className="flex-auto w-64">
-              <DatePicker onChange={(e) => onChangePeriod(e, 'from')} />
+              <DatePicker
+                defaultValue={logistic_payload?.from !== null ? logistic_payload?.from : ''}
+                onChange={(e) => onChangeHandler(e, 'from')}
+              />
             </div>
             <div className="flex-auto w-64">
-              <DatePicker onChange={(e) => onChangePeriod(e, 'to')} />
+              <DatePicker
+                defaultValue={logistic_payload?.to !== null ? logistic_payload?.to : ''}
+                onChange={(e) => onChangeHandler(e, 'to')}
+              />
             </div>
           </div>
         </div>

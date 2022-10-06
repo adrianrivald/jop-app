@@ -15,7 +15,7 @@ const Overlay = () => {
   const cookies = new Cookies();
   const token = cookies.get('token');
   const scan_type = localStorage.getItem('scan_type');
-  const saved_payload = JSON.parse(localStorage.getItem('saved_payload'));
+  const shipment_payload = JSON.parse(localStorage.getItem('shipment_payload'));
 
   const onChange = (e) => {
     setCode(e.target.value);
@@ -34,9 +34,9 @@ const Overlay = () => {
         const data = res.data.data;
         if (scan_type === 'supir') {
           localStorage.setItem(
-            'saved_payload',
+            'shipment_payload',
             JSON.stringify({
-              ...saved_payload,
+              ...shipment_payload,
               supir_id: data?.id,
             })
           );
@@ -50,9 +50,9 @@ const Overlay = () => {
           );
         } else {
           localStorage.setItem(
-            'saved_payload',
+            'shipment_payload',
             JSON.stringify({
-              ...saved_payload,
+              ...shipment_payload,
               pengawal_id: data?.id,
             })
           );

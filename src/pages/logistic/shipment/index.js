@@ -14,7 +14,12 @@ function Dropdown(props) {
   return (
     <div className={`${props.className} w-full`}>
       <label className="text-left mb-1">{props.title}</label>
-      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+      <DropDown
+        selected={props.selected}
+        defaultValue={props.defaultValue}
+        onChange={props.onChange}
+        option={props.option}
+      />
     </div>
   );
 }
@@ -35,7 +40,7 @@ function LogisticShipment() {
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const scanned_driver = localStorage.getItem('scanned_driver');
-  const saved_payload = JSON.parse(localStorage.getItem('saved_payload'));
+  const shipment_payload = JSON.parse(localStorage.getItem('shipment_payload'));
 
   React.useEffect(() => {
     getLogisticType();
@@ -45,12 +50,15 @@ function LogisticShipment() {
       loading_id: loaded_data?.loading_id,
     });
     localStorage.setItem(
-      'saved_payload',
+      'shipment_payload',
       JSON.stringify({
-        ...saved_payload,
+        ...shipment_payload,
         loading_id: loaded_data?.loading_id,
       })
     );
+    if (shipment_payload?.jenis_logistik_id !== null) {
+      getVehicle(shipment_payload?.jenis_logistik_id);
+    }
   }, []);
 
   React.useEffect(() => {
@@ -126,9 +134,9 @@ function LogisticShipment() {
     });
 
     localStorage.setItem(
-      'saved_payload',
+      'shipment_payload',
       JSON.stringify({
-        ...saved_payload,
+        ...shipment_payload,
         [id]: e.target.value,
       })
     );
@@ -149,7 +157,7 @@ function LogisticShipment() {
       .post(
         `${url}pengiriman/store
     `,
-        saved_payload,
+        shipment_payload,
         config
       )
       .then(() => {
@@ -161,7 +169,7 @@ function LogisticShipment() {
           localStorage.removeItem('loaded_data');
           localStorage.removeItem('supir_data');
           localStorage.removeItem('pengawal_data');
-          localStorage.removeItem('saved_payload');
+          localStorage.removeItem('shipment_payload');
           localStorage.removeItem('scan_type');
           localStorage.removeItem('scanned_tapper');
           navigate(-1);
@@ -175,8 +183,8 @@ function LogisticShipment() {
   };
 
   const defaultValue = (id) => {
-    if (saved_payload && saved_payload[id] !== '') {
-      return saved_payload[id];
+    if (shipment_payload && shipment_payload[id] !== '') {
+      return shipment_payload[id];
     }
     return `Pilih ${id}`;
   };
@@ -185,7 +193,7 @@ function LogisticShipment() {
     localStorage.removeItem('loaded_data');
     localStorage.removeItem('supir_data');
     localStorage.removeItem('pengawal_data');
-    localStorage.removeItem('saved_payload');
+    localStorage.removeItem('shipment_payload');
     localStorage.removeItem('scan_type');
     localStorage.removeItem('scanned_tapper');
   };
@@ -212,14 +220,22 @@ function LogisticShipment() {
         <div className="load-detail">
           <Dropdown
             title="Jenis logistik"
-            defaultValue="Pilih jenis logistik"
+            defaultValue={!shipment_payload?.jenis_logistik_id ? 'Pilih jenis logistik' : ''}
+            selected={
+              shipment_payload?.jenis_logistik_id !== null
+                ? shipment_payload?.jenis_logistik_id
+                : 'Pilih jenis logistik'
+            }
             className="mt-3"
             option={logisticType}
             onChange={(e) => onChangeHandler(e, 'jenis_logistik_id')}
           />
           <Dropdown
             title="Armada yang digunakan"
-            defaultValue="Pilih armada"
+            defaultValue={!shipment_payload?.armada_id ? 'Pilih armada' : ''}
+            selected={
+              shipment_payload?.armada_id !== null && vehicleList !== [] ? shipment_payload?.armada_id : 'Pilih armada'
+            }
             className="mt-3"
             option={vehicleList}
             onChange={(e) => onChangeHandler(e, 'armada_id')}
@@ -227,17 +243,19 @@ function LogisticShipment() {
           <div className="flex gap-3">
             <Dropdown
               title="Alamat / fasilitas tujuan"
-              defaultValue="Pilih WH"
+              defaultValue={!shipment_payload?.wh_id ? 'Pilih WH' : ''}
+              selected={shipment_payload?.wh_id !== null ? shipment_payload?.wh_id : 'Pilih WH'}
               className="mt-3"
               option={[
                 { value: 'wh', label: 'WH' },
                 { value: 'klien', label: 'Klien' },
               ]}
-              // onChange={(e) => onChangeHandler(e, 'wh_id')}
+              onChange={(e) => onChangeHandler(e, 'wh_id')}
             />
             <Dropdown
               title="Kode lokasi gudang"
-              defaultValue="Pilih kode lokasi gudang"
+              defaultValue={!shipment_payload?.gudang_id ? 'Pilih kode lokasi gudang' : ''}
+              selected={shipment_payload?.gudang_id !== null ? shipment_payload?.gudang_id : 'Pilih kode lokasi gudang'}
               className="mt-3"
               option={storageList}
               onChange={(e) => onChangeHandler(e, 'gudang_id')}
@@ -246,7 +264,7 @@ function LogisticShipment() {
           <div className="flex flex-col items-start w-full mb-4 mt-3">
             <label className="text-left mb-1">Alamat / fasilitas tujuan lain (optional)</label>
             <textarea
-              defaultValue=""
+              defaultValue={shipment_payload?.alamat_pengiriman !== null ? shipment_payload?.alamat_pengiriman : ''}
               onChange={(e) => onChangeHandler(e, 'alamat_pengiriman')}
               rows="4"
               className="flex justify-between w-full font-bold bg-white dark:bg-white shadow border-none text-xs rounded-lg focus:ring-flora-500 focus:border-flora-500 block w-full p-3 resize-none"
