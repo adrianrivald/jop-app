@@ -62,7 +62,7 @@ const Mandor = () => {
       <section className="container p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="text-xs font-bold text-black">Tugas Kerja</div>
-          <DatePicker defaultValue={selectedDate} onChange={onChangeDate} />
+          <DatePicker defaultValue={selectedDate} onChange={onChangeDate} disabled={listDataFetching} />
         </div>
         {/* table */}
         {listDataFetching ? (

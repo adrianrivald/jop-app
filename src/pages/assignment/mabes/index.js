@@ -17,7 +17,12 @@ function Dropdown(props) {
   return (
     <div className="mt-1 w-3/6">
       <h2 className="text-left text-xs mb-1">{props.title}</h2>
-      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+      <DropDown
+        defaultValue={props.defaultValue}
+        onChange={props.onChange}
+        option={props.option}
+        disabled={props.disabled}
+      />
     </div>
   );
 }
@@ -189,17 +194,33 @@ function Mabes() {
         </div>
         <div>
           <div className="flex justify-between items-center gap-2">
-            <Dropdown title="Estate" defaultValue="Pilih estate" option={estateList} onChange={onChangeEstate} />
-            <Dropdown title="Jenis Tugas" defaultValue="Pilih jenis tugas" option={taskList} onChange={onChangeTask} />
+            <Dropdown
+              title="Estate"
+              defaultValue="Pilih estate"
+              option={estateList}
+              onChange={onChangeEstate}
+              disabled={listDataFetching}
+            />
+            <Dropdown
+              title="Jenis Tugas"
+              defaultValue="Pilih jenis tugas"
+              option={taskList}
+              onChange={onChangeTask}
+              disabled={listDataFetching}
+            />
           </div>
           <div className="flex justify-between items-center gap-2 mt-2">
             <div className="flex-auto w-64">
-              <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
+              <DatePicker
+                defaultValue={moment().format('YYYY-MM-DD')}
+                onChange={onChangeDate}
+                disabled={listDataFetching}
+              />
             </div>
             {/* <div className='flex-auto'>
                             <Button filterCount={filterCount} onClick={onClickFilter} isFilter={true} text='Filter'/>
                         </div> */}
-            <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
+            <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} disabled={listDataFetching} />
           </div>
         </div>
         {listDataFetching ? (
