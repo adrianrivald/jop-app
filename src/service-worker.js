@@ -47,7 +47,14 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
-registerRoute(new RegExp('/.*'), new NetworkFirst());
+registerRoute(({ request }) => request.mode === 'no-cors', new NetworkFirst());
+
+const fetchQueueStrategy = FetchQueueSW.register();
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'GET');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'POST');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'PUT');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'DELETE');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'PATCH');
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
@@ -75,4 +82,4 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
-FetchQueueSW.register();
+// FetchQueueSW.register();

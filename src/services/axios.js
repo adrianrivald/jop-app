@@ -18,4 +18,7 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-axios.interceptors.response.use(AxiosInterceptor.ResponseInterceptorFullfiled);
+axios.interceptors.response.use(
+  AxiosInterceptor.ResponseInterceptorFullfilled,
+  AxiosInterceptor.ResponseInterceptorRejected
+);
