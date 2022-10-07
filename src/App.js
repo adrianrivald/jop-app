@@ -33,17 +33,21 @@ import { FetchQueueHOC } from 'fetch-queue/hoc';
 import './services/axios';
 import Warehouse from './pages/warehouse';
 import LogisticShipmentDetail from './pages/logistic/shipment/detail';
+import WarehouseCIDetail from './pages/warehouse/check-in/detail';
 
 function App() {
   const cookies = new Cookies();
   const path = window.location.pathname;
 
   React.useEffect(() => {
-    if (!cookies.get('token') && path !== '/auth/login') {
+    if (!cookies.get('token') && !localStorage.getItem('userData') && path !== '/auth/login') {
       window.location.href = `${window.location.origin}/auth/login`;
     }
-    if (cookies.get('token') && path === '/auth/login') {
+    if (cookies.get('token') && localStorage.getItem('userData') !== null && path === '/auth/login') {
       window.location.href = `${window.location.origin}/homepage`;
+    }
+    if (!localStorage.getItem('userData') && path !== '/auth/login') {
+      window.location.href = `${window.location.origin}/auth/login`;
     }
   }, []);
 
@@ -92,6 +96,7 @@ function App() {
 
             {/* gudang */}
             <Route path="/warehouse" exact element={<Warehouse />} />
+            <Route path="/warehouse/detail" exact element={<WarehouseCIDetail />} />
 
             {/* misc */}
             <Route path="/storybook" exact element={<Storybook />} />

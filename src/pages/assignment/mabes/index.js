@@ -30,10 +30,9 @@ function Mabes() {
   const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
   const [selectedEstate, setSelectedEstate] = React.useState('');
   const [selectedTask, setSelectedTask] = React.useState('');
-  // const [filterCount, setFilterCount] = React.useState(0)
   const [isEmpty, setIsEmpty] = React.useState(false);
   const [isNoFilter, setIsNoFilter] = React.useState(false);
-  const [selectedFilter, setSelectedFilter] = React.useState({});
+  const mabes_state = JSON.parse(localStorage.getItem('mabes_state'));
   const sortOption = [
     {
       value: 'asc',
@@ -54,39 +53,37 @@ function Mabes() {
   React.useEffect(() => {
     getList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, selectedEstate, selectedTask]);
+  }, [selectedTask, selectedEstate, selectedDate]);
 
   // React.useEffect(() => {
   //     setFilterCount(Object.keys(selectedFilter).length)
   // }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
 
   const getList = (sort) => {
-    if (!selectedTask && !selectedEstate && !selectedDate) {
-      setIsNoFilter(true);
-    } else if (selectedTask || selectedDate || selectedEstate) {
-      axios
-        .get(
-          `${url}penugasan/by-mabes?filter[tanggal_tugas]=${selectedDate}&filter[wilayah_tugas]=${selectedEstate}&filter[jenis_tugas]=${selectedTask}&sort=${
-            sort === 'asc' || !sort ? '-' : ''
-          }tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`,
-          {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: 'application/json',
-            },
-          }
-        )
-        .then((res) => {
-          const data = res.data.data.data;
-          setListData(data);
-          setIsEmpty(false);
-          setIsNoFilter(false);
-          if (data.length === 0) {
-            setIsEmpty(true);
-          }
-        });
-    }
+    axios
+      .get(
+        `${url}penugasan/by-mabes?filter[tanggal_tugas]=${
+          mabes_state?.date !== undefined ? mabes_state?.date : ''
+        }&filter[wilayah_tugas]=${mabes_state?.estate}&filter[jenis_tugas]=${mabes_state?.task}&sort=${
+          !mabes_state?.sort ? (sort === 'asc' || !sort ? '-' : '') : mabes_state?.sort === 'asc' ? '-' : ''
+        }tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`,
+        {
+          url: process.env.REACT_APP_API_URL,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }
+      )
+      .then((res) => {
+        const data = res.data.data.data;
+        setListData(data);
+        setIsEmpty(false);
+        setIsNoFilter(false);
+        if (data.length === 0) {
+          setIsEmpty(true);
+        }
+      });
   };
 
   const getTask = () => {
@@ -129,40 +126,51 @@ function Mabes() {
 
   const onChangeDate = (e) => {
     setSelectedDate(e.target.value);
-    setSelectedFilter({
-      ...selectedFilter,
-      selected_date: true,
-    });
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        date: e.target.value,
+      })
+    );
   };
 
   const onChangeEstate = (e) => {
     setSelectedEstate(e.target.value);
-    setSelectedFilter({
-      ...selectedFilter,
-      selected_estate: true,
-    });
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        estate: e.target.value,
+      })
+    );
   };
 
   const onChangeTask = (e) => {
     setSelectedTask(e.target.value);
-    setSelectedFilter({
-      ...selectedFilter,
-      selected_task: true,
-    });
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        task: e.target.value,
+      })
+    );
   };
 
   const onListClick = (id) => {
     navigate(`/assignment/detail/${id}`);
   };
 
-  // const onClickFilter = () => {
-  //     setSelectedFilter({})
-  //     setIsNoFilter(true)
-  // }
-
   const onChangeSort = (e) => {
     const sort = e.target.value;
     getList(sort);
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        sort: e.target.value,
+      })
+    );
   };
 
   return (
@@ -193,17 +201,34 @@ function Mabes() {
         </div>
         <div>
           <div className="flex justify-between items-center gap-2">
-            <Dropdown title="Estate" defaultValue="Pilih estate" option={estateList} onChange={onChangeEstate} />
-            <Dropdown title="Jenis Tugas" defaultValue="Pilih jenis tugas" option={taskList} onChange={onChangeTask} />
+            <Dropdown
+              title="Estate"
+              defaultValue={!mabes_state?.estate ? 'Pilih estate' : ''}
+              selected={mabes_state?.estate !== null ? mabes_state?.estate : 'Pilih estate'}
+              option={estateList}
+              onChange={onChangeEstate}
+            />
+            <Dropdown
+              title="Jenis Tugas"
+              defaultValue={!mabes_state?.task ? 'Pilih jenis tugas' : ''}
+              selected={mabes_state?.task !== null ? mabes_state?.task : 'Pilih jenis tugas'}
+              option={taskList}
+              onChange={onChangeTask}
+            />
           </div>
           <div className="flex justify-between items-center gap-2 mt-2">
             <div className="flex-auto w-64">
-              <DatePicker defaultValue={moment().format('YYYY-MM-DD')} onChange={onChangeDate} />
+              <DatePicker
+                defaultValue={mabes_state?.date !== null ? mabes_state?.date : moment().format('YYYY-MM-DD')}
+                onChange={onChangeDate}
+              />
             </div>
-            {/* <div className='flex-auto'>
-                            <Button filterCount={filterCount} onClick={onClickFilter} isFilter={true} text='Filter'/>
-                        </div> */}
-            <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} />
+            <DropDown
+              defaultValue={!mabes_state?.sort ? 'Urutkan' : ''}
+              selected={mabes_state?.sort !== null ? mabes_state?.sort : 'Urutkan'}
+              option={sortOption}
+              onChange={onChangeSort}
+            />
           </div>
         </div>
         {!isNoFilter && !isEmpty ? (
