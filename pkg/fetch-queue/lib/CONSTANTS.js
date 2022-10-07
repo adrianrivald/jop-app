@@ -9,4 +9,4 @@ export const NETWORK_STATE = {
   ONLINE: 21,
 };
 
-export const PENDING_STATUS_CODE = 202;
+export const PENDING_STATUS_CODE = 304;

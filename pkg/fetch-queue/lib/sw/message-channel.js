@@ -21,8 +21,7 @@ export class MessageChannel {
       })
       .then((clients) => {
         if (clients && clients.length) {
-          clients[0].postMessage(message.toObject());
-          this._clientListenerPort = clients[0];
+          clients.forEach((client) => client.postMessage(message.toObject()));
         } else {
           console.error("can't post message! client listener port undefined");
         }
