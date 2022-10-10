@@ -3,15 +3,15 @@ import moment from 'moment';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Button from '../../../../components/button/Button';
-import DatePicker from '../../../../components/forms/DatePicker';
-import DropDown from '../../../../components/forms/Dropdown';
-import Divider from '../../../../components/ui/Divider';
-import Header from '../../../../components/ui/Header';
+import Button from '../../../../../components/button/Button';
+import DatePicker from '../../../../../components/forms/DatePicker';
+import DropDown from '../../../../../components/forms/Dropdown';
+import Divider from '../../../../../components/ui/Divider';
+import Header from '../../../../../components/ui/Header';
 
 const url = process.env.REACT_APP_API_URL;
 
-function WarehouseCIDetail() {
+function WarehouseCIDetailArrived() {
   const { id } = useParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -154,4 +154,4 @@ function WarehouseCIDetail() {
   );
 }
 
-export default WarehouseCIDetail;
+export default WarehouseCIDetailArrived;

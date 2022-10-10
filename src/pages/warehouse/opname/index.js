@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/button/Button';
 import FlatButton from '../../../components/button/flat';
 import DropDown from '../../../components/forms/Dropdown';
@@ -11,6 +12,8 @@ function Dropdown(props) {
   );
 }
 function Opname(props) {
+  const navigate = useNavigate();
+
   return (
     <div>
       <div className="flex justify-between gap-2">
@@ -44,7 +47,7 @@ function Opname(props) {
           }
           text="Scan Update"
           className="w-full mt-2"
-          // onClick={()=> navigate(`scan`)}
+          onClick={() => navigate(`scan`)}
         />
       </div>
       <div className="mt-3">

@@ -83,7 +83,7 @@ function CheckIn(props) {
           }
           text="Scan Barang Sampai"
           className="w-full mt-2"
-          // onClick={()=> navigate(`scan`)}
+          onClick={() => navigate(`scan`)}
         />
       </div>
       <div className="flex justify-between items-center mt-4">
@@ -138,7 +138,7 @@ function CheckIn(props) {
                         className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                       />
                       <div
-                        onClick={() => navigate('detail')}
+                        onClick={() => navigate('/warehouse/check-in/detail/arrived')}
                         className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold"
                       >
                         OJ.01-1

@@ -111,7 +111,7 @@ function LogisticDetail() {
       return true;
     }
 
-    if (!localStorage.getItem('delivered')) {
+    if (localStorage.getItem('delivered')) {
       return true;
     }
 

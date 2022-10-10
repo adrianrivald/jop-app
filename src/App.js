@@ -33,7 +33,13 @@ import { FetchQueueHOC } from 'fetch-queue/hoc';
 import './services/axios';
 import Warehouse from './pages/warehouse';
 import LogisticShipmentDetail from './pages/logistic/shipment/detail';
-import WarehouseCIDetail from './pages/warehouse/check-in/detail';
+import WarehouseCIDetailArrived from './pages/warehouse/check-in/detail/arrived';
+import { ToastContainer } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+import WarehouseCIScan from './pages/warehouse/check-in/scan';
+import WarehouseCIDetailNew from './pages/warehouse/check-in/detail/new';
+import WarehouseOpnameScan from './pages/warehouse/opname/scan';
 
 function App() {
   const cookies = new Cookies();
@@ -53,6 +59,7 @@ function App() {
 
   return (
     <FetchQueueHOC>
+      <ToastContainer autoClose={3000} />
       <Provider store={store}>
         <Router>
           <Routes>
@@ -96,7 +103,10 @@ function App() {
 
             {/* gudang */}
             <Route path="/warehouse" exact element={<Warehouse />} />
-            <Route path="/warehouse/detail" exact element={<WarehouseCIDetail />} />
+            <Route path="/warehouse/opname/scan" exact element={<WarehouseOpnameScan />} />
+            <Route path="/warehouse/check-in/detail/arrived" exact element={<WarehouseCIDetailArrived />} />
+            <Route path="/warehouse/check-in/detail/new" exact element={<WarehouseCIDetailNew />} />
+            <Route path="/warehouse/check-in/scan" exact element={<WarehouseCIScan />} />
 
             {/* misc */}
             <Route path="/storybook" exact element={<Storybook />} />

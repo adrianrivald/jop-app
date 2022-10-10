@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../../services/axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FlatButton from '../../../components/button/flat';
