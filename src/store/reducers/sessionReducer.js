@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/default-param-last */
-
 import { UPDATE_SESSION } from '../actions/types';
 
 const initState = {

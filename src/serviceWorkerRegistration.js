@@ -18,6 +18,18 @@ const isLocalhost = Boolean(
     window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 );
 
+const registerSync = (registration) => {
+  registration.sync.register('sync-fetch').then(() => console.info('sync-fetch successfully registered!'));
+
+  Notification.requestPermission().then(async (notifState) => {
+    if (notifState === 'granted') {
+      console.info('notification successfully granted!');
+    } else {
+      console.error('notification not granted');
+    }
+  });
+};
+
 export function register(config) {
   if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
@@ -56,6 +68,7 @@ function registerValidSW(swUrl, config) {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
+      navigator.serviceWorker.ready.then(registerSync);
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (installingWorker == null) {

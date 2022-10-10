@@ -1,9 +1,10 @@
 import { Queue } from './queue';
 import { Network } from './network';
-import { MESSAGE_TYPE, NOT_MODIFIED_STATUS_CODE, ACCEPTED_STATUS_CODE } from '../CONSTANTS';
+import { MESSAGE_TYPE, NOT_MODIFIED_STATUS_CODE, ACCEPTED_STATUS_CODE, INTERNAL_ERROR_STATUS_CODE } from '../CONSTANTS';
 import { MessageChannel } from './message-channel';
 import Message from '../dto/Message';
 import FetchResponseMessageData from '../dto/FetchResponseMessageData';
+import RequestObject from '../dto/RequestObject';
 
 const _SAFE_METHOD = ['GET', 'HEAD'];
 const _CACHE_NAME = 'FETCH_QUEUE';
@@ -39,6 +40,7 @@ export class FetchQueue {
 
     this.register = this.register.bind(this);
     this._didOnline = this._didOnline.bind(this);
+    this.registerPeriodicSync = this.registerPeriodicSync.bind(this);
   }
 
   async wbHandler(request, handler) {
@@ -59,30 +61,42 @@ export class FetchQueue {
       }
     }
 
-    let res = new Response(null, {
-      status: ACCEPTED_STATUS_CODE,
-      statusText: 'pending',
-    });
-    if (isSafeMethod) {
-      res = new Response(null, {
-        status: NOT_MODIFIED_STATUS_CODE,
+    try {
+      const reqObj = await RequestObject.fromRequest(request);
+      this._queue.push(reqObj.toJSON());
+
+      if (isSafeMethod) {
+        return new Response(null, {
+          status: NOT_MODIFIED_STATUS_CODE,
+          statusText: 'pending',
+        });
+      }
+      return new Response(null, {
+        status: ACCEPTED_STATUS_CODE,
+        statusText: 'pending',
+      });
+    } catch (err) {
+      if (isSafeMethod) {
+        return new Response(err.message, {
+          status: INTERNAL_ERROR_STATUS_CODE,
+          statusText: 'pending',
+        });
+      }
+      return new Response(err.message, {
+        status: INTERNAL_ERROR_STATUS_CODE,
         statusText: 'pending',
       });
     }
+  }
 
-    try {
-      this._queue.push(request);
-      return res;
-    } catch (err) {
-      res.body = new ReadableStream({
-        start(controller) {
-          controller.enqueue(err.message);
-          controller.close();
-        },
-      });
-
-      return res;
-    }
+  registerPeriodicSync() {
+    self.addEventListener('sync', (event) => {
+      if (event.tag === 'sync-fetch') {
+        if (navigator.onLine) {
+          event.waitUntil(this._didOnline());
+        }
+      }
+    });
   }
 
   register() {
@@ -92,12 +106,14 @@ export class FetchQueue {
     }
 
     this._network.on('online', this._didOnline);
+    this.registerPeriodicSync();
 
     console.info('Fetch listener registered!');
   }
 
-  _didOnline() {
-    for (let req = this._queue.shift(); req !== undefined; req = this._queue.shift()) {
+  async _didOnline() {
+    for await (const reqObj of this._queue.entries()) {
+      const req = RequestObject.fromJSON(reqObj).toRequest();
       fetch(req)
         .then(async (res) => {
           if (_SAFE_METHOD.includes(req.method)) {
@@ -105,20 +121,20 @@ export class FetchQueue {
             await cache.put(req, res.clone());
           }
 
-          res.text().then((t) => {
-            this._messageChannel.postMessage(
-              Message.create({
-                type: MESSAGE_TYPE.FETCH_RESPONSE,
-                data: FetchResponseMessageData.create({
-                  url: req.url,
-                  method: req.method,
-                  status: res.status,
-                  body: t,
-                  contentType: res.headers.get('content-type'),
-                }),
-              })
-            );
-          });
+          const t = await res.text();
+
+          this._messageChannel.postMessage(
+            Message.create({
+              type: MESSAGE_TYPE.FETCH_RESPONSE,
+              data: FetchResponseMessageData.create({
+                url: req.url,
+                method: req.method,
+                status: res.status,
+                body: t,
+                contentType: res.headers.get('content-type'),
+              }),
+            })
+          );
         })
         .catch((err) => {
           this._messageChannel.postMessage(

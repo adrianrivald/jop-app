@@ -43,7 +43,7 @@ export const login = async (username, password) => {
   } catch (err) {
     if (err.isAxiosError) {
       if (err.response.status === 422) {
-        throw new Error(err.response.data.message());
+        throw new Error(err.response.data.message);
       } else if (error.response.status === 401) {
         throw new Error('login gagal');
       }

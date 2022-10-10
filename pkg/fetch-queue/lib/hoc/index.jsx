@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
-import { MESSAGE_TYPE, NETWORK_STATE } from '../CONSTANTS';
+import { MESSAGE_TYPE, NETWORK_STATE, BC_NAME } from '../CONSTANTS';
 import EE from './event-emitter';
 import Message from '../dto/Message';
 import FetchResponseMessageData from '../dto/FetchResponseMessageData';
 import FetchResponseEventName from '../dto/FetchResponseEventName';
 
 export default function HOC({ children }) {
+  const bc = new BroadcastChannel(BC_NAME);
+
   const onOnline = () => {
     if ('serviceWorker' in navigator) {
       if (navigator.serviceWorker.controller) {
@@ -43,6 +45,7 @@ export default function HOC({ children }) {
 
   const onSWMessage = (e) => {
     const message = Message.fromObject(e.data);
+
     switch (message.type) {
       case MESSAGE_TYPE.FETCH_RESPONSE:
         return handleFetchResponseMessage(message);
@@ -50,6 +53,7 @@ export default function HOC({ children }) {
   };
 
   useEffect(() => {
+    bc.onmessage = onSWMessage;
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
 
@@ -59,12 +63,5 @@ export default function HOC({ children }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.onmessage = onSWMessage;
-    }
-
-    return () => {};
-  }, [navigator.serviceWorker.controller]);
   return children;
 }
