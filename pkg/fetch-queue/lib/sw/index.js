@@ -31,6 +31,12 @@ export default class SW extends Strategy {
    */
   _messageChannel;
 
+  /**
+   * @type {string[]}
+   * @private
+   */
+  _whitelistedURL;
+
   constructor() {
     super();
     // Message Channel
@@ -46,22 +52,42 @@ export default class SW extends Strategy {
     this._fetchQueue = new FetchQueue(this._network, this._queue, this._messageChannel);
 
     this._register = this._register.bind(this);
+    this.capture = this.capture.bind(this);
   }
 
   _handle(request, handler) {
     return this._fetchQueue.wbHandler(request, handler);
   }
 
-  static capture({ request }) {
+  /**
+   * @param {Request} request
+   * @return {boolean}
+   */
+  capture({ request }) {
+    const url = new URL(request.url);
+    if (this._whitelistedURL.includes(url.pathname)) {
+      return false;
+    }
+
     return !['no-cors', 'navigate'].includes(request.mode);
   }
 
-  static register() {
+  /**
+   * @param {string[]} whitelistedURL
+   * @return {SW}
+   */
+  static register(whitelistedURL) {
     const fq = new SW();
-    return fq._register();
+    return fq._register(whitelistedURL);
   }
 
-  _register() {
+  /**
+   * @param {string[]} whitelistedURL
+   * @return {SW}
+   */
+  _register(whitelistedURL) {
+    this._whitelistedURL = whitelistedURL || [];
+
     this._messageChannel.register();
 
     this._network.register();
