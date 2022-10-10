@@ -22,7 +22,7 @@ const Overlay = () => {
   };
 
   const onSubmit = () => {
-    navigate('/warehouse/check-in/detail/new');
+    navigate('/warehouse/opname/update');
   };
 
   return (

@@ -31,7 +31,7 @@ function WarehouseOpnameScan() {
   return (
     <>
       <div className="header" style={{ position: 'relative', zIndex: '99' }}>
-        <Header title="Check-In WH" isWithBack />
+        <Header title="Opname WH" isWithBack />
       </div>
       <div className="qr-area" style={{ marginTop: '-10px' }}>
         <QrReader

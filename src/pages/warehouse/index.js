@@ -1,13 +1,7 @@
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import Button from '../../components/button/Button';
-import Title from '../../components/title/Title';
 import Header from '../../components/ui/Header';
-import Cookies from 'universal-cookie';
 import Toast from '../../components/ui/Toast';
 import DropDown from '../../components/forms/Dropdown';
-import './warehouse.scss';
-import FlatButton from '../../components/button/flat';
 import Opname from './opname';
 import CheckIn from './check-in';
 import Stock from './stock';
@@ -26,21 +20,6 @@ function Dropdown(props) {
 }
 
 function TabsWH(props) {
-  const slider = () => {
-    switch (props.selectedTab) {
-      case 'opname':
-        return 'translate-x-0.25';
-      case 'check-in':
-        return 'translate-x-7';
-      case 'stock':
-        return 'translate-x-13.75';
-      case 'check-out':
-        return 'translate-x-20.5';
-      default:
-        break;
-    }
-  };
-
   return (
     <div className="tabs">
       <ul className="flex bg-white rounded-xl justify-between p-1">
@@ -56,11 +35,6 @@ function TabsWH(props) {
               >
                 <span className="font-bold">{res}</span>
               </li>
-              {/* <div 
-                                    className={
-                                        `glider 
-                                        ${slider()}`}
-                                /> */}
             </>
           );
         })}

@@ -83,7 +83,7 @@ function CheckIn(props) {
           }
           text="Scan Barang Sampai"
           className="w-full mt-2"
-          onClick={() => navigate(`scan`)}
+          onClick={() => navigate(`check-in/scan`)}
         />
       </div>
       <div className="flex justify-between items-center mt-4">
@@ -187,7 +187,7 @@ function CheckIn(props) {
         )}
       </div>
       <div className="submit-area mt-8">
-        <Button isText text="Gabungkan" className="w-full font-bold" />
+        <Button isText text="Gabungkan" className="w-full font-bold" onClick={() => navigate('check-in/join')} />
       </div>
     </div>
   );

@@ -51,6 +51,10 @@ function WarehouseCIDetailNew() {
       });
   };
 
+  const handleSubmit = () => {
+    navigate('rescale');
+  };
+
   return (
     <>
       <div className="header">
@@ -138,7 +142,7 @@ function WarehouseCIDetailNew() {
 
         <div className="button-area flex mt-12 gap-2">
           <Button isText isBack text="Kembali" className="w-full" />
-          <Button isText text="Timbang Ulang" className="w-full" />
+          <Button isText text="Timbang Ulang" className="w-full" onClick={handleSubmit} />
         </div>
       </div>
     </>
