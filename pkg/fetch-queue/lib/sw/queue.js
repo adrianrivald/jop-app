@@ -85,14 +85,13 @@ export class Queue {
     this.lock();
     if (!this._db) {
       this._localQueue.push(req);
-      this.unlock();
     } else {
       const tx = this._db.transaction(_IDB_STORE_NAME, 'readwrite');
       const store = tx.objectStore(_IDB_STORE_NAME);
-      const add = store.add(req);
-      add.onsuccess = this.unlock;
-      add.onerror = this.unlock;
+      store.add(req);
+      tx.commit();
     }
+    this.unlock();
   }
 
   lock() {
