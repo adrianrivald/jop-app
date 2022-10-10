@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { PENDING_STATUS_CODE } from '../CONSTANTS';
+import { NOT_MODIFIED_STATUS_CODE, ACCEPTED_STATUS_CODE } from '../CONSTANTS';
 import EE from './event-emitter';
 import FetchResponseEventName from '../dto/FetchResponseEventName';
 import FetchResponseMessageData from '../dto/FetchResponseMessageData';
@@ -8,13 +8,18 @@ import FetchResponseMessageData from '../dto/FetchResponseMessageData';
  * @param {AxiosResponse} response
  * @constructor
  */
-export function ResponseInterceptorFullfiled(response) {
-  if (response.status === PENDING_STATUS_CODE) {
+export function ResponseInterceptorFullfilled(response) {
+  if (response.status === ACCEPTED_STATUS_CODE) {
     return new Promise((resolve, reject) => {
       EE.once(
-        FetchResponseEventName.create({ url: response.config.url, method: response.config.method }).toString(),
+        FetchResponseEventName.create({ url: response.request.responseURL, method: response.config.method }).toString(),
         async (res) => {
           const fetchRes = FetchResponseMessageData.fromObject(res);
+          if (fetchRes.error) {
+            response.status = fetchRes.status;
+            return reject(new AxiosError('error', null, response.config, response.request, response));
+          }
+
           switch (fetchRes.contentType) {
             case 'text/html':
               response.data = fetchRes.body;
@@ -25,9 +30,10 @@ export function ResponseInterceptorFullfiled(response) {
           }
           response.status = fetchRes.status;
 
-          if (res.status !== 200) {
+          if (fetchRes.status !== 200) {
             return reject(new AxiosError('error', null, response.config, response.request, response));
           }
+
           return resolve(response);
         }
       );
@@ -35,4 +41,44 @@ export function ResponseInterceptorFullfiled(response) {
   }
 
   return response;
+}
+
+/**
+ * @param {AxiosError} err
+ * @constructor
+ */
+export function ResponseInterceptorRejected(err) {
+  const { response } = err;
+  if (response.status === NOT_MODIFIED_STATUS_CODE) {
+    return new Promise((resolve, reject) => {
+      EE.once(
+        FetchResponseEventName.create({ url: response.request.responseURL, method: response.config.method }).toString(),
+        async (res) => {
+          const fetchRes = FetchResponseMessageData.fromObject(res);
+          if (fetchRes.error) {
+            response.status = fetchRes.status;
+            return reject(new AxiosError('error', null, response.config, response.request, response));
+          }
+
+          switch (fetchRes.contentType) {
+            case 'text/html':
+              response.data = fetchRes.body;
+              break;
+            case 'application/json':
+              response.data = JSON.parse(fetchRes.body);
+              break;
+          }
+          response.status = fetchRes.status;
+
+          if (fetchRes.status !== 200) {
+            return reject(new AxiosError('error', null, response.config, response.request, response));
+          }
+
+          return resolve(response);
+        }
+      );
+    });
+  }
+
+  return Promise.reject(err);
 }

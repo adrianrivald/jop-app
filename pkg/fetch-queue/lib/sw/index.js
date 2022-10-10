@@ -4,8 +4,9 @@ import { Queue } from './queue';
 import { Network } from './network';
 import { FetchQueue } from './fetch-queue';
 import { MessageChannel } from './message-channel';
+import { Strategy } from 'workbox-strategies';
 
-export default class SW {
+export default class SW extends Strategy {
   /**
    * @type {Network}
    * @private
@@ -31,6 +32,7 @@ export default class SW {
   _messageChannel;
 
   constructor() {
+    super();
     // Message Channel
     this._messageChannel = new MessageChannel();
 
@@ -46,6 +48,14 @@ export default class SW {
     this._register = this._register.bind(this);
   }
 
+  _handle(request, handler) {
+    return this._fetchQueue.wbHandler(request, handler);
+  }
+
+  static capture({ request }) {
+    return !['no-cors', 'navigate'].includes(request.mode);
+  }
+
   static register() {
     const fq = new SW();
     return fq._register();
@@ -57,5 +67,7 @@ export default class SW {
     this._network.register();
 
     this._fetchQueue.register();
+
+    return this;
   }
 }

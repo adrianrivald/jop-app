@@ -11,7 +11,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 import { FetchQueueSW } from 'fetch-queue/sw';
 
 clientsClaim();
@@ -47,6 +47,15 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
+registerRoute(({ request }) => request.mode === 'no-cors', new NetworkFirst());
+
+const fetchQueueStrategy = FetchQueueSW.register();
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'GET');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'POST');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'PUT');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'DELETE');
+registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'PATCH');
+
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
@@ -71,6 +80,3 @@ self.addEventListener('message', (event) => {
     }
   }
 });
-
-// Any other custom service worker logic can go here.
-FetchQueueSW.register();

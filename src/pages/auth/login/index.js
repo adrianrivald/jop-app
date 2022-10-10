@@ -1,15 +1,11 @@
-import axios from '../../../services/axios';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import FlatButton from '../../../components/button/flat';
-import Cookies from 'universal-cookie';
 import useValidationForm from './useValidationForm';
+import { login } from '../../../store/actions/sessionAction';
 
 const url = process.env.REACT_APP_API_URL;
 
 const Login = () => {
-  const cookies = new Cookies();
-  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
@@ -68,33 +64,11 @@ const Login = () => {
     setErrorMessage({ ...errorMessage });
 
     if (valid) {
-      return await axios
-        .post(`${url}login`, {
-          username: username,
-          password: password,
-        })
-        .then((response) => {
-          const token = response.data.data.token;
-          const userData = response.data.data.user;
-          cookies.set('token', token, { path: '/' });
-          localStorage.setItem(
-            'userData',
-            JSON.stringify({
-              level: userData.level,
-              name: userData.nama,
-              code: userData.code,
-              id: userData.id,
-            })
-          );
-          navigate('/homepage');
-        })
-        .catch((error) => {
-          if (error.response.status === 422) {
-            setErrorMessage({ ...errorMessage, submit: error.response.data.message });
-          } else if (error.response.status === 401) {
-            setErrorMessage({ ...errorMessage, submit: 'Login gagal' });
-          }
-        });
+      try {
+        await login(form.username, form.kataSandi);
+      } catch (err) {
+        setErrorMessage({ ...errorMessage, submit: err.message });
+      }
     }
   };
 

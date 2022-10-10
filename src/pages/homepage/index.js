@@ -6,6 +6,8 @@ import Subtitle from '../../components/title/Subtitle';
 import DropDown from '../../components/forms/Dropdown';
 import React from 'react';
 import Cookies from 'universal-cookie';
+import { logout } from '../../store/actions/sessionAction';
+import { useSelector } from 'react-redux';
 
 const UserInfo = (props) => (
   <div className="flex items-center justify-between p-2 bg-white text-left rounded-md">
@@ -104,17 +106,13 @@ const Contact = (props) => (
 export default function HomePage() {
   const [contact, setContact] = React.useState([]);
   const [selectedContact, setSelectedContact] = React.useState('JOP');
-  const userData = JSON.parse(localStorage.getItem('userData')) ?? {};
-  const cookies = new Cookies();
-
+  const userData = useSelector(({ session }) => session.user);
   React.useEffect(() => {
     getContactList();
   }, []);
 
-  const onLogout = () => {
-    cookies.remove('token', { path: '/' });
-    localStorage.clear();
-    window.location.href = `${window.location.origin}/auth/login`;
+  const onLogout = async () => {
+    await logout();
   };
 
   const onChangeContact = (e) => {

@@ -47,7 +47,7 @@ function Opname(props) {
           }
           text="Scan Update"
           className="w-full mt-2"
-          onClick={() => navigate(`scan`)}
+          onClick={() => navigate(`opname/scan`)}
         />
       </div>
       <div className="mt-3">

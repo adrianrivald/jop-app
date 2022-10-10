@@ -9,42 +9,30 @@ import { getDate } from '../../../utils/getDate';
 import { useNavigate } from 'react-router-dom';
 import { toSentenceCase } from '../../../utils/strings';
 import { getStatusColor } from '../../../utils/getStatusColor';
+import { useSelector } from 'react-redux';
+import { getAssignmentByMandor } from '../../../store/actions/assignmentAction';
 
 const url = process.env.REACT_APP_API_URL;
 
 const Mandor = () => {
+  const { data: listData, fetching: listDataFetching } = useSelector(({ assignment_mandor }) => assignment_mandor);
+
   const cookies = new Cookies();
   const token = cookies.get('token');
   const navigate = useNavigate();
   const defaultDate = getDate(new Date());
   const [selectedDate, setSelectedDate] = useState(defaultDate);
-  const [listData, setListData] = useState([]);
 
   const onChangeDate = (e) => {
     setSelectedDate(e.target.value);
   };
 
-  useEffect(() => {
-    getLIst();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate]);
+  const getList = () => {
+    if (listDataFetching) {
+      return;
+    }
 
-  const getLIst = async () => {
-    await axios
-      .get(
-        `${url}penugasan/by-mandor?filter[tanggal_tugas]=${selectedDate}&include=divisi,hancak,clone,sistem,mandor,field,wilayah_tugas`,
-        {
-          url: process.env.REACT_APP_API_URL,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        }
-      )
-      .then((res) => {
-        const data = res.data.data.data;
-        setListData(data);
-      });
+    getAssignmentByMandor({ tanggalTugas: selectedDate });
   };
 
   const handleAcceptAssignment = async (id) => {
@@ -66,16 +54,22 @@ const Mandor = () => {
 
   const handleDiversionAssignment = (id) => navigate(`/assignment/detail/${id}/diversion`);
 
+  useEffect(getList, [selectedDate]);
+
   return (
     <div className="App">
       <Header title="Penugasan" isWithBack />
       <section className="container p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="text-xs font-bold text-black">Tugas Kerja</div>
-          <DatePicker defaultValue={selectedDate} onChange={onChangeDate} />
+          <DatePicker defaultValue={selectedDate} onChange={onChangeDate} disabled={listDataFetching} />
         </div>
         {/* table */}
-        {listData.length ? (
+        {listDataFetching ? (
+          <div className="flex items-center justify-center" style={{ height: '60vh' }}>
+            Sedang meminta data...
+          </div>
+        ) : listData.length ? (
           listData.map((data) => (
             <div className="flex flex-col justify-center items-center mb-3" key={data.id}>
               <div className="grid grid-cols-5 bg-white rounded-lg mb-4 w-full">

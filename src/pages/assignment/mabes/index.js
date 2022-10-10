@@ -8,6 +8,8 @@ import DropDown from '../../../components/forms/Dropdown';
 import DatePicker from '../../../components/forms/DatePicker';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
+import { getAssignmentByMabes } from '../../../store/actions/assignmentAction';
+import { useSelector } from 'react-redux';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -15,16 +17,21 @@ function Dropdown(props) {
   return (
     <div className="mt-1 w-3/6">
       <h2 className="text-left text-xs mb-1">{props.title}</h2>
-      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+      <DropDown
+        defaultValue={props.defaultValue}
+        onChange={props.onChange}
+        option={props.option}
+        disabled={props.disabled}
+      />
     </div>
   );
 }
 
 function Mabes() {
+  const { data: listData, fetching: listDataFetching } = useSelector(({ assignment_mabes }) => assignment_mabes);
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
-  const [listData, setListData] = React.useState([]);
   const [estateList, setEstateList] = React.useState([]);
   const [taskList, setTaskList] = React.useState([]);
   const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
@@ -44,46 +51,25 @@ function Mabes() {
     },
   ];
 
-  React.useEffect(() => {
-    getEstate();
-    getTask();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  React.useEffect(() => {
-    getList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTask, selectedEstate, selectedDate]);
-
   // React.useEffect(() => {
   //     setFilterCount(Object.keys(selectedFilter).length)
   // }, [selectedDate, selectedEstate, selectedFilter, selectedTask])
 
   const getList = (sort) => {
-    axios
-      .get(
-        `${url}penugasan/by-mabes?filter[tanggal_tugas]=${
-          mabes_state?.date !== undefined ? mabes_state?.date : ''
-        }&filter[wilayah_tugas]=${mabes_state?.estate}&filter[jenis_tugas]=${mabes_state?.task}&sort=${
-          !mabes_state?.sort ? (sort === 'asc' || !sort ? '-' : '') : mabes_state?.sort === 'asc' ? '-' : ''
-        }tanggal_tugas&include=divisi,hancak,field,clone,sistem,mandor,pekerja`,
-        {
-          url: process.env.REACT_APP_API_URL,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        }
-      )
-      .then((res) => {
-        const data = res.data.data.data;
-        setListData(data);
-        setIsEmpty(false);
-        setIsNoFilter(false);
-        if (data.length === 0) {
-          setIsEmpty(true);
-        }
+    if (listDataFetching) {
+      return;
+    }
+
+    if (!selectedTask && !selectedEstate && !selectedDate) {
+      setIsNoFilter(true);
+    } else if (selectedTask || selectedDate || selectedEstate) {
+      getAssignmentByMabes({
+        tanggalTugas: selectedDate,
+        wilayahTugas: selectedEstate,
+        jenisTugas: selectedTask,
+        sort,
       });
+    }
   };
 
   const getTask = () => {
@@ -123,6 +109,23 @@ function Mabes() {
         setEstateList(estateData);
       });
   };
+
+  React.useEffect(() => {
+    if (listDataFetching) {
+      return;
+    }
+
+    getEstate();
+    getTask();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(getList, [selectedDate, selectedEstate, selectedTask]);
+
+  React.useEffect(() => {
+    setIsEmpty(listData.length === 0);
+    setIsNoFilter(false);
+  }, [listData]);
 
   const onChangeDate = (e) => {
     setSelectedDate(e.target.value);
@@ -203,35 +206,36 @@ function Mabes() {
           <div className="flex justify-between items-center gap-2">
             <Dropdown
               title="Estate"
-              defaultValue={!mabes_state?.estate ? 'Pilih estate' : ''}
-              selected={mabes_state?.estate !== null ? mabes_state?.estate : 'Pilih estate'}
+              defaultValue="Pilih estate"
               option={estateList}
               onChange={onChangeEstate}
+              disabled={listDataFetching}
             />
             <Dropdown
               title="Jenis Tugas"
-              defaultValue={!mabes_state?.task ? 'Pilih jenis tugas' : ''}
-              selected={mabes_state?.task !== null ? mabes_state?.task : 'Pilih jenis tugas'}
+              defaultValue="Pilih jenis tugas"
               option={taskList}
               onChange={onChangeTask}
+              disabled={listDataFetching}
             />
           </div>
           <div className="flex justify-between items-center gap-2 mt-2">
             <div className="flex-auto w-64">
               <DatePicker
-                defaultValue={mabes_state?.date !== null ? mabes_state?.date : moment().format('YYYY-MM-DD')}
+                defaultValue={moment().format('YYYY-MM-DD')}
                 onChange={onChangeDate}
+                disabled={listDataFetching}
               />
             </div>
-            <DropDown
-              defaultValue={!mabes_state?.sort ? 'Urutkan' : ''}
-              selected={mabes_state?.sort !== null ? mabes_state?.sort : 'Urutkan'}
-              option={sortOption}
-              onChange={onChangeSort}
-            />
+            {/* <div className='flex-auto'>
+                            <Button filterCount={filterCount} onClick={onClickFilter} isFilter={true} text='Filter'/>
+                        </div> */}
+            <DropDown defaultValue="Urutkan" option={sortOption} onChange={onChangeSort} disabled={listDataFetching} />
           </div>
         </div>
-        {!isNoFilter && !isEmpty ? (
+        {listDataFetching ? (
+          <div className="flex my-4 justify-center">Sedang meminta data...</div>
+        ) : !isNoFilter && !isEmpty ? (
           listData.map((result) => (
             <div className="my-4">
               <Table
