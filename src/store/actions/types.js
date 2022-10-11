@@ -10,3 +10,7 @@ export const ASSIGNMENT = {
 };
 
 export const UPDATE_SESSION = 'UPDATE_SESSION';
+export const TOAST = {
+  SHOW: 'SHOW_TOAST',
+  HIDE: 'HIDE_TOAST',
+};
