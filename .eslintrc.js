@@ -30,12 +30,7 @@ module.exports = {
         allowTaggedTemplates: true,
       },
     ],
-    'no-param-reassign': [
-      2,
-      {
-        props: false,
-      },
-    ],
+    'no-param-reassign': 0,
     'no-console': 0,
     'import/prefer-default-export': 0,
     'import/no-named-default': 0,

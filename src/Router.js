@@ -1,5 +1,5 @@
 import RouteGuard from './components/ui/RouteGuard';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import SignIn from './pages/auth/login';
 import HomePage from './pages/homepage';
 import Assignment from './pages/assignment';
@@ -33,13 +33,13 @@ import { useSelector } from 'react-redux';
 import Toast from './components/ui/Toast';
 import { hideToast } from './store/actions/uiAction';
 
-export default function () {
+export default function Router() {
   const toastState = useSelector(({ toast }) => toast);
 
   return (
     <>
       <Toast isShow={toastState.show} text={toastState.message} onClose={hideToast} isSuccess={!toastState.isError} />
-      <Router>
+      <BrowserRouter>
         <RouteGuard loginPath="/auth/login" homePath="/homepage">
           <Routes>
             <Route path="/" element={<Navigate to="/homepage" replace />} />
@@ -88,7 +88,7 @@ export default function () {
             <Route path="*" element={<div className="flex justify-center p-10">Route not found</div>} />
           </Routes>
         </RouteGuard>
-      </Router>
+      </BrowserRouter>
     </>
   );
 }
