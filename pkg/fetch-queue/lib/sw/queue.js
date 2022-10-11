@@ -91,12 +91,14 @@ export class Queue {
         await new Promise((resolve, reject) => {
           const store = tx.objectStore(_IDB_STORE_NAME);
           const add = store.add(req);
-          add.onsuccess = () => resolve();
+          add.onsuccess = () => {
+            tx.commit();
+            resolve();
+          };
           add.onerror = (err) => {
             reject(err);
           };
         });
-        tx.commit();
       } catch (err) {
         console.error(err);
       }
