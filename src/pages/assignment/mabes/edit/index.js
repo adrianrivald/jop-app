@@ -8,10 +8,41 @@ import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Toast from '../../../../components/ui/Toast';
+import Joi from 'joi';
+import { showToast } from '../../../../store/actions/uiAction';
 
-const url = process.env.REACT_APP_API_URL;
-
+const SCHEMA = Joi.object({
+  divisi_id: Joi.string().uuid().label('Divisi').required(),
+  field_id: Joi.string().uuid().label('Area/block').required(),
+  hancak_id: Joi.string().uuid().label('Hancak').required(),
+  jenis_tugas_id: Joi.string().uuid().label('Jenis tugas').required(),
+  mandor_id: Joi.string().uuid().label('Penanggung jawab tugas/Mandor').required(),
+  sistem_id: Joi.string().uuid().label('Sistem').required(),
+  wilayah_tugas_id: Joi.string().uuid().label('Wilayah tugas').required(),
+  tanggal_tugas: Joi.string()
+    .regex(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01]) (0[0-9]|1[0-9]|2[0-3])\:([0-5][0-9])$/, {
+      name: 'YYYY-MM-DD HH:mm:ss',
+    })
+    .label('Tanggal & Waktu tugas')
+    .required(),
+  is_recurring: Joi.number().min(0).max(1).label('Ulangi tugas').required(),
+  tipe_recurring: Joi.string().label('Tipe ulangi').when('is_recurring', {
+    is: 1,
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
+  batas_recurring: Joi.string()
+    .empty(null)
+    .regex(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/, {
+      name: 'YYYY-MM-DD',
+    })
+    .label('Batas pengulangan')
+    .when('is_recurring', {
+      is: 1,
+      then: Joi.required(),
+      otherwise: Joi.optional(),
+    }),
+});
 function Dropdown(props) {
   return (
     <div className={`mt-5 ${props.customClass}`}>
@@ -52,11 +83,8 @@ function MabesEdit() {
   const [dateTimeInput, setDateTimeInput] = React.useState({});
   const [addInput, setAddInput] = React.useState({});
   const [isRecurring, setIsRecurring] = React.useState(false);
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
   const [clone, setClone] = React.useState('');
   const [currentMandor, setCurrentMandor] = React.useState('');
-  const [alertMessage, setAlertMessage] = React.useState('');
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const recurringList = [
     {
@@ -89,9 +117,8 @@ function MabesEdit() {
   const getDetail = () => {
     axios
       .get(
-        `${url}penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
+        `/penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
         {
-          url: process.env.REACT_APP_API_URL,
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
@@ -110,7 +137,7 @@ function MabesEdit() {
           jenis_tugas_id: data?.jenis_tugas?.id,
           mandor_id: data?.mandor?.id,
           sistem_id: data?.sistem?.id,
-          tanggal_tugas: moment(data?.tanggal_tugas, 'YYYY-MM-DD hh:mm').format('YYYY-MM-DD'),
+          tanggal_tugas: moment(data?.tanggal_tugas, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm'),
           is_recurring: data?.is_recurring,
           tipe_recurring: data?.tipe_recurring,
           batas_recurring: data?.batas_recurring,
@@ -127,8 +154,7 @@ function MabesEdit() {
 
   const getSistem = () => {
     axios
-      .get(`${url}sistem/list`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/sistem/list`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -146,8 +172,7 @@ function MabesEdit() {
 
   const getTask = () => {
     axios
-      .get('https://jop.dudyali.com/api/v1/jenis-tugas/list', {
-        url: process.env.REACT_APP_API_URL,
+      .get('/jenis-tugas/list', {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -165,8 +190,7 @@ function MabesEdit() {
 
   const getEstate = () => {
     axios
-      .get('https://jop.dudyali.com/api/v1/wilayah-tugas/list', {
-        url: process.env.REACT_APP_API_URL,
+      .get('/wilayah-tugas/list', {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -184,8 +208,7 @@ function MabesEdit() {
 
   const getDivisi = (id) => {
     axios
-      .get(`${url}divisi/by-wilayah-tugas/${id}?include=wilayah_tugas`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/divisi/by-wilayah-tugas/${id}?include=wilayah_tugas`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -203,8 +226,7 @@ function MabesEdit() {
 
   const getHancak = (id) => {
     axios
-      .get(`${url}hancak/by-divisi/${id}?include=divisi`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/hancak/by-divisi/${id}?include=divisi`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -222,8 +244,7 @@ function MabesEdit() {
 
   const getArea = () => {
     axios
-      .get('https://jop.dudyali.com/api/v1/field/list', {
-        url: process.env.REACT_APP_API_URL,
+      .get('/field/list', {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -241,8 +262,7 @@ function MabesEdit() {
 
   const getMandor = () => {
     axios
-      .get('https://jop.dudyali.com/api/v1/penugasan/list-mandor', {
-        url: process.env.REACT_APP_API_URL,
+      .get('/penugasan/list-mandor', {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -277,7 +297,10 @@ function MabesEdit() {
     });
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: Object.values({
+        ...dateTimeInput,
+        date: e.target.value,
+      }).join(' '),
     });
   };
 
@@ -288,14 +311,15 @@ function MabesEdit() {
     });
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: Object.values({
+        ...dateTimeInput,
+        time: e.target.value,
+      }).join(' '),
     });
   };
-
   const getClone = (id) => {
     axios
-      .get(`${url}field/by-uuid/${id}?include=clone`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/field/by-uuid/${id}?include=clone`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -307,41 +331,44 @@ function MabesEdit() {
       });
   };
 
-  const handleSubmit = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    };
-    if ((isSwitch === 'true' && addInput.mandor_id !== currentMandor) || !isSwitch) {
-      axios
-        .put(
-          `${url}penugasan/update/${id}`,
+  const handleSubmit = async () => {
+    try {
+      await SCHEMA.validateAsync({
+        ...addInput,
+        is_recurring: isRecurring === true ? 1 : 0,
+      });
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      };
+      if ((isSwitch === 'true' && addInput.mandor_id !== currentMandor) || !isSwitch) {
+        await axios.put(
+          `/penugasan/update/${id}`,
           {
             ...addInput,
             is_recurring: isRecurring === true ? 1 : 0,
           },
           config
-        )
-        .then((res) => {
-          setIsSuccess(true);
-          setAlertMessage('Sukses mengubah data !');
-          setIsButtonDisabled(true);
-          setIsSubmitted(true);
-          setTimeout(() => {
-            setIsButtonDisabled(false);
-            setIsSubmitted(false);
-            navigate(`/assignment/detail/${id}`);
-          }, 3000);
+        );
+
+        showToast({
+          message: 'Sukses mengubah data !',
         });
-    } else {
-      setIsSuccess(false);
-      setAlertMessage('Mandor belum dialhikan, silakan ganti mandor');
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 3000);
+        setIsButtonDisabled(true);
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+          navigate(`/assignment/detail/${id}`);
+        }, 3000);
+      } else {
+        throw new Error('Mandor belum dialihkan, silakan ganti mandor');
+      }
+    } catch (err) {
+      showToast({
+        message: err.message,
+        isError: true,
+      });
     }
   };
 
@@ -409,7 +436,7 @@ function MabesEdit() {
               <h2 className="text-left mb-1">Tanggal Tugas</h2>
               {detailData?.tanggal_tugas && (
                 <DatePicker
-                  defaultValue={moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm').format('YYYY-MM-DD') ?? ''}
+                  defaultValue={moment(detailData?.tanggal_tugas, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') ?? ''}
                   onChange={(e) => onChangeDate(e)}
                 />
               )}
@@ -418,7 +445,7 @@ function MabesEdit() {
               <h2 className="text-left mb-1">Waktu Tugas</h2>
               {detailData?.tanggal_tugas && (
                 <TimePicker
-                  defaultValue={moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm').format('hh:mm')}
+                  defaultValue={moment(detailData?.tanggal_tugas, 'YYYY-MM-DD HH:mm:ss').format('HH:mm')}
                   onChange={(e) => onChangeTime(e)}
                 />
               )}
@@ -441,7 +468,7 @@ function MabesEdit() {
               <h2 className="text-left mb-1">Batas Pengulangan</h2>
               <DatePicker
                 disabled={!isRecurring}
-                defaultValue={moment(detailData?.batas_recurring, 'YYYY-MM-DD hh:mm').format('YYYY-MM-DD') ?? ''}
+                defaultValue={moment(detailData?.batas_recurring, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') ?? ''}
                 onChange={(e) => onChangeHandler(e, 'batas_recurring')}
               />
             </div>
@@ -462,7 +489,6 @@ function MabesEdit() {
               disabled={isButtonDisabled}
             />
           </div>
-          <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
         </div>
       </div>
     </>

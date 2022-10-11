@@ -4,9 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import FlatButton from '../../../../components/button/flat';
-import Toast from '../../../../components/ui/Toast';
-
-const url = process.env.REACT_APP_API_URL;
+import { showToast } from '../../../../store/actions/uiAction';
 
 const TapperPlanning = () => {
   const cookies = new Cookies();
@@ -16,17 +14,14 @@ const TapperPlanning = () => {
   const [detail, setDetail] = useState({});
   const [listTapper, setListTapper] = useState([]); // untuk muncul list tapper
   const [listWorker, setListWorker] = useState([]); // untuk nyimpan checked tapper
-  const [alertMessage, setAlertMessage] = React.useState('');
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
 
   const getAllData = async () => {
     let detailData;
 
     await axios
       .get(
-        `${url}penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
+        `/penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
         {
-          url: process.env.REACT_APP_API_URL,
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
@@ -43,8 +38,7 @@ const TapperPlanning = () => {
       });
 
     await axios
-      .get(`${url}penugasan/list-tapper/available/${id}?include=wilayah_tugas,skema_kerja`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/penugasan/list-tapper/available/${id}?include=wilayah_tugas,skema_kerja`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -113,28 +107,29 @@ const TapperPlanning = () => {
 
   const handleAssignWorker = async () => {
     try {
-      await axios
-        .post(
-          `${url}penugasan/assign-pekerja`,
-          {
-            penugasan_id: id,
-            pekerja: listWorker,
+      if (!listWorker.length) {
+        throw new Error('Daftar tapper tidak bisa kosong!');
+      }
+      await axios.post(
+        `/penugasan/assign-pekerja`,
+        {
+          penugasan_id: id,
+          pekerja: listWorker,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
           },
-          {
-            url: process.env.REACT_APP_API_URL,
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: 'application/json',
-            },
-          }
-        )
-        .then((response) => navigate(`/assignment/mandor/list`));
+        }
+      );
+      navigate(`/assignment`);
     } catch (error) {
-      setIsSubmitted(true);
-      setAlertMessage(error?.response?.data?.message);
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 3000);
+      if (error.isAxiosError) {
+        showToast({ message: error.response.data.message, isError: true });
+      } else {
+        showToast({ message: error.message, isError: true });
+      }
     }
   };
 
@@ -215,7 +210,6 @@ const TapperPlanning = () => {
         {detail.approved_by_mabes_at === null && (
           <FlatButton className={'w-full mb-2 text-sm font-bold mt-6'} text={'Simpan'} onClick={handleAssignWorker} />
         )}
-        <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={false} />
       </section>
     </div>
   );

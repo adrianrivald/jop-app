@@ -7,9 +7,40 @@ import TimePicker from '../../../../components/forms/TimePicker';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Toast from '../../../../components/ui/Toast';
+import Joi from 'joi';
+import { showToast } from '../../../../store/actions/uiAction';
 
-const url = process.env.REACT_APP_API_URL;
+const SCHEMA = Joi.object({
+  divisi_id: Joi.string().uuid().label('Divisi').required(),
+  field_id: Joi.string().uuid().label('Area/block').required(),
+  hancak_id: Joi.string().uuid().label('Hancak').required(),
+  jenis_tugas_id: Joi.string().uuid().label('Jenis tugas').required(),
+  mandor_id: Joi.string().uuid().label('Penanggung jawab tugas/Mandor').required(),
+  sistem_id: Joi.string().uuid().label('Sistem').required(),
+  wilayah_tugas_id: Joi.string().uuid().label('Wilayah tugas').required(),
+  tanggal_tugas: Joi.string()
+    .regex(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01]) (0[0-9]|1[0-9]|2[0-3])\:([0-5][0-9])$/, {
+      name: 'YYYY-MM-DD HH:mm:ss',
+    })
+    .label('Tanggal & Waktu tugas')
+    .required(),
+  is_recurring: Joi.number().min(0).max(1).label('Ulangi tugas').required(),
+  tipe_recurring: Joi.string().label('Tipe ulangi').when('is_recurring', {
+    is: 1,
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
+  batas_recurring: Joi.string()
+    .regex(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/, {
+      name: 'YYYY-MM-DD',
+    })
+    .label('Batas pengulangan')
+    .when('is_recurring', {
+      is: 1,
+      then: Joi.required(),
+      otherwise: Joi.optional(),
+    }),
+});
 
 function Dropdown(props) {
   return (
@@ -44,7 +75,6 @@ function MabesAssignment() {
   const [mandorList, setMandorList] = React.useState([]);
   const [addInput, setAddInput] = React.useState({});
   const [dateTimeInput, setDateTimeInput] = React.useState({});
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isRecurring, setIsRecurring] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [clone, setClone] = React.useState('');
@@ -106,8 +136,7 @@ function MabesAssignment() {
   const getTask = () => {
     try {
       axios
-        .get('https://jop.dudyali.com/api/v1/jenis-tugas/list', {
-          url: process.env.REACT_APP_API_URL,
+        .get('/jenis-tugas/list', {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
@@ -122,14 +151,13 @@ function MabesAssignment() {
           setTaskList(taskData);
         });
     } catch (error) {
-      console.error(error.message);
+      console.error(error);
     }
   };
 
   const getEstate = () => {
     axios
-      .get('https://jop.dudyali.com/api/v1/wilayah-tugas/list', {
-        url: process.env.REACT_APP_API_URL,
+      .get('/wilayah-tugas/list', {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -147,8 +175,7 @@ function MabesAssignment() {
 
   const getDivisi = () => {
     axios
-      .get(`${url}divisi/by-wilayah-tugas/${addInput.wilayah_tugas_id}?include=wilayah_tugas`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/divisi/by-wilayah-tugas/${addInput.wilayah_tugas_id}?include=wilayah_tugas`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -166,8 +193,7 @@ function MabesAssignment() {
 
   const getHancak = () => {
     axios
-      .get(`${url}hancak/by-divisi/${addInput.divisi_id}?include=divisi`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/hancak/by-divisi/${addInput.divisi_id}?include=divisi`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -185,8 +211,7 @@ function MabesAssignment() {
 
   const getArea = () => {
     axios
-      .get('https://jop.dudyali.com/api/v1/field/list', {
-        url: process.env.REACT_APP_API_URL,
+      .get('/field/list', {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -204,8 +229,7 @@ function MabesAssignment() {
 
   const getMandor = () => {
     axios
-      .get(`${url}penugasan/list-mandor`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/penugasan/list-mandor`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -223,8 +247,7 @@ function MabesAssignment() {
 
   const getSistem = () => {
     axios
-      .get(`${url}sistem/list`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/sistem/list`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -242,8 +265,7 @@ function MabesAssignment() {
 
   const getClone = (id) => {
     axios
-      .get(`${url}field/by-uuid/${id}?include=clone`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/field/by-uuid/${id}?include=clone`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -268,31 +290,44 @@ function MabesAssignment() {
     }
   };
 
-  const handleSubmit = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    };
-    axios
-      .post(
-        `${url}penugasan/store`,
-        {
-          ...addInput,
-          is_recurring: isRecurring === true ? 1 : 0,
-        },
-        config
-      )
-      .then((res) => {
-        setIsSubmitted(true);
-        setIsButtonDisabled(true);
-        setTimeout(() => {
-          setIsButtonDisabled(false);
-          setIsSubmitted(false);
-          navigate('/assignment');
-        }, 3000);
+  const handleSubmit = async () => {
+    try {
+      await SCHEMA.validateAsync({
+        ...addInput,
+        is_recurring: isRecurring ? 1 : 0,
       });
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      };
+      axios
+        .post(
+          `/penugasan/store`,
+          {
+            ...addInput,
+            is_recurring: isRecurring === true ? 1 : 0,
+          },
+          config
+        )
+        .then((res) => {
+          showToast({
+            message: 'Sukses menambahkan data !',
+          });
+          setIsButtonDisabled(true);
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsSubmitted(false);
+            navigate('/assignment');
+          }, 3000);
+        });
+    } catch (err) {
+      showToast({
+        message: err.message,
+        isError: true,
+      });
+    }
   };
   const onChangeDate = (e) => {
     setDateTimeInput({
@@ -301,7 +336,10 @@ function MabesAssignment() {
     });
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: Object.values({
+        ...dateTimeInput,
+        date: e.target.value,
+      }).join(' '),
     });
   };
 
@@ -312,7 +350,10 @@ function MabesAssignment() {
     });
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: Object.values({
+        ...dateTimeInput,
+        time: e.target.value,
+      }).join(' '),
     });
   };
 
@@ -418,7 +459,6 @@ function MabesAssignment() {
               disabled={isButtonDisabled}
             />
           </div>
-          <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
         </div>
       </div>
     </>

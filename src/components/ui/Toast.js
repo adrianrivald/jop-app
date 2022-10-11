@@ -1,4 +1,16 @@
-export default function Toast({ isShow = false, text, onClose, isSuccess = true }) {
+import { useEffect } from 'react';
+
+export default function Toast({ isShow = false, text, isSuccess = true, timeout = 2000, onClose }) {
+  useEffect(() => {
+    if (isShow) {
+      setTimeout(() => {
+        isShow = false;
+        if (onClose) {
+          onClose();
+        }
+      }, timeout);
+    }
+  }, [isShow]);
   return (
     <>
       {isSuccess ? (
