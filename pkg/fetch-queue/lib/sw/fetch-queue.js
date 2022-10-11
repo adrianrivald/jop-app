@@ -116,6 +116,10 @@ export class FetchQueue {
       const req = RequestObject.fromJSON(reqObj).toRequest();
       fetch(req)
         .then(async (res) => {
+          if (res.status === 502) {
+            return this._queue.push(req);
+          }
+
           if (_SAFE_METHOD.includes(req.method)) {
             const cache = await caches.open(_CACHE_NAME);
             await cache.put(req, res.clone());

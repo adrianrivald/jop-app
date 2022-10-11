@@ -75,7 +75,7 @@ export class Queue {
     this._isLocked = false;
   }
 
-  _handlePush(req) {
+  async _handlePush(req) {
     // add callback for queue to be unlocked if queue is locked
     if (this._isLocked) {
       this._ee.once(EVENT_UNLOCK, () => this.push(req));
@@ -87,9 +87,19 @@ export class Queue {
       this._localQueue.push(req);
     } else {
       const tx = this._db.transaction(_IDB_STORE_NAME, 'readwrite');
-      const store = tx.objectStore(_IDB_STORE_NAME);
-      store.add(req);
-      tx.commit();
+      try {
+        await new Promise((resolve, reject) => {
+          const store = tx.objectStore(_IDB_STORE_NAME);
+          const add = store.add(req);
+          add.onsuccess = () => resolve();
+          add.onerror = (err) => {
+            reject(err);
+          };
+        });
+        tx.commit();
+      } catch (err) {
+        console.error(err);
+      }
     }
     this.unlock();
   }
