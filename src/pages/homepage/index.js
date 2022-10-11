@@ -173,7 +173,7 @@ export default function HomePage() {
     <div className="App">
       <Header title="Beranda" isWithBurgerMenu isWithNotification />
       <section className="container">
-        <UserInfo userName={userData?.name} userCode={userData?.code} onLogout={onLogout} />
+        <UserInfo userName={userData?.nama} userCode={userData?.code} onLogout={onLogout} />
         <UserMenu level={userData?.level} />
         <Contact onChange={onChangeContact} selectedContact={selectedContact} option={contact} />
       </section>

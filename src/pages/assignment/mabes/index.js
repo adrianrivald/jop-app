@@ -179,7 +179,7 @@ function Mabes() {
   return (
     <>
       <div className="header">
-        <Header title="Penugasan" isWithBack />
+        <Header title="Penugasan" isWithBack to="/homepage" />
       </div>
       <div className="container">
         <p className="text-xs">Penugasan</p>

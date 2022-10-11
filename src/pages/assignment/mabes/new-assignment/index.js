@@ -319,7 +319,7 @@ function MabesAssignment() {
   return (
     <>
       <div className="header">
-        <Header title="Penugasan" isWithBack />
+        <Header title="Penugasan" isWithBack to="/assignment" />
       </div>
       <div className="container">
         <div>

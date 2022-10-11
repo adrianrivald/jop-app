@@ -49,7 +49,7 @@ const MandorAcceptAssignment = () => {
 
   return (
     <div className="App min-h-screen h-full">
-      <Header title="Terima Penugasan" isWithBack />
+      <Header title="Terima Penugasan" isWithBack to="/assignment" />
       <section className="container p-4 flex flex-col justify-between" style={{ height: 'calc(100vh - 70px)' }}>
         <div className="flex flex-col" key={detail.id}>
           <div className="flex flex-col justify-between items-start mb-4">

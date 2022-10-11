@@ -142,7 +142,7 @@ const TapperPlanning = () => {
 
   return (
     <div className="App min-h-screen h-full">
-      <Header title="Perencanaan Tapper" isWithBack />
+      <Header title="Perencanaan Tapper" isWithBack to={`/assignment/detail/${id}/accept`} />
       <section className="container p-4 flex flex-col justify-between">
         <div className="flex flex-col items-start justify-center">
           <h1 className="font-bold text-left mb-2">{detail.wilayah_tugas?.nama}</h1>

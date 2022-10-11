@@ -145,7 +145,7 @@ function MabesDetail() {
   return (
     <>
       <div className="header">
-        <Header title="Penugasan" isWithBack />
+        <Header title="Penugasan" isWithBack to="/assignment" />
       </div>
       <div className="container">
         <div className="flex justify-between items-center">
