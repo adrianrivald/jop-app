@@ -132,7 +132,7 @@ function Logistic() {
       .get(
         `${url}pengiriman/batch-siap-kirim?filter[tph]=${
           logistic_payload?.kode_lokasi
-        }&filter[periode_penimbangan]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
+        }&filter[periode]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
           url: process.env.REACT_APP_API_URL,
           headers: {
@@ -152,7 +152,7 @@ function Logistic() {
       .get(
         `${url}pengiriman/batch-dalam-pengiriman?filter[tph]=${
           logistic_payload?.kode_lokasi
-        }&filter[periode_penimbangan]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
+        }&filter[periode]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
           url: process.env.REACT_APP_API_URL,
           headers: {
@@ -172,7 +172,7 @@ function Logistic() {
       .get(
         `${url}pengiriman/batch-selesai-kirim?filter[tph]=${
           logistic_payload?.kode_lokasi
-        }&filter[periode_penimbangan]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
+        }&filter[periode]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
           url: process.env.REACT_APP_API_URL,
           headers: {

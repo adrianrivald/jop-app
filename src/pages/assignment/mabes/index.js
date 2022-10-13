@@ -249,7 +249,7 @@ function Mabes() {
                 mandor_item={result.mandor.nama}
                 status_tugas_item={result.status_tugas === 'menunggu-persetujuan' ? 'menunggu' : result.status_tugas}
                 tapper_item={result.hancak.jumlah_rekomendasi_tapper}
-                tanggal_tugas_item={moment(result.tanggal_status, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')}
+                tanggal_tugas_item={moment(result.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')}
                 worker_total={result.pekerja.length}
               />
             </div>

@@ -269,6 +269,7 @@ function MabesAssignment() {
   };
 
   const handleSubmit = () => {
+    console.log(addInput, 'addinput');
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -299,9 +300,10 @@ function MabesAssignment() {
       ...dateTimeInput,
       date: e.target.value,
     });
+
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: `${e.target.value}` + ` ${addInput?.tanggal_tugas ? addInput?.tanggal_tugas.split(' ')[1] : ''}`,
     });
   };
 
@@ -310,9 +312,10 @@ function MabesAssignment() {
       ...dateTimeInput,
       time: e.target.value,
     });
+
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values(dateTimeInput).join(' '),
+      tanggal_tugas: `${addInput?.tanggal_tugas ? addInput?.tanggal_tugas.split(' ')[0] : ''}` + ` ${e.target.value}`,
     });
   };
 
