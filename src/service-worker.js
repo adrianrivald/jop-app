@@ -13,6 +13,7 @@ import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 import { FetchQueueSW } from 'fetch-queue/sw';
+import { whitelistedURL } from './configs/offline-config';
 
 clientsClaim();
 
@@ -49,12 +50,12 @@ registerRoute(
 
 registerRoute(({ request }) => request.mode === 'no-cors', new NetworkFirst());
 
-const fetchQueueStrategy = FetchQueueSW.register();
-registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'GET');
-registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'POST');
-registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'PUT');
-registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'DELETE');
-registerRoute(FetchQueueSW.capture, fetchQueueStrategy, 'PATCH');
+const fetchQueueStrategy = FetchQueueSW.register(whitelistedURL);
+registerRoute(fetchQueueStrategy.capture, fetchQueueStrategy, 'GET');
+registerRoute(fetchQueueStrategy.capture, fetchQueueStrategy, 'POST');
+registerRoute(fetchQueueStrategy.capture, fetchQueueStrategy, 'PUT');
+registerRoute(fetchQueueStrategy.capture, fetchQueueStrategy, 'DELETE');
+registerRoute(fetchQueueStrategy.capture, fetchQueueStrategy, 'PATCH');
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
