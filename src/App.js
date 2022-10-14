@@ -9,6 +9,7 @@ import Router from './Router';
 function App() {
   return (
     <FetchQueueHOC>
+      {/* <ToastContainer autoClose={3000} /> */}
       <Provider store={store}>
         <PersistGate persistor={persistor}>
           <Router />

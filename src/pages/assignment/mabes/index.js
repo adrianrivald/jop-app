@@ -37,10 +37,9 @@ function Mabes() {
   const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
   const [selectedEstate, setSelectedEstate] = React.useState('');
   const [selectedTask, setSelectedTask] = React.useState('');
-  // const [filterCount, setFilterCount] = React.useState(0)
   const [isEmpty, setIsEmpty] = React.useState(false);
   const [isNoFilter, setIsNoFilter] = React.useState(false);
-  const [selectedFilter, setSelectedFilter] = React.useState({});
+  const mabes_state = JSON.parse(localStorage.getItem('mabes_state'));
   const sortOption = [
     {
       value: 'asc',
@@ -130,46 +129,57 @@ function Mabes() {
 
   const onChangeDate = (e) => {
     setSelectedDate(e.target.value);
-    setSelectedFilter({
-      ...selectedFilter,
-      selected_date: true,
-    });
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        date: e.target.value,
+      })
+    );
   };
 
   const onChangeEstate = (e) => {
     setSelectedEstate(e.target.value);
-    setSelectedFilter({
-      ...selectedFilter,
-      selected_estate: true,
-    });
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        estate: e.target.value,
+      })
+    );
   };
 
   const onChangeTask = (e) => {
     setSelectedTask(e.target.value);
-    setSelectedFilter({
-      ...selectedFilter,
-      selected_task: true,
-    });
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        task: e.target.value,
+      })
+    );
   };
 
   const onListClick = (id) => {
     navigate(`/assignment/detail/${id}`);
   };
 
-  // const onClickFilter = () => {
-  //     setSelectedFilter({})
-  //     setIsNoFilter(true)
-  // }
-
   const onChangeSort = (e) => {
     const sort = e.target.value;
     getList(sort);
+    localStorage.setItem(
+      'mabes_state',
+      JSON.stringify({
+        ...mabes_state,
+        sort: e.target.value,
+      })
+    );
   };
 
   return (
     <>
       <div className="header">
-        <Header title="Penugasan" isWithBack />
+        <Header title="Penugasan" isWithBack to="/homepage" />
       </div>
       <div className="container">
         <p className="text-xs">Penugasan</p>
@@ -239,7 +249,7 @@ function Mabes() {
                 mandor_item={result.mandor.nama}
                 status_tugas_item={result.status_tugas === 'menunggu-persetujuan' ? 'menunggu' : result.status_tugas}
                 tapper_item={result.hancak.jumlah_rekomendasi_tapper}
-                tanggal_tugas_item={moment(result.tanggal_status, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')}
+                tanggal_tugas_item={moment(result.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')}
                 worker_total={result.pekerja.length}
               />
             </div>

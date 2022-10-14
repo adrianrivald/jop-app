@@ -334,12 +334,10 @@ function MabesAssignment() {
       ...dateTimeInput,
       date: e.target.value,
     });
+
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values({
-        ...dateTimeInput,
-        date: e.target.value,
-      }).join(' '),
+      tanggal_tugas: `${e.target.value}` + ` ${addInput?.tanggal_tugas ? addInput?.tanggal_tugas.split(' ')[1] : ''}`,
     });
   };
 
@@ -348,19 +346,17 @@ function MabesAssignment() {
       ...dateTimeInput,
       time: e.target.value,
     });
+
     setAddInput({
       ...addInput,
-      tanggal_tugas: Object.values({
-        ...dateTimeInput,
-        time: e.target.value,
-      }).join(' '),
+      tanggal_tugas: `${addInput?.tanggal_tugas ? addInput?.tanggal_tugas.split(' ')[0] : ''}` + ` ${e.target.value}`,
     });
   };
 
   return (
     <>
       <div className="header">
-        <Header title="Penugasan" isWithBack />
+        <Header title="Penugasan" isWithBack to="/assignment" />
       </div>
       <div className="container">
         <div>

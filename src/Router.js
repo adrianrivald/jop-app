@@ -25,8 +25,15 @@ import LogisticDetail from './pages/logistic/detail';
 import LogisticLoading from './pages/logistic/loading';
 import LogisticShipment from './pages/logistic/shipment';
 import LogisticScan from './pages/logistic/scan';
-import LogisticShipmentDetail from './pages/logistic/shipment/detail';
 import Warehouse from './pages/warehouse';
+import LogisticShipmentDetail from './pages/logistic/shipment/detail';
+import WarehouseOpnameScan from './pages/warehouse/opname/scan';
+import WarehouseCIDetailNew from './pages/warehouse/check-in/detail/new';
+import WarehouseCIScan from './pages/warehouse/check-in/scan';
+import WarehouseCIDetailArrived from './pages/warehouse/check-in/detail/arrived';
+import WarehouseOpnameUpdate from './pages/warehouse/opname/update';
+import WarehouseCIDetailRescale from './pages/warehouse/check-in/detail/new/rescale';
+import WarehouseCIJoin from './pages/warehouse/check-in/join';
 import Storybook from './pages/storybook';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -73,15 +80,23 @@ export default function Router() {
             <Route path="/weighing/detail/:id/scan" element={<WeighingScan />} />
 
             {/* pengiriman */}
-            <Route path="/logistic" element={<Logistic />} />
-            <Route path="/logistic/detail/:id" element={<LogisticDetail />} />
-            <Route path="/logistic/loading/:id" element={<LogisticLoading />} />
-            <Route path="/logistic/shipment/:id/" element={<LogisticShipment />} />
-            <Route path="/logistic/shipment/:id/scan" element={<LogisticScan />} />
-            <Route path="/logistic/shipment/detail/:id/" element={<LogisticShipmentDetail />} />
+            <Route path="/logistic" exact element={<Logistic />} />
+            <Route path="/logistic/detail/:id" exact element={<LogisticDetail />} />
+            <Route path="/logistic/loading/:id" exact element={<LogisticLoading />} />
+            <Route path="/logistic/shipment/:id/" exact element={<LogisticShipment />} />
+            <Route path="/logistic/shipment/:id/scan" exact element={<LogisticScan />} />
+            <Route path="/logistic/shipment/detail/:id/" exact element={<LogisticShipmentDetail />} />
 
             {/* gudang */}
-            <Route path="/warehouse" element={<Warehouse />} />
+            <Route path="/warehouse" exact element={<Warehouse />} />
+            <Route path="/warehouse/opname/scan" exact element={<WarehouseOpnameScan />} />
+            <Route path="/warehouse/opname/update" exact element={<WarehouseOpnameUpdate />} />
+
+            <Route path="/warehouse/check-in/detail/arrived" exact element={<WarehouseCIDetailArrived />} />
+            <Route path="/warehouse/check-in/detail/:id" exact element={<WarehouseCIDetailNew />} />
+            <Route path="/warehouse/check-in/detail/:id/rescale" exact element={<WarehouseCIDetailRescale />} />
+            <Route path="/warehouse/check-in/scan" exact element={<WarehouseCIScan />} />
+            <Route path="/warehouse/check-in/join" exact element={<WarehouseCIJoin />} />
 
             {/* misc */}
             <Route path="/storybook" element={<Storybook />} />

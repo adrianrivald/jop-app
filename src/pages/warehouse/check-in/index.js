@@ -1,9 +1,17 @@
+import axios from 'axios';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import DropDown from '../../../components/forms/Dropdown';
 import Divider from '../../../components/ui/Divider';
 
+const url = process.env.REACT_APP_API_URL;
+
 function CheckIn(props) {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
+  const navigate = useNavigate();
   const [openedId, setOpenedId] = React.useState({});
   const [checkInData, setCheckInData] = React.useState([
     {
@@ -47,6 +55,25 @@ function CheckIn(props) {
     },
   ]);
 
+  React.useEffect(() => {
+    getCheckInData();
+  }, []);
+
+  const getCheckInData = () => {
+    axios
+      .get(`${url}warehouse/timbang/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        // setCheckInData(data);
+      });
+  };
+
   const onExpand = (idx) => {
     setOpenedId({
       ...openedId,
@@ -61,7 +88,8 @@ function CheckIn(props) {
     });
   };
 
-  const onCheckMaterial = () => {
+  const onCheckMaterial = (e) => {
+    e.stopPropagation();
     // TODO
   };
 
@@ -80,7 +108,7 @@ function CheckIn(props) {
           }
           text="Scan Barang Sampai"
           className="w-full mt-2"
-          // onClick={()=> navigate(`scan`)}
+          onClick={() => navigate(`check-in/scan`)}
         />
       </div>
       <div className="flex justify-between items-center mt-4">
@@ -91,9 +119,9 @@ function CheckIn(props) {
         {checkInData?.length > 0 ? (
           checkInData?.map((res, idx) =>
             openedId[`item_${idx}`] === true ? (
-              <div className="bg-white p-3">
+              <div className="bg-white">
                 <div
-                  className="flex justify-between items-center mt-2 transition-transform cursor-pointer"
+                  className="flex justify-between items-center transition-transform cursor-pointer pt-3 pl-3 pr-3"
                   onClick={() => onCollapse(idx)}
                 >
                   <div className="flex items-center">
@@ -124,48 +152,39 @@ function CheckIn(props) {
                     </svg>
                   </div>
                 </div>
-                <div className=" p-3 ">
-                  <div className="flex gap-3 my-1">
-                    <p className="w-2/4">Jenis Logistik</p>
-                    <p className="w-2/4 font-bold">{res?.detail?.jenis_logistik}</p>
-                  </div>
-                  <div className="flex gap-3 my-1">
-                    <p className="w-2/4">Armada</p>
-                    <p className="w-2/4 font-bold">{res?.detail?.armada}</p>
-                  </div>
-                  <div className="flex gap-3 my-1">
-                    <p className="w-2/4">Alamat / fasilitas tujuan</p>
-                    <div className="w-2/4 ">
-                      <p className="font-bold">{res?.detail?.alamat.split('-')[0]}</p>
-                      <p className="font-bold">{res?.detail?.alamat.split('-')[1]}</p>
+                <Divider />
+                <div className="mt-5 pl-3 pr-3 pb-3">
+                  <div className="flex justify-between items-center font-bold">
+                    <div className="flex items-center">
+                      <input
+                        checked={false}
+                        onClick={onCheckMaterial}
+                        type="checkbox"
+                        className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
+                      />
+                      <div
+                        onClick={() => navigate('/warehouse/check-in/detail/arrived')}
+                        className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold"
+                      >
+                        OJ.01-1
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-3 my-1">
-                    <p className="w-2/4">Supir / pengendara</p>
-                    <div className="w-2/4 ">
-                      <p className="font-bold">{res?.detail?.supir.split('-')[0]}</p>
-                      <p className="font-bold">{res?.detail?.supir.split('-')[1]}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 my-1">
-                    <p className="w-2/4">Pengawal</p>
-                    <div className="w-2/4 ">
-                      <p className="font-bold">{res?.detail?.pengawal.split('-')[0]}</p>
-                      <p className="font-bold">{res?.detail?.pengawal.split('-')[1]}</p>
-                    </div>
+                    <p>100</p>
+                    <p>92</p>
+                    <p>8</p>
                   </div>
                 </div>
-                <Divider />
+                <Divider className="mb-0" />
               </div>
             ) : (
-              <div className="p-3">
+              <div>
                 <div
-                  className="flex justify-between items-center mt-2 transition-transform cursor-pointer"
+                  className="flex justify-between items-center transition-transform cursor-pointer pt-3 pl-3 pr-3"
                   onClick={() => onExpand(idx)}
                 >
-                  <div className="flex">
+                  <div className="flex items-center">
                     <input
-                      checked={false}
+                      checked={(prev) => !prev}
                       onClick={onCheckMaterial}
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
@@ -184,13 +203,16 @@ function CheckIn(props) {
                     </svg>
                   </div>
                 </div>
-                <Divider />
+                <Divider className="mb-0" />
               </div>
             )
           )
         ) : (
           <div className="flex justify-center">No Data</div>
         )}
+      </div>
+      <div className="submit-area mt-8">
+        <Button isText text="Gabungkan" className="w-full font-bold" onClick={() => navigate('check-in/join')} />
       </div>
     </div>
   );

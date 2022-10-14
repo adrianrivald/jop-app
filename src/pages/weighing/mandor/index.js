@@ -186,7 +186,6 @@ function MandorWeighing() {
       dispatch(allActions.addMaterialCode(selectedMaterial.filter((val) => val.id !== id)));
       localStorage.setItem('selected_material', JSON.stringify(selectedMaterial.filter((val) => val.id !== id)));
     }
-    // dispatch(allActions.addMaterialCode(selectedMaterial));
   };
 
   const handleSubmit = () => {

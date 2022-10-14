@@ -58,7 +58,7 @@ const Mandor = () => {
 
   return (
     <div className="App">
-      <Header title="Penugasan" isWithBack />
+      <Header title="Penugasan" isWithBack to="/homepage" />
       <section className="container p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="text-xs font-bold text-black">Tugas Kerja</div>

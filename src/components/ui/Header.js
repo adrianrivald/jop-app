@@ -12,6 +12,7 @@ export default function Header({
   isWithBurgerMenu,
   handleNotification,
   moreAction,
+  to,
 }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -21,8 +22,13 @@ export default function Header({
   };
 
   const handleBack = () => {
-    navigate(-1);
-    moreAction();
+    if (to) {
+      navigate(to);
+      moreAction();
+    } else {
+      navigate(-1);
+      moreAction();
+    }
   };
 
   return (

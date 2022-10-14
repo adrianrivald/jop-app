@@ -2,7 +2,7 @@ import axios from 'axios';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Button from '../../../../components/button/Button';
+import Button from '../../../../../components/button/Button';
 import './overlay.css';
 
 const url = process.env.REACT_APP_API_URL;
@@ -21,56 +21,8 @@ const Overlay = () => {
     setCode(e.target.value);
   };
 
-  const getDetail = async () => {
-    await axios
-      .get(`${url}absensi/scan-by-tapper-kode/${code}`, {
-        url: process.env.REACT_APP_API_URL,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-      .then((res) => {
-        const data = res.data.data;
-        if (scan_type === 'supir') {
-          localStorage.setItem(
-            'shipment_payload',
-            JSON.stringify({
-              ...shipment_payload,
-              supir_id: data?.id,
-            })
-          );
-
-          localStorage.setItem(
-            'supir_data',
-            JSON.stringify({
-              name: data?.nama,
-              code: data?.kode,
-            })
-          );
-        } else {
-          localStorage.setItem(
-            'shipment_payload',
-            JSON.stringify({
-              ...shipment_payload,
-              pengawal_id: data?.id,
-            })
-          );
-
-          localStorage.setItem(
-            'pengawal_data',
-            JSON.stringify({
-              name: data?.nama,
-              code: data?.kode,
-            })
-          );
-        }
-      });
-    navigate(-1);
-  };
-
-  const onSubmit = async () => {
-    getDetail();
+  const onSubmit = () => {
+    navigate('/warehouse/opname/update');
   };
 
   return (

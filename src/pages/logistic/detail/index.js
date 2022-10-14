@@ -23,6 +23,7 @@ function LogisticDetail() {
 
   React.useEffect(() => {
     getBatchDetail();
+    localStorage.removeItem('shipment_payload');
   }, []);
 
   const getBatchDetail = () => {
@@ -99,6 +100,30 @@ function LogisticDetail() {
     localStorage.removeItem('delivered');
   };
 
+  const disabledForDeliver = () => {
+    // isButtonDisabled || localStorage.getItem('delivered') === null
+    // ? false
+    // : true || batchDetail?.loading?.length === 0
+    // ? true
+    // : false
+
+    if (isButtonDisabled) {
+      return true;
+    }
+
+    if (localStorage.getItem('delivered')) {
+      return true;
+    }
+
+    if (batchDetail?.loading?.length === 0) {
+      return true;
+    }
+
+    return false;
+  };
+
+  console.log(batchDetail?.loading?.length === 0, 'isnothasloading');
+
   return (
     <>
       <div className="header">
@@ -149,11 +174,11 @@ function LogisticDetail() {
           <p className="font-bold mb-4">List Pengiriman</p>
           {batchDetail?.kirim?.length > 0 ? (
             batchDetail?.kirim?.map((res, idx) => (
-              <div className="cursor-pointer" onClick={() => onClickShipment(res?.id, idx + 1)}>
+              <div className="cursor-pointer" onClick={() => onClickShipment(res?.id, idx + 1)} key={idx}>
                 <p>Pengiriman ke - {idx + 1}</p>
                 <p className="font-bold">{res?.kode}</p>
                 {res?.detail?.map((res, idx) => (
-                  <div className="my-2">
+                  <div className="my-2" key={idx}>
                     <p>
                       LOAD {idx + 1} : {res?.nama} - {res?.berat_kirim} kg
                     </p>
@@ -178,20 +203,17 @@ function LogisticDetail() {
                             ? 'bg-cloud'
                             : 'bg-leaf'
                         } h-6`}
-                        style={{ width: `${res?.berat_kirim}px` }}
+                        style={{ width: `${res?.berat_kirim}rem` }}
+                        key={idx}
                       />
                     ))}
-                    {/* {console.log(
-                      res?.detail.reduce((accumulator, b) => accumulator + (b['berat_kirim'] || 0), 0),
-                      'total'
-                    )} */}
                     <div
                       className={`rounded-r-md bg-earth h-6`}
                       style={{
                         width: `${
                           batchDetail?.total_berat -
                           res?.detail.reduce((accumulator, b) => accumulator + (b['berat_kirim'] || 0), 0)
-                        }px`,
+                        }rem`,
                       }}
                     />
                   </div>
@@ -210,7 +232,7 @@ function LogisticDetail() {
         </div>
         <div className="submit-area mt-11">
           <Button
-            disabled={isButtonDisabled || localStorage.getItem('delivered') === null ? false : true}
+            disabled={disabledForDeliver()}
             isText
             text="Deliver"
             className="w-full text-md"
