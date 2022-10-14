@@ -18,12 +18,11 @@ function WarehouseCIScan() {
   const [alertMessage, setAlertMessage] = React.useState('');
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const saved_payload = JSON.parse(localStorage.getItem('saved_payload'));
-  const scan_type = localStorage.getItem('scan_type');
 
   const onResult = (result) => {
     try {
       if (result) {
-        //
+        navigate(`/warehouse/check-in/detail/${result?.text}`);
       }
     } catch (error) {}
   };

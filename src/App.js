@@ -96,8 +96,8 @@ function App() {
                 <Route path="/warehouse/opname/update" exact element={<WarehouseOpnameUpdate />} />
 
                 <Route path="/warehouse/check-in/detail/arrived" exact element={<WarehouseCIDetailArrived />} />
-                <Route path="/warehouse/check-in/detail/new" exact element={<WarehouseCIDetailNew />} />
-                <Route path="/warehouse/check-in/detail/new/rescale" exact element={<WarehouseCIDetailRescale />} />
+                <Route path="/warehouse/check-in/detail/:id" exact element={<WarehouseCIDetailNew />} />
+                <Route path="/warehouse/check-in/detail/:id/rescale" exact element={<WarehouseCIDetailRescale />} />
                 <Route path="/warehouse/check-in/scan" exact element={<WarehouseCIScan />} />
                 <Route path="/warehouse/check-in/join" exact element={<WarehouseCIJoin />} />
 

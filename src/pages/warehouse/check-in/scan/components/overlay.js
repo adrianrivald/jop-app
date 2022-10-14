@@ -21,8 +21,20 @@ const Overlay = () => {
     setCode(e.target.value);
   };
 
-  const onSubmit = () => {
-    navigate('/warehouse/check-in/detail/new');
+  const onSubmit = async () => {
+    await axios
+      .get(`${url}pengiriman/scan-by-kode?identifier=${code}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        console.log(data, 'data');
+        navigate(`/warehouse/check-in/detail/${data.id}`);
+      });
   };
 
   return (

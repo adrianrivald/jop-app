@@ -1,10 +1,16 @@
+import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import DropDown from '../../../components/forms/Dropdown';
 import Divider from '../../../components/ui/Divider';
 
+const url = process.env.REACT_APP_API_URL;
+
 function CheckIn(props) {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
   const navigate = useNavigate();
   const [openedId, setOpenedId] = React.useState({});
   const [checkInData, setCheckInData] = React.useState([
@@ -48,6 +54,25 @@ function CheckIn(props) {
       foto: [],
     },
   ]);
+
+  React.useEffect(() => {
+    getCheckInData();
+  }, []);
+
+  const getCheckInData = () => {
+    axios
+      .get(`${url}warehouse/timbang/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        // setCheckInData(data);
+      });
+  };
 
   const onExpand = (idx) => {
     setOpenedId({

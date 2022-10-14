@@ -155,7 +155,7 @@ const Balanced = () => {
 
   return (
     <div className="App">
-      <Header title="Penimbangan TPH" isWithBack />
+      <Header title="Penimbangan TPH" isWithBack to="/homepage" />
       <section className="container p-4">
         <h1 className="text-left mb-2">Mulai Penimbangan Baru</h1>
         <FlatButton
@@ -177,7 +177,7 @@ const Balanced = () => {
                 </div>
                 <button
                   className="text-xs font-bold px-4 py-1 text-flora drop-shadow-md bg-white rounded-xl"
-                  onClick={onCopyCode}
+                  onClick={() => onCopyCode(res?.kode)}
                 >
                   Salin Kode
                 </button>

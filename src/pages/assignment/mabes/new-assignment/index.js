@@ -269,7 +269,6 @@ function MabesAssignment() {
   };
 
   const handleSubmit = () => {
-    console.log(addInput, 'addinput');
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
