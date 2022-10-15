@@ -14,6 +14,7 @@ import axios from 'axios';
 const url = process.env.REACT_APP_API_URL;
 
 function WarehouseOpnameUpdate() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');

@@ -90,7 +90,7 @@ export default function Router() {
             {/* gudang */}
             <Route path="/warehouse" exact element={<Warehouse />} />
             <Route path="/warehouse/opname/scan" exact element={<WarehouseOpnameScan />} />
-            <Route path="/warehouse/opname/update" exact element={<WarehouseOpnameUpdate />} />
+            <Route path="/warehouse/opname/update/:id" exact element={<WarehouseOpnameUpdate />} />
 
             <Route path="/warehouse/check-in/detail/arrived" exact element={<WarehouseCIDetailArrived />} />
             <Route path="/warehouse/check-in/detail/:id" exact element={<WarehouseCIDetailNew />} />

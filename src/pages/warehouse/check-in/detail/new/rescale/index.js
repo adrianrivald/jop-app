@@ -241,8 +241,9 @@ function WarehouseCIDetailRescale() {
                       <span className="absolute inset-y-7 right-2">kg</span>
                       <input
                         className="w-full text-4xl font-bold rounded-lg py-2 px-3 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                        type="text"
-                        pattern="\d*"
+                        type="number"
+                        min="0"
+                        max={res?.berat}
                         onChange={(e) => onChangeWeight(e, idx)}
                       />
                     </div>

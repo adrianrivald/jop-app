@@ -70,7 +70,8 @@ function CheckIn(props) {
       })
       .then((res) => {
         const data = res.data.data.data;
-        // setCheckInData(data);
+        console.log(data, 'data');
+        setCheckInData(data);
       });
   };
 
@@ -131,7 +132,7 @@ function CheckIn(props) {
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
-                    <p className="font-bold">{res?.code}</p>
+                    <p className="font-bold">{res?.kode}</p>
                   </div>
                   <div className="cursor-pointer">
                     <svg
@@ -166,7 +167,7 @@ function CheckIn(props) {
                         onClick={() => navigate('/warehouse/check-in/detail/arrived')}
                         className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold"
                       >
-                        OJ.01-1
+                        {res?.kode_armada}
                       </div>
                     </div>
                     <p>100</p>
@@ -189,7 +190,7 @@ function CheckIn(props) {
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
-                    <p className="font-bold">{res?.code}</p>
+                    <p className="font-bold">{res?.kode}</p>
                   </div>
                   <div className="cursor-pointer">
                     <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">

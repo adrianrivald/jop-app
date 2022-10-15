@@ -1,7 +1,12 @@
+import axios from 'axios';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import FlatButton from '../../../components/button/flat';
 import DropDown from '../../../components/forms/Dropdown';
+
+const url = process.env.REACT_APP_API_URL;
 
 function Dropdown(props) {
   return (
@@ -12,26 +17,116 @@ function Dropdown(props) {
   );
 }
 function Opname(props) {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
   const navigate = useNavigate();
+  const [gudangList, setGudangList] = React.useState([]);
+  const [materialList, setMaterialList] = React.useState([]);
+  const [warehouseList, setWarehouseList] = React.useState([]);
+  const [opnameData, setOpnameData] = React.useState({});
+
+  React.useEffect(() => {
+    getGudang();
+    getOpname();
+    getMaterial();
+    getWarehouse();
+  }, []);
+
+  const getWarehouse = (id) => {
+    axios
+      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const warehouseData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setWarehouseList(warehouseData);
+      });
+  };
+  const getMaterial = () => {
+    axios
+      .get(`${url}bahan-baku/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const materialData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setMaterialList(materialData);
+      });
+  };
+
+  const getGudang = () => {
+    axios
+      .get(`${url}gudang/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const gudangData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setGudangList(gudangData);
+      });
+  };
+
+  const getOpname = () => {
+    axios
+      .get(`${url}warehouse/stock-opname`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        console.log(data, 'dataopname');
+        setOpnameData(data);
+      });
+  };
 
   return (
     <div>
       <div className="flex justify-between gap-2">
         <div className="flex-auto w-64">
-          <Dropdown title="Tempat Penimbangan" defaultValue="Pilih tempat penimbangan" option={[]} />
+          <Dropdown title="Tempat Penimbangan" defaultValue="Pilih tempat penimbangan" option={warehouseList} />
         </div>
         <div className="flex-auto w-64">
-          <Dropdown title="Gudang" defaultValue="Pilih gudang" option={[]} />
+          <Dropdown title="Gudang" defaultValue="Pilih gudang" option={gudangList} />
         </div>
       </div>
       <div className="flex justify-between my-3 gap-3">
         <div className="p-3 rounded-xl border border-cloud w-full">
           <p className="text-xxs mb-1">Jenis bahan baku</p>
-          <DropDown option={[]} onChange={() => {}} defaultValue={'Slab'} className="mt-6" />
+          <DropDown
+            option={materialList}
+            onChange={() => {}}
+            defaultValue={'Pilih jenis bahan baku'}
+            className="mt-6"
+          />
         </div>
         <div className="p-3 rounded-xl border border-cloud w-full">
           <p className="text-xxs mb-3">Total Berat Timbang (WET)</p>
-          <p className="text-4xl font-bold">2000 kg</p>
+          <p className="text-4xl font-bold">{opnameData?.total_wet} kg</p>
         </div>
       </div>
       <div className="scan mt-3">
