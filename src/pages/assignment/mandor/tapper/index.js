@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../../../components/ui/Header';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
 import FlatButton from '../../../../components/button/flat';
 import { showToast } from '../../../../store/actions/uiAction';
 
 const TapperPlanning = () => {
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const navigate = useNavigate();
   let { id } = useParams();
   const [detail, setDetail] = useState({});
@@ -23,7 +20,6 @@ const TapperPlanning = () => {
         `/penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         }
@@ -40,7 +36,6 @@ const TapperPlanning = () => {
     await axios
       .get(`/penugasan/list-tapper/available/${id}?include=wilayah_tugas,skema_kerja`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -118,7 +113,6 @@ const TapperPlanning = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         }

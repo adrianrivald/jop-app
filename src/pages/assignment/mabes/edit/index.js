@@ -7,7 +7,6 @@ import DatePicker from '../../../../components/forms/DatePicker';
 import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
 import { useNavigate, useParams } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Joi from 'joi';
 import { showToast } from '../../../../store/actions/uiAction';
 
@@ -69,8 +68,6 @@ function MabesEdit() {
   const search = window.location.search;
   const params = new URLSearchParams(search);
   const isSwitch = params.get('isSwitch');
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const [detailData, setDetailData] = React.useState({});
   // const [workerList, setWorkerList] = React.useState([])
   const [estateList, setEstateList] = React.useState([]);
@@ -120,7 +117,6 @@ function MabesEdit() {
         `/penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         }
@@ -156,7 +152,6 @@ function MabesEdit() {
     axios
       .get(`/sistem/list`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -174,7 +169,6 @@ function MabesEdit() {
     axios
       .get('/jenis-tugas/list', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -192,7 +186,6 @@ function MabesEdit() {
     axios
       .get('/wilayah-tugas/list', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -210,7 +203,6 @@ function MabesEdit() {
     axios
       .get(`/divisi/by-wilayah-tugas/${id}?include=wilayah_tugas`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -228,7 +220,6 @@ function MabesEdit() {
     axios
       .get(`/hancak/by-divisi/${id}?include=divisi`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -246,7 +237,6 @@ function MabesEdit() {
     axios
       .get('/field/list', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -264,7 +254,6 @@ function MabesEdit() {
     axios
       .get('/penugasan/list-mandor', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -317,7 +306,6 @@ function MabesEdit() {
     axios
       .get(`/field/by-uuid/${id}?include=clone`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -335,7 +323,6 @@ function MabesEdit() {
       });
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       };

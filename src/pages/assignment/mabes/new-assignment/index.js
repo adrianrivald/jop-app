@@ -6,7 +6,6 @@ import FlatButton from '../../../../components/button/flat';
 import TimePicker from '../../../../components/forms/TimePicker';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Joi from 'joi';
 import { showToast } from '../../../../store/actions/uiAction';
 
@@ -64,8 +63,6 @@ function CheckIsRecurring(props) {
 
 function MabesAssignment() {
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const [estateList, setEstateList] = React.useState([]);
   const [taskList, setTaskList] = React.useState([]);
   const [sistemList, setSistemList] = React.useState([]);
@@ -138,7 +135,6 @@ function MabesAssignment() {
       axios
         .get('/jenis-tugas/list', {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         })
@@ -159,7 +155,6 @@ function MabesAssignment() {
     axios
       .get('/wilayah-tugas/list', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -177,7 +172,6 @@ function MabesAssignment() {
     axios
       .get(`/divisi/by-wilayah-tugas/${addInput.wilayah_tugas_id}?include=wilayah_tugas`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -195,7 +189,6 @@ function MabesAssignment() {
     axios
       .get(`/hancak/by-divisi/${addInput.divisi_id}?include=divisi`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -213,7 +206,6 @@ function MabesAssignment() {
     axios
       .get('/field/list', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -231,7 +223,6 @@ function MabesAssignment() {
     axios
       .get(`/penugasan/list-mandor`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -249,7 +240,6 @@ function MabesAssignment() {
     axios
       .get(`/sistem/list`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -267,7 +257,6 @@ function MabesAssignment() {
     axios
       .get(`/field/by-uuid/${id}?include=clone`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -298,7 +287,6 @@ function MabesAssignment() {
       });
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       };

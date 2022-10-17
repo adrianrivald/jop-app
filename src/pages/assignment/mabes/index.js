@@ -7,11 +7,8 @@ import React from 'react';
 import DropDown from '../../../components/forms/Dropdown';
 import DatePicker from '../../../components/forms/DatePicker';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import { getAssignmentByMabes } from '../../../store/actions/assignmentAction';
 import { useSelector } from 'react-redux';
-
-const url = process.env.REACT_APP_API_URL;
 
 function Dropdown(props) {
   return (
@@ -30,8 +27,6 @@ function Dropdown(props) {
 function Mabes() {
   const { data: listData, fetching: listDataFetching } = useSelector(({ assignment_mabes }) => assignment_mabes);
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const [estateList, setEstateList] = React.useState([]);
   const [taskList, setTaskList] = React.useState([]);
   const [selectedDate, setSelectedDate] = React.useState(moment().format('YYYY-MM-DD'));
@@ -74,10 +69,8 @@ function Mabes() {
 
   const getTask = () => {
     axios
-      .get(`${url}jenis-tugas/list`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/jenis-tugas/list`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -93,10 +86,8 @@ function Mabes() {
 
   const getEstate = () => {
     axios
-      .get(`${url}wilayah-tugas/list`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/wilayah-tugas/list`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
