@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../components/ui/Header';
 import DatePicker from '../../components/forms/DatePicker';
-import Cookies from 'universal-cookie';
 import { getDateTime } from '../../utils/getDateTime';
 import { getDate } from '../../utils/getDate';
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +12,6 @@ import { getAssignmentByMandor } from '../../store/actions/assignmentAction';
 const Absence = () => {
   const { data: listData, fetching: listDataFetching } = useSelector(({ assignment_mandor }) => assignment_mandor);
 
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const navigate = useNavigate();
   const defaultDate = getDate(new Date());
   const [selectedDate, setSelectedDate] = useState(defaultDate);

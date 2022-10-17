@@ -306,7 +306,6 @@ function MabesAssignment() {
           setIsButtonDisabled(true);
           setTimeout(() => {
             setIsButtonDisabled(false);
-            setIsSubmitted(false);
             navigate('/assignment');
           }, 3000);
         });
