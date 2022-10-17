@@ -12,8 +12,6 @@ import Toast from '../../../../components/ui/Toast';
 import warning from '../../../../assets/icons/warning.svg';
 // import FlatButton from '../../../../components/button/flat';
 
-const url = process.env.REACT_APP_API_URL;
-
 function WorkerList(props) {
   return (
     <div className="flex justify-between items-center mt-3 pt-3">
@@ -41,8 +39,6 @@ function WorkerList(props) {
 
 function MabesDetail() {
   const { id } = useParams();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const navigate = useNavigate();
   const [detailData, setDetailData] = React.useState({});
   const [workerList, setWorkerList] = React.useState([]);
@@ -56,11 +52,9 @@ function MabesDetail() {
   const getDetail = async () => {
     await axios
       .get(
-        `${url}penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
+        `/penugasan/detail/${id}?include=wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
         {
-          url: process.env.REACT_APP_API_URL,
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         }
@@ -76,13 +70,12 @@ function MabesDetail() {
     if (detailData?.pekerja?.length > 0) {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       };
       axios
         .post(
-          `${url}penugasan/izinkan-tapper`,
+          `/penugasan/izinkan-tapper`,
           {
             penugasan_id: detailData.id,
           },
@@ -102,13 +95,12 @@ function MabesDetail() {
   const onCancel = () => {
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     };
     axios
       .post(
-        `${url}penugasan/batalkan-tugas`,
+        `/penugasan/batalkan-tugas`,
         {
           penugasan_id: detailData.id,
         },

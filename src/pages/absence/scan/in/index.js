@@ -3,50 +3,55 @@ import { useParams } from 'react-router-dom';
 import Header from '../../../../components/ui/Header';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import { QrReader } from 'react-qr-reader';
 import Overlay from '../components/overlay';
-import Toast from '../../../../components/ui/Toast';
+import Joi from 'joi';
+import { showToast } from '../../../../store/actions/uiAction';
 
-const url = process.env.REACT_APP_API_URL;
+const SCHEMA = Joi.object({
+  pekerja_id: Joi.string().uuid().label('Pekerja ID').required(),
+  penugasan_id: Joi.string().uuid().label('Penugasan ID').required(),
+});
 
 function AbsenceIn() {
   const { id_tugas } = useParams();
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
-  const [alertMessage, setAlertMessage] = React.useState('');
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
 
   const onResult = async (result, error) => {
-    try {
-      if (result) {
+    if (error) {
+      return showToast({ message: error.message, isError: true });
+    }
+
+    if (result) {
+      try {
+        await SCHEMA.validateAsync({
+          pekerja_id: result?.text,
+          penugasan_id: id_tugas,
+        });
+
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         };
-        await axios
-          .post(
-            `${url}absensi/store`,
-            {
-              pekerja_id: result?.text,
-              penugasan_id: id_tugas,
-              tipe_absen: 'masuk',
-            },
-            config
-          )
-          .then(() => {
-            navigate(`/absence/tapper/${result?.text}`);
-          });
+
+        await axios.post(
+          `/absensi/store`,
+          {
+            pekerja_id: result?.text,
+            penugasan_id: id_tugas,
+            tipe_absen: 'masuk',
+          },
+          config
+        );
+
+        navigate(`/absence/tapper/${result?.text}`);
+      } catch (err) {
+        showToast({
+          message: err.message,
+          isError: true,
+        });
       }
-    } catch (error) {
-      setIsSubmitted(true);
-      setAlertMessage(error?.response?.data?.error?.message);
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 3000);
     }
   };
 
@@ -73,7 +78,6 @@ function AbsenceIn() {
           constraints={{ facingMode: 'environment' }}
         />
       </div>
-      <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={false} />
     </>
   );
 }

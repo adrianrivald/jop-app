@@ -6,11 +6,8 @@ import Button from '../../../components/button/Button';
 import React from 'react';
 import DropDown from '../../../components/forms/Dropdown';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Subtitle from '../../../components/title/Subtitle';
 import Title from '../../../components/title/Title';
-
-const url = process.env.REACT_APP_API_URL;
 
 function WorkerList(props) {
   return props.workerList.map((result, idx) => {
@@ -54,8 +51,6 @@ function Dropdown(props) {
 
 function AbsenceList() {
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const { id_tugas } = useParams();
   const [absenceList, setAbsenceList] = React.useState({});
   const [workerList, setWorkerList] = React.useState([]);
@@ -68,10 +63,8 @@ function AbsenceList() {
   const getAbsence = (sort) => {
     try {
       axios
-        .get(`${url}absensi/by-penugasan/${id_tugas}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`, {
-          url: process.env.REACT_APP_API_URL,
+        .get(`/absensi/by-penugasan/${id_tugas}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`, {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         })
@@ -123,7 +116,7 @@ function AbsenceList() {
             title="Pilih jenis pekerjaan karyawan"
             defaultValue="Tapper"
             option={[{ label: 'Tapper' }]}
-            onChange={() => console.log('')}
+            onChange={() => {}}
           />
           <div className="flex justify-between mt-3 gap-3">
             <div className="p-3 rounded-xl border border-cloud w-full">

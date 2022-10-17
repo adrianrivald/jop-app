@@ -7,14 +7,9 @@ import Title from '../../../components/title/Title';
 import Header from '../../../components/ui/Header';
 import Fallback from '../../../assets/images/fallback-ava.png';
 import FlatButton from '../../../components/button/flat';
-import Cookies from 'universal-cookie';
-
-const url = process.env.REACT_APP_API_URL;
 
 const DetailTapper = () => {
   const { id } = useParams();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const [tapperDetail, setTapperDetail] = React.useState({});
   const [openedId, setOpenedId] = React.useState({});
   const [absenceHistory, setAbsenceHistory] = React.useState([]);
@@ -27,10 +22,8 @@ const DetailTapper = () => {
 
   const getDetail = async () => {
     await axios
-      .get(`${url}absensi/scan-by-tapper-uuid/${id}`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/absensi/scan-by-tapper-uuid/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -42,10 +35,8 @@ const DetailTapper = () => {
 
   const getAbsenceHistory = async (sort) => {
     await axios
-      .get(`${url}absensi/riwayat-by-tapper/${id}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/absensi/riwayat-by-tapper/${id}?sort=${!sort || sort === 'asc' ? '-' : ''}tanggal_tugas`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
