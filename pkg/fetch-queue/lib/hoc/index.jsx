@@ -57,6 +57,12 @@ export default function HOC({ children }) {
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
 
+    navigator.serviceWorker.ready.then(() => {
+      if (navigator.onLine) {
+        onOnline();
+      }
+    });
+
     return () => {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
