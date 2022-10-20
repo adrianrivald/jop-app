@@ -4,7 +4,7 @@ import { Queue } from './queue';
 import { Network } from './network';
 import { FetchQueue } from './fetch-queue';
 import { MessageChannel } from './message-channel';
-import { Strategy } from 'workbox-strategies';
+import { Strategy, StrategyHandler } from 'workbox-strategies';
 
 export default class SW extends Strategy {
   /**
@@ -65,11 +65,13 @@ export default class SW extends Strategy {
    */
   capture({ request }) {
     const url = new URL(request.url);
-    if (this._whitelistedURL.includes(url.pathname)) {
+    const parsedUrl = url.origin + url.pathname;
+
+    if (this._whitelistedURL.includes(parsedUrl)) {
       return false;
     }
 
-    return !['no-cors', 'navigate'].includes(request.mode);
+    return !['no-cors', 'navigate'].includes(request.mode) && url.origin !== self.location.origin;
   }
 
   /**

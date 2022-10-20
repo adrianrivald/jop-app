@@ -19,8 +19,6 @@ const isLocalhost = Boolean(
 );
 
 const registerSync = (registration) => {
-  registration.sync.register('sync-fetch').then(() => console.info('sync-fetch successfully registered!'));
-
   Notification.requestPermission().then(async (notifState) => {
     if (notifState === 'granted') {
       console.info('notification successfully granted!');

@@ -19,15 +19,15 @@ export class Network extends EventEmitter {
   _onOffline() {
     if (this._isOnline) {
       this._isOnline = false;
-      this.emit('offline');
     }
+    this.emit('offline');
   }
 
   _onOnline() {
     if (!this._isOnline) {
       this._isOnline = true;
-      this.emit('online');
     }
+    this.emit('online');
   }
 
   /**

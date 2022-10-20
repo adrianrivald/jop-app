@@ -48,7 +48,10 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
-registerRoute(({ request }) => request.mode === 'no-cors', new NetworkFirst());
+registerRoute(({ request }) => {
+  const reqUrl = new URL(request.url);
+  return request.mode === 'no-cors' && reqUrl.origin === self.location.origin;
+}, new NetworkFirst());
 
 const fetchQueueStrategy = FetchQueueSW.register(whitelistedURL);
 registerRoute(fetchQueueStrategy.capture, fetchQueueStrategy, 'GET');
