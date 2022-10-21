@@ -41,30 +41,32 @@ function WarehouseCIJoin() {
         },
       })
       .then((res) => {
-        const data = res.data.data.data;
+        const data = res.data.data;
+        console.log(data, 'data');
+        setStockDetail(data);
       })
       .catch((err) => {
-        const dummy = {
-          id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
-          kode: 'WH1-G1.001/10-14/P1',
-          batch: '001',
-          tanggal_masuk: '2022-10-14 01:26:34',
-          total_wet: 98,
-          drc: 0,
-          total_dry: 0,
-          foto: [],
-          gudang: {
-            id: '85f093a9-1157-46aa-83ab-af9c621749f1',
-            kode: '1',
-            nama: 'G1',
-            warehouse: {
-              id: '7086697b-093a-4eb4-b79a-4b7c0b07cd71',
-              kode: '1',
-              nama: 'WH1',
-            },
-          },
-        };
-        setStockDetail(dummy);
+        // const dummy = {
+        //   id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
+        //   kode: 'WH1-G1.001/10-14/P1',
+        //   batch: '001',
+        //   tanggal_masuk: '2022-10-14 01:26:34',
+        //   total_wet: 98,
+        //   drc: 0,
+        //   total_dry: 0,
+        //   foto: [],
+        //   gudang: {
+        //     id: '85f093a9-1157-46aa-83ab-af9c621749f1',
+        //     kode: '1',
+        //     nama: 'G1',
+        //     warehouse: {
+        //       id: '7086697b-093a-4eb4-b79a-4b7c0b07cd71',
+        //       kode: '1',
+        //       nama: 'WH1',
+        //     },
+        //   },
+        // };
+        // setStockDetail(dummy);
       });
   };
 
@@ -282,12 +284,7 @@ function WarehouseCIJoin() {
           <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate('/warehouse')} />
           <Button isText text="Checked-In" className="w-full" onClick={handleSubmit} disabled={isButtonDisabled} />
         </div>
-        <Toast
-          text={'Sukses mengupdate data!'}
-          onClose={() => setIsSubmitted(false)}
-          isShow={isSubmitted}
-          isSuccess={false}
-        />
+        <Toast text={'Sukses mengupdate data!'} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
       </div>
     </>
   );

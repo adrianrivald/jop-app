@@ -52,7 +52,6 @@ function WarehouseCIDetailRescale() {
   React.useEffect(() => {
     getShipmentDetail();
     getWarehouse();
-    getGudang();
     getWeigher();
   }, []);
 
@@ -75,9 +74,9 @@ function WarehouseCIDetailRescale() {
       });
   };
 
-  const getGudang = () => {
+  const getGudang = (val) => {
     axios
-      .get(`${url}gudang/list`, {
+      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -147,6 +146,9 @@ function WarehouseCIDetailRescale() {
   };
 
   const onChangeHandler = (e, input_id) => {
+    if (input_id === 'tempat_penimbangan') {
+      getGudang(e.target.value);
+    }
     setPayload((prev) => ({
       ...prev,
       [input_id]: e.target.value,
