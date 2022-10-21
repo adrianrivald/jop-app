@@ -8,6 +8,7 @@ import DatePicker from '../../../../../components/forms/DatePicker';
 import DropDown from '../../../../../components/forms/Dropdown';
 import Divider from '../../../../../components/ui/Divider';
 import Header from '../../../../../components/ui/Header';
+import Toast from '../../../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -19,14 +20,16 @@ function WarehouseCIDetailArrived() {
   const [shipmentDetail, setShipmentDetail] = React.useState({});
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
 
   React.useEffect(() => {
-    getShipmentDetail();
+    getDetail();
   }, []);
 
-  const getShipmentDetail = () => {
+  const getDetail = () => {
     axios
-      .get(`${url}pengiriman/scan-by-uuid?identifier=${id}`, {
+      .get(`${url}warehouse/timbang/detail/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -36,7 +39,20 @@ function WarehouseCIDetailArrived() {
       .then((res) => {
         const data = res.data.data;
         setShipmentDetail(data);
+        setPayload({
+          ...payload,
+          berat_kirim: data?.berat_kirim,
+          berat_sampai: data?.berat_sampai,
+          foto: data?.foto,
+        });
       });
+  };
+
+  const onChangeWeight = (e, id) => {
+    setPayload({
+      ...payload,
+      [id]: e.target.value,
+    });
   };
 
   const onSelectPhoto = (e) => {
@@ -71,6 +87,31 @@ function WarehouseCIDetailArrived() {
       });
   };
 
+  const handleSubmit = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    };
+    await axios
+      .put(
+        `${url}warehouse/timbang/update/${id}
+        `,
+        payload,
+        config
+      )
+      .then(() => {
+        setIsSubmitted(true);
+        setIsButtonDisabled(true);
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+          setIsSubmitted(false);
+          navigate(`/warehouse`);
+        }, 3000);
+      });
+  };
+
   return (
     <>
       <div className="header">
@@ -79,33 +120,33 @@ function WarehouseCIDetailArrived() {
       <div className="container">
         <div>
           <div className="flex justify-between items-center font-bold">
-            <p className="text-sun">Pengiriman ke- 3</p>
-            <p className="text-sun">Perjalanan</p>
+            <p className="text-sun">Pengiriman ke- {shipmentDetail?.trip_ke}</p>
+            {/* <p className="text-sun">Perjalanan</p> */}
           </div>
-          <p className="text-xxs mt-1">Rabu, 12 Februari 2022, 15:37</p>
-          <p className="font-bold">TP1-01/02-12/B.007/P1</p>
-          <p className="text-xxs">Slab – 105 kg (wet)</p>
+          <p className="text-xxs mt-1">{shipmentDetail?.tanggal_pengiriman}</p>
+          <p className="font-bold">{shipmentDetail?.kode}</p>
+          {/* <p className="text-xxs">Slab – 105 kg (wet)</p> */}
         </div>
         <Divider />
         <div className="checkin-detail">
           <div className="flex justify-between mt-3 gap-3">
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Ware House</p>
-              <span className="text-4xl font-bold">WH1</span>
+              <span className="text-4xl font-bold">{shipmentDetail?.gudang?.warehouse?.nama}</span>
             </div>
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Gudang</p>
-              <span className="text-4xl font-bold">Gudang 1</span>
+              <span className="text-4xl font-bold">{shipmentDetail?.gudang?.nama}</span>
             </div>
           </div>
           <div className="flex justify-between mt-3 gap-3">
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Petugas Penimbang</p>
-              <span className="text-4xl font-bold">Jack</span>
+              <span className="text-4xl font-bold">{shipmentDetail?.petugas_penimbang?.nama}</span>
             </div>
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Bahan Baku</p>
-              <span className="text-4xl font-bold">Slab</span>
+              <span className="text-4xl font-bold">{shipmentDetail?.nama_produk}</span>
             </div>
           </div>
         </div>
@@ -114,17 +155,33 @@ function WarehouseCIDetailArrived() {
           <div className="flex justify-between mt-3 gap-3">
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Berat Kirim</p>
-              <span className="text-4xl font-bold">100</span>
-              <span> kg</span>
+              <div className="relative">
+                <span className="absolute inset-y-7 right-2">kg</span>
+                <input
+                  className="w-full text-4xl font-bold rounded-lg py-2 px-3 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                  type="number"
+                  min="0"
+                  defaultValue={shipmentDetail?.berat_kirim}
+                  onChange={(e) => onChangeWeight(e, 'berat_kirim')}
+                />
+              </div>
             </div>
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Berat Sampai</p>
-              <span className="text-4xl font-bold">92</span>
-              <span> kg</span>
+              <div className="relative">
+                <span className="absolute inset-y-7 right-2">kg</span>
+                <input
+                  className="w-full text-4xl font-bold rounded-lg py-2 px-3 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                  type="number"
+                  min="0"
+                  defaultValue={shipmentDetail?.berat_sampai}
+                  onChange={(e) => onChangeWeight(e, 'berat_sampai')}
+                />
+              </div>
             </div>
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Selisih Berat</p>
-              <span className="text-4xl font-bold">8</span>
+              <span className="text-4xl font-bold">{shipmentDetail?.selisih_berat}</span>
               <span> kg</span>
             </div>
           </div>
@@ -132,7 +189,7 @@ function WarehouseCIDetailArrived() {
         <Divider />
         <div className="photo-area mt-3">
           <div className="photos-container overflow-x-auto flex gap-3">
-            {photos?.map((res, idx) => (
+            {shipmentDetail?.foto?.map((res, idx) => (
               <img
                 width="200"
                 alt={`photo_${idx + 1}`}
@@ -168,8 +225,9 @@ function WarehouseCIDetailArrived() {
         </div>
         <div className="button-area flex mt-12 gap-2">
           <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate('/warehouse')} />
-          <Button isText text="Timbang Ulang" className="w-full" onClick={() => navigate('rescale')} />
+          <Button isText text="Timbang Ulang" className="w-full" onClick={handleSubmit} disabled={isButtonDisabled} />
         </div>
+        <Toast text="Sukses mengubah data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
       </div>
     </>
   );

@@ -202,12 +202,7 @@ function WarehouseOpnameUpdate() {
           <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate(-1)} />
           <Button isText text="Simpan" className="w-full" onClick={handleSubmit} disabled={isButtonDisabled} />
         </div>
-        <Toast
-          text={'Sukses mengupdate data!'}
-          onClose={() => setIsSubmitted(false)}
-          isShow={isSubmitted}
-          isSuccess={false}
-        />
+        <Toast text={'Sukses mengupdate data!'} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
       </div>
     </>
   );

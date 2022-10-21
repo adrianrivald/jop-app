@@ -270,7 +270,7 @@ function Stock(props) {
         `${url}warehouse/gabung-stock-sales
           `,
         {
-          wh_penimbangan_id: selectedItem,
+          wh_stock_in_id: selectedItem,
         },
         config
       )
