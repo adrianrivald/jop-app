@@ -9,21 +9,94 @@ import DropDown from '../../../../components/forms/Dropdown';
 import FlatButton from '../../../../components/button/flat';
 import Divider from '../../../../components/ui/Divider';
 import axios from 'axios';
+import moment from 'moment';
 // import FlatButton from '../../../../../../../../components/button/flat';
 
 const url = process.env.REACT_APP_API_URL;
 
 function WarehouseCIJoin() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
+  const [stockDetail, setStockDetail] = React.useState({});
+  const [isEditDrc, setIsEditDrc] = React.useState(false);
+  const [isEditDry, setIsEditDry] = React.useState(false);
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
+
+  React.useEffect(() => {
+    getStockDetail();
+  }, []);
+
+  const getStockDetail = () => {
+    axios
+      .get(`${url}warehouse/stock-in/detail/${id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+      })
+      .catch((err) => {
+        const dummy = {
+          id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
+          kode: 'WH1-G1.001/10-14/P1',
+          batch: '001',
+          tanggal_masuk: '2022-10-14 01:26:34',
+          total_wet: 98,
+          drc: 0,
+          total_dry: 0,
+          foto: [],
+          gudang: {
+            id: '85f093a9-1157-46aa-83ab-af9c621749f1',
+            kode: '1',
+            nama: 'G1',
+            warehouse: {
+              id: '7086697b-093a-4eb4-b79a-4b7c0b07cd71',
+              kode: '1',
+              nama: 'WH1',
+            },
+          },
+        };
+        setStockDetail(dummy);
+      });
+  };
+
+  const onEditDrc = () => {
+    setPayload((prev) => ({
+      ...prev,
+      mode: 'drc',
+    }));
+    setIsEditDrc(true);
+    setIsEditDry(false);
+  };
+
+  const onEditDry = () => {
+    setPayload((prev) => ({
+      ...prev,
+      mode: 'total_dry',
+    }));
+    setIsEditDrc(false);
+    setIsEditDry(true);
+  };
+
+  const onChangeHandler = (e) => {
+    setPayload((prev) => ({
+      ...prev,
+      value: e.target.value,
+    }));
+  };
 
   const onSelectPhoto = (e) => {
     let formData = new FormData();
     formData.append('file', e.target.files[0]);
-    formData.append('path', 'public/logistik/kirim');
+    formData.append('path', 'public/stock/new');
     void uploadPhoto(formData);
   };
 
@@ -52,8 +125,29 @@ function WarehouseCIJoin() {
       });
   };
 
-  const handleSubmit = () => {
-    navigate('/warehouse');
+  const handleSubmit = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    };
+    await axios
+      .put(
+        `${url}warehouse/stock-in/update/${id}
+        `,
+        payload,
+        config
+      )
+      .then(() => {
+        setIsSubmitted(true);
+        setIsButtonDisabled(true);
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+          setIsSubmitted(false);
+          navigate(`/warehouse`);
+        }, 3000);
+      });
   };
 
   return (
@@ -62,7 +156,7 @@ function WarehouseCIJoin() {
         <Header title="Kode Stock Baru" isWithBack />
       </div>
       <div className="container">
-        <Title text="WH1-G1.001/02-12/P1" />
+        <Title text={stockDetail?.kode} />
         <div>
           <Button
             isIcon
@@ -82,19 +176,21 @@ function WarehouseCIJoin() {
           />
           <div className="flex gap-3 my-2">
             <p className="w-2/4">Warehouse</p>
-            <p className="w-2/4 font-bold">WH 1</p>
+            <p className="w-2/4 font-bold">{stockDetail?.gudang?.warehouse?.nama}</p>
           </div>
           <div className="flex gap-3 my-2">
             <p className="w-2/4">Gudang</p>
-            <p className="w-2/4 font-bold">Gudang 1</p>
+            <p className="w-2/4 font-bold">{stockDetail?.gudang?.nama}</p>
           </div>
           <div className="flex gap-3 my-2">
             <p className="w-2/4">No Batch</p>
-            <p className="w-2/4 font-bold">001</p>
+            <p className="w-2/4 font-bold">{stockDetail?.batch}</p>
           </div>
           <div className="flex gap-3 my-2">
             <p className="w-2/4">Tanggal Masuk</p>
-            <p className="w-2/4 font-bold">12 / 02 / 2022</p>
+            <p className="w-2/4 font-bold">
+              {moment(stockDetail?.tanggal_masuk, 'YYYY-MM-DD hh:mm:ss').format('DD / MM / YYYY')}
+            </p>
           </div>
         </div>
         <Divider />
@@ -104,10 +200,10 @@ function WarehouseCIJoin() {
             <div className="flex gap-3 items-center">
               <div className="relative">
                 <span>
-                  <b>322</b> kg
+                  <b>{stockDetail?.total_wet}</b> kg
                 </span>
               </div>
-              <Button className="text-xs w-16" isText text="Edit" onClick={() => {}} />
+              <div className="w-16" />
             </div>
           </div>
           <div className="flex justify-between items-center my-2">
@@ -117,13 +213,15 @@ function WarehouseCIJoin() {
                 <span className="absolute inset-y-4 right-2">%</span>
                 <input
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                  type="text"
-                  pattern="\d*"
-                  onChange={(e) => {}}
+                  type="number"
+                  min="0"
+                  defaultValue={stockDetail?.total_wet}
+                  disabled={!isEditDrc}
+                  onChange={(e) => onChangeHandler(e)}
                 />
               </div>
 
-              <Button className="text-xs w-16" isText text="Edit" onClick={() => {}} />
+              <Button className="text-xs w-16" isText text="Edit" onClick={onEditDrc} />
             </div>
           </div>
           <div className="flex justify-between items-center my-2">
@@ -133,12 +231,14 @@ function WarehouseCIJoin() {
                 <span className="absolute inset-y-4 right-2">kg</span>
                 <input
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                  type="text"
-                  pattern="\d*"
-                  onChange={(e) => {}}
+                  type="number"
+                  min="0"
+                  defaultValue={stockDetail?.total_wet}
+                  disabled={!isEditDry}
+                  onChange={(e) => onChangeHandler(e)}
                 />
               </div>
-              <Button className="text-xs w-16" isText text="Edit" onClick={() => {}} />
+              <Button className="text-xs w-16" isText text="Edit" onClick={onEditDry} />
             </div>
           </div>
         </div>
@@ -179,9 +279,15 @@ function WarehouseCIJoin() {
           <input id="file-upload" type="file" onChange={onSelectPhoto} style={{ display: 'none' }} />
         </div>
         <div className="button-area flex mt-12 gap-2">
-          <Button isText isBack text="Kembali" className="w-full" />
-          <Button isText text="Checked-In" className="w-full" onClick={handleSubmit} />
+          <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate('/warehouse')} />
+          <Button isText text="Checked-In" className="w-full" onClick={handleSubmit} disabled={isButtonDisabled} />
         </div>
+        <Toast
+          text={'Sukses mengupdate data!'}
+          onClose={() => setIsSubmitted(false)}
+          isShow={isSubmitted}
+          isSuccess={false}
+        />
       </div>
     </>
   );

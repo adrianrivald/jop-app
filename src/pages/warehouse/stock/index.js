@@ -1,55 +1,160 @@
+import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import DropDown from '../../../components/forms/Dropdown';
 import Divider from '../../../components/ui/Divider';
 
+const url = process.env.REACT_APP_API_URL;
+
+function Dropdown(props) {
+  return (
+    <div className={`${props.customClass} w-full`}>
+      <h2 className="text-left mb-1">{props.title}</h2>
+      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+    </div>
+  );
+}
+
 function Stock(props) {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
   const navigate = useNavigate();
   const [openedId, setOpenedId] = React.useState({});
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
-  const [stockData, setStockData] = React.useState([
-    {
-      status: 'Perjalanan',
-      date: 'Rabu, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P1',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (120 Kg)',
-        armada: 'B 3355 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Kamis, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Jumat, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-  ]);
+  const [isNoData, setIsNoData] = React.useState(true);
+  const [stockData, setStockData] = React.useState([]);
+  const [gudangList, setGudangList] = React.useState([]);
+  const [materialList, setMaterialList] = React.useState([]);
+  const [warehouseList, setWarehouseList] = React.useState([]);
+  const [selectedGudang, setSelectedGudang] = React.useState('');
+  const [selectedMaterial, setSelectedMaterial] = React.useState('');
+  const [selectedItem, setSelectedItem] = React.useState([]);
+  const [isEditWet, setIsEditWet] = React.useState(false);
+  const [isEditDrc, setIsEditDrc] = React.useState(false);
+  const [isEditDry, setIsEditDry] = React.useState(false);
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
+
+  React.useEffect(() => {
+    // getGudang();
+    getMaterial();
+    getWarehouse();
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedGudang !== '' && selectedMaterial !== '') {
+      getStock(selectedGudang, selectedMaterial);
+    }
+  }, [selectedGudang, selectedMaterial]);
+
+  const getWarehouse = (id) => {
+    axios
+      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const warehouseData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setWarehouseList(warehouseData);
+      });
+  };
+  const getMaterial = () => {
+    axios
+      .get(`${url}bahan-baku/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const materialData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setMaterialList(materialData);
+      });
+  };
+
+  const getGudang = (val) => {
+    axios
+      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const gudangData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setGudangList(gudangData);
+      });
+  };
+
+  const getStock = (gudang_id, bahan_baku_id) => {
+    axios
+      .get(`${url}warehouse/stock-in/list?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${bahan_baku_id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        setStockData(data);
+        setIsNoData(false);
+        if (data?.data.length === 0) {
+          console.log(
+            [
+              {
+                id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
+                kode: 'WH1-G1.001/10-14/P1',
+                total_wet: 98,
+                drc: 0,
+                total_dry: 0,
+                foto: [],
+              },
+              {
+                id: '4e2de4f3-3d6d-4118-ad08-380a98f23912',
+                kode: 'WH1-G1.001/10-14/P2',
+                total_wet: 32,
+                drc: 75,
+                total_dry: 12,
+                foto: [],
+              },
+            ],
+            'data'
+          );
+          setStockData([
+            {
+              id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
+              kode: 'WH1-G1.001/10-14/P1',
+              total_wet: 98,
+              drc: 0,
+              total_dry: 0,
+              foto: [],
+            },
+          ]);
+        }
+      });
+  };
+
   const onSelectPhoto = (e) => {
     let formData = new FormData();
     formData.append('file', e.target.files[0]);
@@ -82,6 +187,55 @@ function Stock(props) {
       });
   };
 
+  const onChangeWH = (e) => {
+    getGudang(e.target.value);
+  };
+
+  const onChangeGudang = (e) => {
+    setSelectedGudang(e.target.value);
+  };
+
+  const onChangeMaterial = (e) => {
+    setSelectedMaterial(e.target.value);
+  };
+
+  const onEditWet = () => {
+    setPayload((prev) => ({
+      ...prev,
+      mode: 'total_wet',
+    }));
+    setIsEditWet(true);
+    setIsEditDrc(false);
+    setIsEditDry(false);
+  };
+
+  const onEditDrc = () => {
+    setPayload((prev) => ({
+      ...prev,
+      mode: 'drc',
+    }));
+    setIsEditWet(false);
+    setIsEditDrc(true);
+    setIsEditDry(false);
+  };
+
+  const onEditDry = () => {
+    setPayload((prev) => ({
+      ...prev,
+      mode: 'total_dry',
+    }));
+    setIsEditWet(false);
+    setIsEditDrc(false);
+    setIsEditDry(true);
+  };
+
+  const onChangeHandler = (e) => {
+    setPayload((prev) => ({
+      ...prev,
+      value: e.target.value,
+    }));
+  };
+
   const onExpand = (idx) => {
     setOpenedId({
       ...openedId,
@@ -96,20 +250,73 @@ function Stock(props) {
     });
   };
 
-  const onCheckMaterial = (e) => {
+  const onCheckItem = (e, id) => {
+    if (!selectedItem.includes(id)) {
+      setSelectedItem([...selectedItem, id]);
+    } else {
+      setSelectedItem(selectedItem.filter((val) => val !== id));
+    }
     e.stopPropagation();
-    // TODO
   };
-
-  const handleSubmit = () => {
-    //
+  const handleSubmit = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    };
+    await axios
+      .post(
+        `${url}warehouse/gabung-stock-sales
+          `,
+        {
+          wh_penimbangan_id: selectedItem,
+        },
+        config
+      )
+      .then((res) => {
+        const data = {
+          stock_sales_id: 'ac65e6d9-2ffe-48d4-8647-2f51e797251b',
+        };
+        setIsSubmitted(true);
+        setIsButtonDisabled(true);
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+          setIsSubmitted(false);
+          localStorage.setItem('saved_tab', 'check-out');
+          localStorage.setItem('check-out-value', data.stock_sales_id);
+        }, 3000);
+      })
+      .catch((err) => {
+        const data = { stock_sales_id: 'ac65e6d9-2ffe-48d4-8647-2f51e797251b' };
+        localStorage.setItem('saved_tab', 'check-out');
+        localStorage.setItem('check-out-value', data.stock_sales_id);
+      });
   };
 
   return (
     <div>
+      <div className="flex justify-between gap-2">
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Tempat Penimbangan"
+            defaultValue="Pilih tempat penimbangan"
+            option={warehouseList}
+            onChange={(e) => onChangeWH(e)}
+          />
+        </div>
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Gudang"
+            defaultValue="Pilih gudang"
+            option={gudangList}
+            onChange={(e) => onChangeGudang(e)}
+          />
+        </div>
+      </div>
       <div className="flex justify-between items-center mt-4">
         <p className="text-sm font-bold">Daftar Stock di Gudang</p>
-        <DropDown option={[]} defaultValue="Slab(P1)" />
+        <DropDown option={materialList} defaultValue={'Pilih jenis bahan baku'} onChange={(e) => onChangeMaterial(e)} />
       </div>
       <div className="mt-7">
         {stockData?.length > 0 ? (
@@ -122,25 +329,25 @@ function Stock(props) {
                 >
                   <div className="flex items-center">
                     <input
-                      checked={(prev) => !prev}
-                      onClick={onCheckMaterial}
+                      checked={selectedItem.includes(res?.id)}
+                      onClick={(e) => onCheckItem(e, res?.id)}
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
                     <div>
-                      <p className="font-bold">{res?.code}</p>
+                      <p className="font-bold">{res?.kode}</p>
                       <div className="flex justify-center gap-3">
                         <div className="flex gap-1">
                           <span>Wet</span>
-                          <span className="text-xs text-sun font-bold">1348</span>
+                          <span className="text-xs text-sun font-bold">{res?.total_wet}</span>
                         </div>
                         <div className="flex gap-1">
-                          <span>Wet</span>
-                          <span className="text-xs text-sun font-bold">1348</span>
+                          <span>DRC</span>
+                          <span className="text-xs text-sun font-bold">{res?.drc}</span>
                         </div>
                         <div className="flex gap-1">
-                          <span>Wet</span>
-                          <span className="text-xs text-sun font-bold">1348</span>
+                          <span>Dry</span>
+                          <span className="text-xs text-sun font-bold">{res?.total_dry}</span>
                         </div>
                       </div>
                     </div>
@@ -191,13 +398,15 @@ function Stock(props) {
                         <div className="relative">
                           <span className="absolute inset-y-4 right-2">kg</span>
                           <input
-                            className="rounded-lg py-4 bg-bgrey px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                            type="text"
-                            pattern="\d*"
-                            onChange={(e) => {}}
+                            className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                            type="number"
+                            min="0"
+                            defaultValue={res?.total_wet}
+                            disabled={!isEditWet}
+                            onChange={(e) => onChangeHandler(e)}
                           />
                         </div>
-                        <Button className="text-xs w-16" isText text="Edit" onClick={() => {}} />
+                        <Button className="text-xs w-16" isText text="Edit" onClick={onEditWet} />
                       </div>
                     </div>
                     <div className="flex justify-between items-center my-2">
@@ -206,14 +415,16 @@ function Stock(props) {
                         <div className="relative">
                           <span className="absolute inset-y-4 right-2">%</span>
                           <input
-                            className="rounded-lg py-4 bg-bgrey px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                            type="text"
-                            pattern="\d*"
-                            onChange={(e) => {}}
+                            className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                            type="number"
+                            min="0"
+                            defaultValue={res?.drc}
+                            disabled={!isEditDrc}
+                            onChange={(e) => onChangeHandler(e)}
                           />
                         </div>
 
-                        <Button className="text-xs w-16" isText text="Edit" onClick={() => {}} />
+                        <Button className="text-xs w-16" isText text="Edit" onClick={onEditDrc} />
                       </div>
                     </div>
                     <div className="flex justify-between items-center my-2">
@@ -222,19 +433,21 @@ function Stock(props) {
                         <div className="relative">
                           <span className="absolute inset-y-4 right-2">kg</span>
                           <input
-                            className="rounded-lg py-4 bg-bgrey px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                            type="text"
-                            pattern="\d*"
-                            onChange={(e) => {}}
+                            className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                            type="number"
+                            min="0"
+                            defaultValue={res?.total_dry}
+                            disabled={!isEditDry}
+                            onChange={(e) => onChangeHandler(e)}
                           />
                         </div>
-                        <Button className="text-xs w-16" isText text="Edit" onClick={() => {}} />
+                        <Button className="text-xs w-16" isText text="Edit" onClick={onEditDry} />
                       </div>
                     </div>
                   </div>
                   <div className="photo-area mt-3">
                     <div className="photos-container overflow-x-auto flex gap-3">
-                      {photos?.map((res, idx) => (
+                      {res?.foto?.map((res, idx) => (
                         <img
                           width="200"
                           alt={`photo_${idx + 1}`}
@@ -283,25 +496,25 @@ function Stock(props) {
                 >
                   <div className="flex items-center">
                     <input
-                      checked={(prev) => !prev}
-                      onClick={onCheckMaterial}
+                      checked={selectedItem.includes(res?.id)}
+                      onClick={(e) => onCheckItem(e, res?.id)}
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
                     <div>
-                      <p className="font-bold">{res?.code}</p>
+                      <p className="font-bold">{res?.kode}</p>
                       <div className="flex justify-center gap-3">
                         <div className="flex gap-1">
                           <span>Wet</span>
-                          <span className="text-xs text-sun font-bold">1348</span>
+                          <span className="text-xs text-sun font-bold">{res?.total_wet}</span>
                         </div>
                         <div className="flex gap-1">
-                          <span>Wet</span>
-                          <span className="text-xs text-sun font-bold">1348</span>
+                          <span>DRC</span>
+                          <span className="text-xs text-sun font-bold">{res?.drc}</span>
                         </div>
                         <div className="flex gap-1">
-                          <span>Wet</span>
-                          <span className="text-xs text-sun font-bold">1348</span>
+                          <span>Dry</span>
+                          <span className="text-xs text-sun font-bold">{res?.total_dry}</span>
                         </div>
                       </div>
                     </div>
@@ -345,7 +558,7 @@ function Stock(props) {
         )}
       </div>
       <div className="submit-area mt-8">
-        <Button isText text="Keluarkan Stock" className="w-full font-bold" onClick={() => {}} />
+        <Button isText text="Keluarkan Stock" className="w-full font-bold" onClick={handleSubmit} />
       </div>
     </div>
   );

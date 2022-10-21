@@ -96,7 +96,7 @@ export default function Router() {
             <Route path="/warehouse/check-in/detail/:id" exact element={<WarehouseCIDetailNew />} />
             <Route path="/warehouse/check-in/detail/:id/rescale" exact element={<WarehouseCIDetailRescale />} />
             <Route path="/warehouse/check-in/scan" exact element={<WarehouseCIScan />} />
-            <Route path="/warehouse/check-in/join" exact element={<WarehouseCIJoin />} />
+            <Route path="/warehouse/check-in/join/:id" exact element={<WarehouseCIJoin />} />
 
             {/* misc */}
             <Route path="/storybook" element={<Storybook />} />

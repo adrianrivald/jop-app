@@ -8,11 +8,29 @@ import Divider from '../../../components/ui/Divider';
 
 const url = process.env.REACT_APP_API_URL;
 
+function Dropdown(props) {
+  return (
+    <div className={`${props.customClass} w-full`}>
+      <h2 className="text-left mb-1">{props.title}</h2>
+      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+    </div>
+  );
+}
+
 function CheckIn(props) {
   const cookies = new Cookies();
   const token = cookies.get('token');
+  const [warehouseList, setWarehouseList] = React.useState([]);
+  const [gudangList, setGudangList] = React.useState([]);
   const navigate = useNavigate();
+  const [selectedGudang, setSelectedGudang] = React.useState('');
   const [openedId, setOpenedId] = React.useState({});
+  const [selectedItem, setSelectedItem] = React.useState([]);
+
+  React.useEffect(() => {
+    console.log(selectedItem, 'selectedItem');
+  }, [selectedItem]);
+
   const [checkInData, setCheckInData] = React.useState([
     {
       status: 'Perjalanan',
@@ -56,8 +74,47 @@ function CheckIn(props) {
   ]);
 
   React.useEffect(() => {
+    getWarehouse();
     getCheckInData();
   }, []);
+
+  const getWarehouse = (id) => {
+    axios
+      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const warehouseData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setWarehouseList(warehouseData);
+      });
+  };
+
+  const getGudang = (val) => {
+    axios
+      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const gudangData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setGudangList(gudangData);
+      });
+  };
 
   const getCheckInData = () => {
     axios
@@ -89,13 +146,79 @@ function CheckIn(props) {
     });
   };
 
-  const onCheckMaterial = (e) => {
+  const onChangeWH = (e) => {
+    getGudang(e.target.value);
+  };
+
+  const onChangeGudang = (e) => {
+    setSelectedGudang(e.target.value);
+  };
+
+  const onCheckMaterial = (e, id) => {
+    if (!selectedItem.includes(id)) {
+      setSelectedItem([...selectedItem, id]);
+    } else {
+      setSelectedItem(selectedItem.filter((val) => val !== id));
+    }
     e.stopPropagation();
-    // TODO
+  };
+
+  const handleSubmit = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    };
+    await axios
+      .post(
+        `${url}warehouse/gabung-stock-in
+          `,
+        {
+          wh_penimbangan_id: selectedItem,
+        },
+        config
+      )
+      .then((res) => {
+        const data = {
+          stock_sales_id: 'ac65e6d9-2ffe-48d4-8647-2f51e797251b',
+        };
+        setIsSubmitted(true);
+        setIsButtonDisabled(true);
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+          setIsSubmitted(false);
+          localStorage.setItem('saved_tab', 'check-out');
+          localStorage.setItem('check-out-value', data.stock_sales_id);
+        }, 3000);
+      })
+      .catch((err) => {
+        const data = { stock_sales_id: 'ac65e6d9-2ffe-48d4-8647-2f51e797251b' };
+        localStorage.setItem('saved_tab', 'check-out');
+        localStorage.setItem('check-out-value', data.stock_sales_id);
+      });
   };
 
   return (
     <div>
+      <div className="flex justify-between gap-2">
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Tempat Penimbangan"
+            defaultValue="Pilih tempat penimbangan"
+            option={warehouseList}
+            onChange={(e) => onChangeWH(e)}
+          />
+        </div>
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Gudang"
+            defaultValue="Pilih gudang"
+            option={gudangList}
+            onChange={(e) => onChangeGudang(e)}
+          />
+        </div>
+      </div>
       <div className="scan mt-3">
         <Button
           isIcon
@@ -127,8 +250,8 @@ function CheckIn(props) {
                 >
                   <div className="flex items-center">
                     <input
-                      checked={false}
-                      onClick={onCheckMaterial}
+                      checked={selectedItem.includes(res?.id)}
+                      onClick={(e) => onCheckMaterial(e, res?.id)}
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
@@ -158,8 +281,8 @@ function CheckIn(props) {
                   <div className="flex justify-between items-center font-bold">
                     <div className="flex items-center">
                       <input
-                        checked={false}
-                        onClick={onCheckMaterial}
+                        checked={selectedItem.includes(res?.id)}
+                        onClick={(e) => onCheckMaterial(e, res?.id)}
                         type="checkbox"
                         className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                       />
@@ -170,9 +293,9 @@ function CheckIn(props) {
                         {res?.kode_armada}
                       </div>
                     </div>
-                    <p>100</p>
-                    <p>92</p>
-                    <p>8</p>
+                    <p>{res?.berat_kirim}</p>
+                    <p>{res?.berat_sampai}</p>
+                    <p>{res?.selisih_berat}</p>
                   </div>
                 </div>
                 <Divider className="mb-0" />
@@ -185,8 +308,8 @@ function CheckIn(props) {
                 >
                   <div className="flex items-center">
                     <input
-                      checked={(prev) => !prev}
-                      onClick={onCheckMaterial}
+                      checked={selectedItem.includes(res?.id)}
+                      onClick={(e) => onCheckMaterial(e, res?.id)}
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
@@ -213,7 +336,7 @@ function CheckIn(props) {
         )}
       </div>
       <div className="submit-area mt-8">
-        <Button isText text="Gabungkan" className="w-full font-bold" onClick={() => navigate('check-in/join')} />
+        <Button isText text="Gabungkan" className="w-full font-bold" onClick={handleSubmit} />
       </div>
     </div>
   );

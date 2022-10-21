@@ -146,7 +146,7 @@ function WarehouseCIDetailArrived() {
           <input id="file-upload" type="file" onChange={onSelectPhoto} style={{ display: 'none' }} />
         </div>
         <div className="button-area flex mt-12 gap-2">
-          <Button isText isBack text="Kembali" className="w-full" />
+          <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate('/warehouse')} />
           <Button isText text="Timbang Ulang" className="w-full" />
         </div>
       </div>

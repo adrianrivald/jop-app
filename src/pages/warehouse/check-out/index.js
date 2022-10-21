@@ -1,60 +1,297 @@
+import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import DropDown from '../../../components/forms/Dropdown';
 import Divider from '../../../components/ui/Divider';
 
+const url = process.env.REACT_APP_API_URL;
+
+function Dropdown(props) {
+  return (
+    <div className={`${props.customClass} w-full`}>
+      <h2 className="text-left mb-1">{props.title}</h2>
+      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+    </div>
+  );
+}
+
 function CheckOut(props) {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
   const navigate = useNavigate();
   const [openedId, setOpenedId] = React.useState({});
+  const [gudangList, setGudangList] = React.useState([]);
+  const [materialList, setMaterialList] = React.useState([]);
+  const [warehouseList, setWarehouseList] = React.useState([]);
+  const [selectedGudang, setSelectedGudang] = React.useState('');
+  const [selectedMaterial, setSelectedMaterial] = React.useState('');
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
-  const [stockData, setStockData] = React.useState([
-    {
-      status: 'Perjalanan',
-      date: 'Rabu, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P1',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (120 Kg)',
-        armada: 'B 3355 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Kamis, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Jumat, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-  ]);
+  const checkOutId = localStorage.getItem('check-out-value');
+  const [checkOutData, setCheckOutData] = React.useState([]);
+
+  const getCheckOutDetail = () => {
+    axios
+      .get(`${url}warehouse/stock-sales/detail/${checkOutId}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        setCheckOutData({
+          id: '181f0c11-39d2-4377-b24a-03627fb4ab58',
+          kode: 'WH1-G1/S.001',
+          tanggal_keluar: '2022-10-19 18:23:40',
+          total_wet: 128,
+          drc: 98.44,
+          total_dry: 126,
+          status: 'berlangsung',
+          status_kirim: 'dalam-pengiriman',
+          gudang: {
+            id: '85f093a9-1157-46aa-83ab-af9c621749f1',
+            kode: '1',
+            nama: 'G1',
+            warehouse: {
+              id: '7086697b-093a-4eb4-b79a-4b7c0b07cd71',
+              kode: '1',
+              nama: 'WH1',
+            },
+          },
+          detail: [
+            {
+              id: '0eadb111-a3d6-4560-af92-aae5950c553d',
+              kode: 'P1',
+              nama: 'SLAB',
+              total_wet: 98,
+              drc: 99.69,
+              total_dry: 97.7,
+              total_sales: 19540000,
+            },
+            {
+              id: '4e0e8729-5666-421c-8730-4329ab0aec4c',
+              kode: 'P2',
+              nama: 'CUP LUMP',
+              total_wet: 17,
+              drc: 97.06,
+              total_dry: 16.5,
+              total_sales: 2550000,
+            },
+            {
+              id: '18f904bf-b1a3-4678-84ab-83000c40090e',
+              kode: 'P3',
+              nama: 'Latek',
+              total_wet: 13,
+              drc: 90.77,
+              total_dry: 11.8,
+              total_sales: 3250000,
+            },
+          ],
+          stock: [
+            {
+              id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
+              kode: 'WH1-G1.001/10-14/P1',
+              qr_path: 'http://127.0.0.1:8000/storage/qr-stock/4e2de4f3-3d6d-4118-ad08-380a98f23911.svg',
+              total_wet: 98,
+              drc: 99.69,
+              total_dry: 97.7,
+              foto: ['http://127.0.0.1:8000/storage/tph-loading/pOVJTpa0GHOYGhohJv1AsVPv9P8QxlvJhzVUmHMn.png'],
+            },
+            {
+              id: '8861db26-68d1-4adf-a7c2-11532c6c578b',
+              kode: 'WH1-G1.001/10-18/P2',
+              qr_path: '',
+              total_wet: 17,
+              drc: 97.06,
+              total_dry: 16.5,
+              foto: ['http://127.0.0.1:8000/storage/tph-loading/pOVJTpa0GHOYGhohJv1AsVPv9P8QxlvJhzVUmHMn.png'],
+            },
+            {
+              id: '674aa592-8670-49cc-9711-045b66b19116',
+              kode: 'WH1-G1.001/10-18/P3',
+              qr_path: '',
+              total_wet: 13,
+              drc: 90.77,
+              total_dry: 11.8,
+              foto: ['http://127.0.0.1:8000/storage/tph-loading/pOVJTpa0GHOYGhohJv1AsVPv9P8QxlvJhzVUmHMn.png'],
+            },
+          ],
+        });
+      })
+      .catch((err) => {
+        setCheckOutData({
+          id: '181f0c11-39d2-4377-b24a-03627fb4ab58',
+          kode: 'WH1-G1/S.001',
+          tanggal_keluar: '2022-10-19 18:23:40',
+          total_wet: 128,
+          drc: 98.44,
+          total_dry: 126,
+          status: 'berlangsung',
+          status_kirim: 'dalam-pengiriman',
+          gudang: {
+            id: '85f093a9-1157-46aa-83ab-af9c621749f1',
+            kode: '1',
+            nama: 'G1',
+            warehouse: {
+              id: '7086697b-093a-4eb4-b79a-4b7c0b07cd71',
+              kode: '1',
+              nama: 'WH1',
+            },
+          },
+          detail: [
+            {
+              id: '0eadb111-a3d6-4560-af92-aae5950c553d',
+              kode: 'P1',
+              nama: 'SLAB',
+              total_wet: 98,
+              drc: 99.69,
+              total_dry: 97.7,
+              total_sales: 19540000,
+            },
+            {
+              id: '4e0e8729-5666-421c-8730-4329ab0aec4c',
+              kode: 'P2',
+              nama: 'CUP LUMP',
+              total_wet: 17,
+              drc: 97.06,
+              total_dry: 16.5,
+              total_sales: 2550000,
+            },
+            {
+              id: '18f904bf-b1a3-4678-84ab-83000c40090e',
+              kode: 'P3',
+              nama: 'Latek',
+              total_wet: 13,
+              drc: 90.77,
+              total_dry: 11.8,
+              total_sales: 3250000,
+            },
+          ],
+          stock: [
+            {
+              id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
+              kode: 'WH1-G1.001/10-14/P1',
+              qr_path: 'http://127.0.0.1:8000/storage/qr-stock/4e2de4f3-3d6d-4118-ad08-380a98f23911.svg',
+              total_wet: 98,
+              drc: 99.69,
+              total_dry: 97.7,
+              foto: ['http://127.0.0.1:8000/storage/tph-loading/pOVJTpa0GHOYGhohJv1AsVPv9P8QxlvJhzVUmHMn.png'],
+            },
+            {
+              id: '8861db26-68d1-4adf-a7c2-11532c6c578b',
+              kode: 'WH1-G1.001/10-18/P2',
+              qr_path: '',
+              total_wet: 17,
+              drc: 97.06,
+              total_dry: 16.5,
+              foto: ['http://127.0.0.1:8000/storage/tph-loading/pOVJTpa0GHOYGhohJv1AsVPv9P8QxlvJhzVUmHMn.png'],
+            },
+            {
+              id: '674aa592-8670-49cc-9711-045b66b19116',
+              kode: 'WH1-G1.001/10-18/P3',
+              qr_path: '',
+              total_wet: 13,
+              drc: 90.77,
+              total_dry: 11.8,
+              foto: ['http://127.0.0.1:8000/storage/tph-loading/pOVJTpa0GHOYGhohJv1AsVPv9P8QxlvJhzVUmHMn.png'],
+            },
+          ],
+        });
+      });
+  };
+
+  React.useEffect(() => {
+    // getGudang();
+    getMaterial();
+    getWarehouse();
+    if (checkOutId !== undefined || checkOutId) {
+      getCheckOutDetail();
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedGudang !== '' && selectedMaterial !== '') {
+      getCheckOutDetail(selectedGudang, selectedMaterial);
+    }
+  }, [selectedGudang, selectedMaterial]);
+
+  const getWarehouse = (id) => {
+    axios
+      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const warehouseData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setWarehouseList(warehouseData);
+      });
+  };
+  const getMaterial = () => {
+    axios
+      .get(`${url}bahan-baku/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const materialData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setMaterialList(materialData);
+      });
+  };
+
+  const getGudang = (val) => {
+    axios
+      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const gudangData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setGudangList(gudangData);
+      });
+  };
+
   const onSelectPhoto = (e) => {
     let formData = new FormData();
     formData.append('file', e.target.files[0]);
     formData.append('path', 'public/logistik/kirim');
     void uploadPhoto(formData);
+  };
+
+  const onChangeWH = (e) => {
+    getGudang(e.target.value);
+  };
+
+  const onChangeGudang = (e) => {
+    setSelectedGudang(e.target.value);
+  };
+
+  const onChangeMaterial = (e) => {
+    setSelectedMaterial(e.target.value);
   };
 
   const uploadPhoto = async (formData) => {
@@ -107,13 +344,31 @@ function CheckOut(props) {
 
   return (
     <div>
+      {/* <div className="flex justify-between gap-2">
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Tempat Penimbangan"
+            defaultValue="Pilih tempat penimbangan"
+            option={warehouseList}
+            onChange={(e) => onChangeWH(e)}
+          />
+        </div>
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Gudang"
+            defaultValue="Pilih gudang"
+            option={gudangList}
+            onChange={(e) => onChangeGudang(e)}
+          />
+        </div>
+      </div> */}
       <div className="flex justify-between items-center mt-4">
         <p className="text-sm font-bold">Daftar Order Sales</p>
-        <DropDown option={[]} defaultValue="Jumlah Timbangan" />
+        <DropDown option={materialList} defaultValue="Jumlah Timbangan" onChange={(e) => onChangeMaterial(e)} />
       </div>
       <div className="mt-7">
-        {stockData?.length > 0 ? (
-          stockData?.map((res, idx) =>
+        {checkOutData ? (
+          checkOutData?.detail?.map((res, idx) =>
             openedId[`item_${idx}`] === true ? (
               <div className="bg-white">
                 <div

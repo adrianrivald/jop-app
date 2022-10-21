@@ -274,7 +274,7 @@ function WarehouseCIDetailRescale() {
             </div>
             <div className="button-area flex mt-12 gap-2">
               <Button isText isBack text="Kembali" className="w-full" />
-              <Button isText text="Konfirmasi" className="w-full" onClick={handleSubmit} />
+              <Button isText text="Konfirmasi" className="w-full" onClick={handleSubmit} disabled={isButtonDisabled} />
             </div>
           </div>
           <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
