@@ -16,8 +16,29 @@ function WarehouseCIDetailArrived() {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
+  const [shipmentDetail, setShipmentDetail] = React.useState({});
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
+
+  React.useEffect(() => {
+    getShipmentDetail();
+  }, []);
+
+  const getShipmentDetail = () => {
+    axios
+      .get(`${url}pengiriman/scan-by-uuid?identifier=${id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        setShipmentDetail(data);
+      });
+  };
+
   const onSelectPhoto = (e) => {
     let formData = new FormData();
     formData.append('file', e.target.files[0]);
@@ -147,7 +168,7 @@ function WarehouseCIDetailArrived() {
         </div>
         <div className="button-area flex mt-12 gap-2">
           <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate('/warehouse')} />
-          <Button isText text="Timbang Ulang" className="w-full" />
+          <Button isText text="Timbang Ulang" className="w-full" onClick={() => navigate('rescale')} />
         </div>
       </div>
     </>

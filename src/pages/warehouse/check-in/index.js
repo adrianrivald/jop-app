@@ -26,57 +26,22 @@ function CheckIn(props) {
   const [selectedGudang, setSelectedGudang] = React.useState('');
   const [openedId, setOpenedId] = React.useState({});
   const [selectedItem, setSelectedItem] = React.useState([]);
+  const [selectedMaterial, setSelectedMaterial] = React.useState('');
+  const [materialList, setMaterialList] = React.useState([]);
+
+  const [checkInData, setCheckInData] = React.useState([]);
 
   React.useEffect(() => {
-    console.log(selectedItem, 'selectedItem');
-  }, [selectedItem]);
-
-  const [checkInData, setCheckInData] = React.useState([
-    {
-      status: 'Perjalanan',
-      date: 'Rabu, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P1',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (120 Kg)',
-        armada: 'B 3355 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Kamis, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Jumat, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-  ]);
-
-  React.useEffect(() => {
+    getMaterial();
     getWarehouse();
     getCheckInData();
   }, []);
+
+  React.useEffect(() => {
+    if (selectedGudang !== '' && selectedMaterial !== '') {
+      getCheckInData(selectedGudang, selectedMaterial);
+    }
+  }, [selectedGudang, selectedMaterial]);
 
   const getWarehouse = (id) => {
     axios
@@ -116,9 +81,9 @@ function CheckIn(props) {
       });
   };
 
-  const getCheckInData = () => {
+  const getMaterial = () => {
     axios
-      .get(`${url}warehouse/timbang/list`, {
+      .get(`${url}bahan-baku/list`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -127,7 +92,25 @@ function CheckIn(props) {
       })
       .then((res) => {
         const data = res.data.data.data;
-        console.log(data, 'data');
+        const materialData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setMaterialList(materialData);
+      });
+  };
+
+  const getCheckInData = (gudang_id, jenis_bahan_baku_id) => {
+    axios
+      .get(`${url}warehouse/timbang/list?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${jenis_bahan_baku_id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
         setCheckInData(data);
       });
   };
@@ -152,6 +135,10 @@ function CheckIn(props) {
 
   const onChangeGudang = (e) => {
     setSelectedGudang(e.target.value);
+  };
+
+  const onChangeMaterial = (e) => {
+    setSelectedMaterial(e.target.value);
   };
 
   const onCheckMaterial = (e, id) => {
@@ -237,7 +224,7 @@ function CheckIn(props) {
       </div>
       <div className="flex justify-between items-center mt-4">
         <p className="text-sm font-bold">Daftar Barang Sampai</p>
-        <DropDown option={[]} defaultValue="Slab(P1)" />
+        <DropDown option={materialList} defaultValue="Pilih jenis bahan baku" onChange={(e) => onChangeMaterial(e)} />
       </div>
       <div className="mt-7">
         {checkInData?.length > 0 ? (
@@ -287,7 +274,7 @@ function CheckIn(props) {
                         className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                       />
                       <div
-                        onClick={() => navigate('/warehouse/check-in/detail/arrived')}
+                        onClick={() => navigate(`/warehouse/check-in/detail/arrived/${res?.id}`)}
                         className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold"
                       >
                         {res?.kode_armada}

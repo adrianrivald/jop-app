@@ -130,6 +130,14 @@ function WarehouseCIDetailRescale() {
           berat_kirim: res?.berat,
           foto: res?.foto?.map((res) => res.split('/storage/')[1]),
         }));
+        console.log(
+          data?.loading?.map((res) => ({
+            jenis_bahan_baku_id: res?.jenis_bahan_baku_id,
+            berat_kirim: res?.berat,
+            foto: res?.foto?.map((res) => res.split('/storage/')[1]),
+          })),
+          'detail data'
+        );
         setPayload({
           ...payload,
           pengiriman_id: id,

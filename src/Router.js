@@ -92,7 +92,7 @@ export default function Router() {
             <Route path="/warehouse/opname/scan" exact element={<WarehouseOpnameScan />} />
             <Route path="/warehouse/opname/update/:id" exact element={<WarehouseOpnameUpdate />} />
 
-            <Route path="/warehouse/check-in/detail/arrived" exact element={<WarehouseCIDetailArrived />} />
+            <Route path="/warehouse/check-in/detail/arrived/:id" exact element={<WarehouseCIDetailArrived />} />
             <Route path="/warehouse/check-in/detail/:id" exact element={<WarehouseCIDetailNew />} />
             <Route path="/warehouse/check-in/detail/:id/rescale" exact element={<WarehouseCIDetailRescale />} />
             <Route path="/warehouse/check-in/scan" exact element={<WarehouseCIScan />} />

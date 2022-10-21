@@ -73,10 +73,6 @@ function WarehouseCIDetailNew() {
       });
   };
 
-  const handleSubmit = () => {
-    navigate('rescale');
-  };
-
   return (
     <>
       <div className="header">
@@ -140,9 +136,7 @@ function WarehouseCIDetailNew() {
                 <img
                   width="200"
                   alt={`photo_${idx + 1}`}
-                  // src={`${'https://jop.dudyali.com/storage/'}${res}`}
                   src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                  // src={res}
                   className="rounded-xl"
                 />
               ))}
@@ -151,8 +145,8 @@ function WarehouseCIDetailNew() {
         </div>
 
         <div className="button-area flex mt-12 gap-2">
-          <Button isText isBack text="Kembali" className="w-full" />
-          <Button isText text="Timbang Ulang" className="w-full" onClick={handleSubmit} />
+          <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate('/warehouse')} />
+          <Button isText text="Timbang Ulang" className="w-full" onClick={() => navigate('rescale')} />
         </div>
       </div>
     </>
