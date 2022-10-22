@@ -174,7 +174,7 @@ function WarehouseCIJoin() {
             }
             text="QR Code"
             className="bg-white text-black shadow my-4"
-            onClick={() => navigate(`scan`)}
+            onClick={() => navigate(`qr`)}
           />
           <div className="flex gap-3 my-2">
             <p className="w-2/4">Warehouse</p>

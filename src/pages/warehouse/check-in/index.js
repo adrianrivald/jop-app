@@ -166,16 +166,11 @@ function CheckIn(props) {
         config
       )
       .then((res) => {
-        console.log(res?.data);
-        setIsSubmitted(true);
-        setIsButtonDisabled(true);
-        setTimeout(() => {
-          setIsButtonDisabled(false);
-          setIsSubmitted(false);
-          navigate(`/warehouse/check-in/join/${res?.data.data.stock_in_id}`);
-        }, 3000);
+        navigate(`/warehouse/check-in/join/${res?.data.data.stock_in_id}`);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.error(err.message);
+      });
   };
 
   return (

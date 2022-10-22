@@ -22,6 +22,7 @@ const WeighingTapper = () => {
   const scanned_tapper = localStorage.getItem('scanned_tapper');
   const weighing_id = localStorage.getItem('weighing_id');
   const [tapperDetail, setTapperDetail] = React.useState({});
+  const [tapperHistoryDetail, setTapperHistoryDetail] = React.useState([]);
   const [weighingPayload, setWeighingPayload] = React.useState({});
   const stored_data = JSON.parse(localStorage.getItem('selected_material'));
   const [isSubmitted, setIsSubmitted] = React.useState(false);
@@ -47,7 +48,8 @@ const WeighingTapper = () => {
         .then((res) => {
           const data = res.data.data;
           setTransactionData(data);
-          setTapperDetail(data.tapper);
+          setTapperDetail(data?.tapper);
+          setTapperHistoryDetail(data?.tapper?.riwayat_penugasan_terakhir);
           setWeighingPayload({
             ...weighingPayload,
             tapper_id: scanned_tapper,
@@ -71,8 +73,9 @@ const WeighingTapper = () => {
         .then((res) => {
           const data = res.data.data;
           setTapperDetail(data);
+          setTapperHistoryDetail(data?.riwayat_penugasan?.length > 0 ? data?.riwayat_penugasan[0] : []);
+          console.log(data?.riwayat_penugasan[0], data, 'data riwayat');
           setTransactionData(data);
-
           setWeighingPayload({
             ...weighingPayload,
             tapper_id: scanned_tapper,
@@ -189,22 +192,26 @@ const WeighingTapper = () => {
         </div>
         <div className="mt-3">
           <Title text="Detail Tapping Terakhir" />
-          <div className="flex justify-between w-2/3">
-            <div>
-              <p>Mandor</p>
-              {/* <p>Waktu Timbang</p> */}
-              <p>Wilayah Kerja</p>
+          {tapperHistoryDetail?.length > 0 ? (
+            <div className="flex justify-between w-2/3">
+              <div>
+                <p>Mandor</p>
+                {/* <p>Waktu Timbang</p> */}
+                <p>Wilayah Kerja</p>
+              </div>
+              <div>
+                <p className="font-bold">{tapperHistoryDetail.mandor}</p>
+                <div className="font-bold">
+                  <p>{tapperHistoryDetail?.wilayah_tugas?.divisi}</p>
+                  <p>{tapperHistoryDetail?.wilayah_tugas?.hancak ?? tapperDetail?.wilayah_tugas?.hancak}</p>
+                  <p>Blok {tapperHistoryDetail?.wilayah_tugas?.field}</p>
+                  <p>Clone {tapperHistoryDetail.wilayah_tugas?.clone}</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="font-bold">{tapperDetail?.riwayat_penugasan_terakhir?.mandor}</p>
-              {/* <div className="font-bold">
-                                <p>{tapperDetail?.riwayat_penugasan_terakhir?.wilayah_tugas?.divisi ?? tapperDetail?.riwayat_penugasan[0]?.wilayah_tugas?.divisi}</p>
-                                <p>{tapperDetail?.riwayat_penugasan_terakhir?.wilayah_tugas?.hancak ?? tapperDetail?.riwayat_penugasan[0]?.wilayah_tugas?.hancak}</p>
-                                <p>Blok {tapperDetail?.riwayat_penugasan_terakhir?.wilayah_tugas?.field ?? tapperDetail?.riwayat_penugasan[0]?.wilayah_tugas?.field}</p>
-                                <p>Clone {tapperDetail?.riwayat_penugasan_terakhir?.wilayah_tugas?.clone ?? tapperDetail?.riwayat_penugasan[0]?.wilayah_tugas?.divisi}</p>
-                            </div> */}
-            </div>
-          </div>
+          ) : (
+            <div>No Data</div>
+          )}
         </div>
         <Divider />
         <div className="mt-3">
@@ -258,13 +265,6 @@ const WeighingTapper = () => {
       </div>
       <div className="button-area p-3">
         <div className="photos-container overflow-x-auto flex gap-3">
-          {/* {
-                            photos?.map((res, idx) => {
-                                return (
-                                    <img width="200" alt={`photo_${idx+1}`} src={!weighing_transaction ? URL.createObjectURL(res?.blob) : photos[idx].file} className="rounded-xl" />
-                                )
-                            })
-                        } */}
           {transactionData?.foto?.map((res, idx) => (
             <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />
           ))}
@@ -272,9 +272,7 @@ const WeighingTapper = () => {
             <img
               width="200"
               alt={`photo_${idx + 1}`}
-              // src={`${'https://jop.dudyali.com/storage/'}${res}`}
               src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-              // src={res}
               className="rounded-xl"
             />
           ))}

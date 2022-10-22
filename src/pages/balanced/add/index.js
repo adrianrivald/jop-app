@@ -198,7 +198,7 @@ const AddBalanced = () => {
 
   return (
     <div className="App min-h-screen h-full">
-      <Header title="Penimbangan Baru" isWithBack />
+      <Header title="Penimbangan Baru" isWithBack to="/weighing" />
       <section
         className="container p-4 flex flex-col justify-start items-start"
         style={{ height: 'calc(100vh - 70px)' }}

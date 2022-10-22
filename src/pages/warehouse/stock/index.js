@@ -21,10 +21,11 @@ function Stock(props) {
   const cookies = new Cookies();
   const token = cookies.get('token');
   const navigate = useNavigate();
-  const [openedId, setOpenedId] = React.useState({});
+  const [openedId, setOpenedId] = React.useState();
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
   const [isNoData, setIsNoData] = React.useState(true);
+  const [selectedId, setSelectedId] = React.useState('');
   const [stockData, setStockData] = React.useState([]);
   const [gudangList, setGudangList] = React.useState([]);
   const [materialList, setMaterialList] = React.useState([]);
@@ -117,48 +118,17 @@ function Stock(props) {
       })
       .then((res) => {
         const data = res.data.data;
+        console.log(data.data, 'dataa');
         setStockData(data);
         setIsNoData(false);
-        if (data?.data.length === 0) {
-          console.log(
-            [
-              {
-                id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
-                kode: 'WH1-G1.001/10-14/P1',
-                total_wet: 98,
-                drc: 0,
-                total_dry: 0,
-                foto: [],
-              },
-              {
-                id: '4e2de4f3-3d6d-4118-ad08-380a98f23912',
-                kode: 'WH1-G1.001/10-14/P2',
-                total_wet: 32,
-                drc: 75,
-                total_dry: 12,
-                foto: [],
-              },
-            ],
-            'data'
-          );
-          setStockData([
-            {
-              id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
-              kode: 'WH1-G1.001/10-14/P1',
-              total_wet: 98,
-              drc: 0,
-              total_dry: 0,
-              foto: [],
-            },
-          ]);
-        }
+        setStockData(data?.data);
       });
   };
 
   const onSelectPhoto = (e) => {
     let formData = new FormData();
     formData.append('file', e.target.files[0]);
-    formData.append('path', 'public/logistik/kirim');
+    formData.append('path', 'public/stock/gudang');
     void uploadPhoto(formData);
   };
 
@@ -182,7 +152,7 @@ function Stock(props) {
         setPhotos([...photos, data?.path]);
         setPayload({
           ...payload,
-          path_foto: [...photos, data?.path],
+          foto: [...photos, data?.path],
         });
       });
   };
@@ -236,18 +206,13 @@ function Stock(props) {
     }));
   };
 
-  const onExpand = (idx) => {
-    setOpenedId({
-      ...openedId,
-      [`item_${idx}`]: true,
-    });
+  const onExpand = (idx, id) => {
+    setSelectedId(id);
+    setOpenedId(idx + 1);
   };
 
-  const onCollapse = (idx) => {
-    setOpenedId({
-      ...openedId,
-      [`item_${idx}`]: false,
-    });
+  const onCollapse = () => {
+    setOpenedId(0);
   };
 
   const onCheckItem = (e, id) => {
@@ -258,6 +223,32 @@ function Stock(props) {
     }
     e.stopPropagation();
   };
+
+  const handleSave = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    };
+    await axios
+      .put(
+        `${url}warehouse/stock-in/update/${selectedId}
+        `,
+        payload,
+        config
+      )
+      .then(() => {
+        setIsSubmitted(true);
+        setIsButtonDisabled(true);
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+          setIsSubmitted(false);
+          navigate(`/warehouse`);
+        }, 3000);
+      });
+  };
+
   const handleSubmit = async () => {
     const config = {
       headers: {
@@ -321,7 +312,7 @@ function Stock(props) {
       <div className="mt-7">
         {stockData?.length > 0 ? (
           stockData?.map((res, idx) =>
-            openedId[`item_${idx}`] === true ? (
+            openedId === idx + 1 ? (
               <div className="bg-white">
                 <div
                   className="flex justify-between items-center transition-transform cursor-pointer pt-3 pl-3 pr-3"
@@ -457,6 +448,16 @@ function Stock(props) {
                           className="rounded-xl"
                         />
                       ))}
+                      {photos?.map((res, idx) => (
+                        <img
+                          width="200"
+                          alt={`photo_${idx + 1}`}
+                          // src={`${'https://jop.dudyali.com/storage/'}${res}`}
+                          src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
+                          // src={res}
+                          className="rounded-xl"
+                        />
+                      ))}
                     </div>
                   </div>
                   <div className="mt-3">
@@ -482,8 +483,8 @@ function Stock(props) {
                     <input id="file-upload" type="file" onChange={onSelectPhoto} style={{ display: 'none' }} />
                   </div>
                   <div className="button-area flex mt-5 gap-2">
-                    <Button isText isBack text="Batalkan" className="w-full" />
-                    <Button isText text="Simpan" className="w-full" onClick={handleSubmit} />
+                    <Button isText isBack text="Batalkan" className="w-full" onClick={() => onCollapse()} />
+                    <Button isText text="Simpan" className="w-full" onClick={handleSave} />
                   </div>
                 </div>
                 <Divider className="mb-0" />
@@ -492,7 +493,7 @@ function Stock(props) {
               <div>
                 <div
                   className="flex justify-between items-center transition-transform cursor-pointer pt-3 pl-3 pr-3"
-                  onClick={() => onExpand(idx)}
+                  onClick={() => onExpand(idx, res?.id)}
                 >
                   <div className="flex items-center">
                     <input
@@ -534,7 +535,7 @@ function Stock(props) {
                       }
                       isText={false}
                       className="bg-white text-black shadow m-0"
-                      onClick={() => navigate(`scan`)}
+                      onClick={() => navigate(`/warehouse/check-in/join/${res?.id}/qr`)}
                     />
                     <div className="cursor-pointer">
                       <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">

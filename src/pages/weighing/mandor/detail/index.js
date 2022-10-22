@@ -181,7 +181,7 @@ function DetailWeighing() {
   return (
     <>
       <div className="header">
-        <Header title="Penimbangan TPH" isWithBack />
+        <Header title="Penimbangan TPH" isWithBack to="/weighing" />
       </div>
       <div className="container">
         <p className="text-sm font-bold">{weighingDetail?.kode}</p>

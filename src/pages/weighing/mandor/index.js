@@ -198,7 +198,7 @@ function MandorWeighing() {
   return (
     <>
       <div className="header">
-        <Header title="Penimbangan TPH" isWithBack />
+        <Header title="Penimbangan TPH" isWithBack to="/homepage" />
       </div>
       <div className="container">
         <div>
