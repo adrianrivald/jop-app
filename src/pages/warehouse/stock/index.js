@@ -207,11 +207,19 @@ function Stock(props) {
   };
 
   const onExpand = (idx, id) => {
+    setIsEditDrc(false);
+    setIsEditDry(false);
+    setIsEditWet(false);
+    setPhotos([]);
     setSelectedId(id);
     setOpenedId(idx + 1);
   };
 
   const onCollapse = () => {
+    setIsEditDrc(false);
+    setIsEditDry(false);
+    setIsEditWet(false);
+    setPhotos([]);
     setOpenedId(0);
   };
 
@@ -261,27 +269,24 @@ function Stock(props) {
         `${url}warehouse/gabung-stock-sales
           `,
         {
+          gudang_id: selectedGudang,
           wh_stock_in_id: selectedItem,
         },
         config
       )
       .then((res) => {
-        const data = {
-          stock_sales_id: 'ac65e6d9-2ffe-48d4-8647-2f51e797251b',
-        };
+        const stock_sales_id = res?.data?.data?.stock_sales_id;
         setIsSubmitted(true);
         setIsButtonDisabled(true);
         setTimeout(() => {
           setIsButtonDisabled(false);
           setIsSubmitted(false);
           localStorage.setItem('saved_tab', 'check-out');
-          localStorage.setItem('check-out-value', data.stock_sales_id);
+          localStorage.setItem('check-out-value', stock_sales_id);
         }, 3000);
       })
       .catch((err) => {
-        const data = { stock_sales_id: 'ac65e6d9-2ffe-48d4-8647-2f51e797251b' };
-        localStorage.setItem('saved_tab', 'check-out');
-        localStorage.setItem('check-out-value', data.stock_sales_id);
+        console.error(err.message);
       });
   };
 

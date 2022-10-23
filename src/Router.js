@@ -40,6 +40,7 @@ import { useSelector } from 'react-redux';
 import Toast from './components/ui/Toast';
 import { hideToast } from './store/actions/uiAction';
 import WarehouseCIQR from './pages/warehouse/check-in/join/qr';
+import WarehouseCOUpdate from './pages/warehouse/check-out/update';
 
 export default function Router() {
   const toastState = useSelector(({ toast }) => toast);
@@ -99,6 +100,7 @@ export default function Router() {
             <Route path="/warehouse/check-in/scan" exact element={<WarehouseCIScan />} />
             <Route path="/warehouse/check-in/join/:id" exact element={<WarehouseCIJoin />} />
             <Route path="/warehouse/check-in/join/:id/qr" exact element={<WarehouseCIQR />} />
+            <Route path="/warehouse/check-out/update/:id" exact element={<WarehouseCOUpdate />} />
 
             {/* misc */}
             <Route path="/storybook" element={<Storybook />} />

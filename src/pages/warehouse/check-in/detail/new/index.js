@@ -38,38 +38,8 @@ function WarehouseCIDetailNew() {
       .then((res) => {
         const data = res.data.data;
         setShipmentDetail(data);
-      });
-  };
-
-  const onSelectPhoto = (e) => {
-    let formData = new FormData();
-    formData.append('file', e.target.files[0]);
-    formData.append('path', 'public/logistik/kirim');
-    void uploadPhoto(formData);
-  };
-
-  const uploadPhoto = async (formData) => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        // 'Content-Type': 'image/jpeg',
-        Accept: 'application/json',
-      },
-    };
-    await axios
-      .post(
-        `${url}upload-foto
-        `,
-        formData,
-        config
-      )
-      .then((res) => {
-        const data = res?.data?.data;
-        setPhotos([...photos, data?.path]);
-        setPayload({
-          ...payload,
-          path_foto: [...photos, data?.path],
-        });
+        const joinedPhotos = data?.loading?.map((res) => res.foto);
+        setPhotos(joinedPhotos);
       });
   };
 
@@ -133,12 +103,7 @@ function WarehouseCIDetailNew() {
           <div className="photo-area mt-3">
             <div className="photos-container overflow-x-auto flex gap-3">
               {photos?.map((res, idx) => (
-                <img
-                  width="200"
-                  alt={`photo_${idx + 1}`}
-                  src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                  className="rounded-xl"
-                />
+                <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />
               ))}
             </div>
           </div>

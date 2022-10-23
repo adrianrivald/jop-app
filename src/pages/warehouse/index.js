@@ -59,7 +59,6 @@ function Content(props) {
 }
 
 function Warehouse() {
-  const [isActive, setIsActive] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState('');
   const tabList = ['Opname', 'Check-in', 'Stock', 'Check-out'];
   const saved_tab = localStorage.getItem('saved_tab');
@@ -70,7 +69,7 @@ function Warehouse() {
     } else {
       setSelectedTab('opname');
     }
-  }, []);
+  }, [localStorage.getItem('saved_tab')]);
 
   const onChangeTab = (id) => {
     setSelectedTab(id);
