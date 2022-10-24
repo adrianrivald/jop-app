@@ -16,7 +16,8 @@ export default function Toast({ isShow = false, text, isSuccess = true, timeout 
       {isSuccess ? (
         <div
           id="toast-success"
-          className={`z-99 fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-200 flex items-center p-4 mb-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 ${
+          style={{ zIndex: '999' }}
+          className={`fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-200 flex items-center p-4 mb-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 ${
             isShow === true ? 'visible opacity-100  top-10' : 'invisible opacity-0 top-0'
           }`}
           role="alert"
@@ -46,7 +47,8 @@ export default function Toast({ isShow = false, text, isSuccess = true, timeout 
       ) : (
         <div
           id="toast-danger"
-          className={`z-99 fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-200 flex items-center p-4 mb-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 ${
+          style={{ zIndex: '999' }}
+          className={`fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-200 flex items-center p-4 mb-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 ${
             isShow === true ? 'visible opacity-100  top-10' : 'invisible opacity-0 top-0'
           }`}
           role="alert"

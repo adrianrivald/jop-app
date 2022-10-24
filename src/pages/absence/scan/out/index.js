@@ -18,10 +18,6 @@ function AbsenceOut() {
   const navigate = useNavigate();
 
   const onResult = async (result, error) => {
-    if (error) {
-      return showToast({ message: error.message, isError: true });
-    }
-
     if (result) {
       try {
         await SCHEMA.validateAsync({
@@ -47,7 +43,7 @@ function AbsenceOut() {
         navigate(`/absence/tapper/${result?.text}`);
       } catch (err) {
         showToast({
-          message: err.message,
+          message: err.response?.data?.error?.message,
           isError: true,
         });
       }
