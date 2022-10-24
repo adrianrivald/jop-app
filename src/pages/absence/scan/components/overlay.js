@@ -65,7 +65,7 @@ const Overlay = () => {
         navigate(`/absence/tapper/${tapperDetail?.id}`);
       } catch (err) {
         showToast({
-          message: err.message,
+          message: err.response?.data?.error?.message,
           isError: true,
         });
       }
