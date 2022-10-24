@@ -127,7 +127,7 @@ function WarehouseCIDetailRescale() {
         const joinedPhotos = data?.loading?.map((res) => res.foto);
         setPhotos(joinedPhotos);
         const detailMaterial = data?.loading?.map((res) => ({
-          jenis_bahan_baku_id: res?.jenis_bahan_buku_id,
+          jenis_bahan_baku_id: res?.jenis_bahan_baku_id,
           berat_kirim: res?.berat,
           foto: res?.foto?.map((res) => res.split('/storage/')[1]),
         }));
