@@ -58,7 +58,7 @@ function MandorWeighing() {
 
   const getDivisi = () => {
     axios
-      .get(`${url}divisi/list?sort=nama&include=wilayah_tugas`, {
+      .get(`${url}/divisi/list?sort=nama&include=wilayah_tugas`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,7 +77,7 @@ function MandorWeighing() {
 
   const getTph = (divisi) => {
     axios
-      .get(`${url}tph/list?filter[divisi]=${divisi}&include=wilayah_tugas,divisi&sort=kode,nama`, {
+      .get(`${url}/tph/list?filter[divisi]=${divisi}&include=wilayah_tugas,divisi&sort=kode,nama`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -96,7 +96,7 @@ function MandorWeighing() {
 
   const getWeighing = (tph) => {
     axios
-      .get(`${url}penimbangan/list?include=tph,divisi,petugas_penimbang`, {
+      .get(`${url}/penimbangan/list?include=tph,divisi,petugas_penimbang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ function MandorWeighing() {
 
   const getWeighingDetail = async (id) => {
     await axios
-      .get(`${url}penimbangan/detail/${id}`, {
+      .get(`${url}/penimbangan/detail/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

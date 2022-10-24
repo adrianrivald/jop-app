@@ -91,7 +91,7 @@ const AddBalanced = () => {
 
   const getDivisi = () => {
     axios
-      .get(`${url}divisi/list?sort=nama&include=wilayah_tugas`, {
+      .get(`${url}/divisi/list?sort=nama&include=wilayah_tugas`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ const AddBalanced = () => {
 
   const getWeigher = () => {
     axios
-      .get(`${url}petugas-timbang/list?sort=nama`, {
+      .get(`${url}/petugas-timbang/list?sort=nama`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -129,7 +129,7 @@ const AddBalanced = () => {
 
   const getMaterial = () => {
     axios
-      .get(`${url}bahan-baku/list?sort=nama`, {
+      .get(`${url}/bahan-baku/list?sort=nama`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -144,7 +144,7 @@ const AddBalanced = () => {
 
   const getTPH = (divisi_id) => {
     axios
-      .get(`${url}tph/list?filter[divisi]=${divisi_id}&include=wilayah_tugas,divisi&sort=kode,nama`, {
+      .get(`${url}/tph/list?filter[divisi]=${divisi_id}&include=wilayah_tugas,divisi&sort=kode,nama`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -185,7 +185,7 @@ const AddBalanced = () => {
         Accept: 'application/json',
       },
     };
-    axios.post(`${url}penimbangan/store`, addInput, config).then((res) => {
+    axios.post(`${url}/penimbangan/store`, addInput, config).then((res) => {
       setIsSubmitted(true);
       setIsButtonDisabled(true);
       setTimeout(() => {

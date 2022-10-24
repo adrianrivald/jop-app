@@ -35,7 +35,7 @@ function WarehouseOpnameUpdate() {
 
   const getOpnameDetail = () => {
     axios
-      .get(`${url}warehouse/scan-by-stock-uuid?identifier=${id}`, {
+      .get(`${url}/warehouse/scan-by-stock-uuid?identifier=${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -117,7 +117,7 @@ function WarehouseOpnameUpdate() {
     } else {
       await axios
         .put(
-          `${url}warehouse/stock-in/update/${id}
+          `${url}/warehouse/stock-in/update/${id}
             `,
           payload,
           config

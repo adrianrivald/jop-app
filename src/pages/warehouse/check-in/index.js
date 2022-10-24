@@ -44,7 +44,7 @@ function CheckIn(props) {
 
   const getWarehouse = (id) => {
     axios
-      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+      .get(`${url}/warehouse/list?include=wilayah_tugas,gudang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ function CheckIn(props) {
 
   const getGudang = (val) => {
     axios
-      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+      .get(`${url}/gudang/list?filter[warehouse]=${val}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ function CheckIn(props) {
 
   const getMaterial = () => {
     axios
-      .get(`${url}bahan-baku/list`, {
+      .get(`${url}/bahan-baku/list`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -101,13 +101,16 @@ function CheckIn(props) {
 
   const getCheckInData = (gudang_id, jenis_bahan_baku_id) => {
     axios
-      .get(`${url}warehouse/timbang/list?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${jenis_bahan_baku_id}`, {
-        url: process.env.REACT_APP_API_URL,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
+      .get(
+        `${url}/warehouse/timbang/list?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${jenis_bahan_baku_id}`,
+        {
+          url: process.env.REACT_APP_API_URL,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }
+      )
       .then((res) => {
         const data = res.data.data.data;
         setCheckInData(data);
@@ -158,7 +161,7 @@ function CheckIn(props) {
     };
     await axios
       .post(
-        `${url}warehouse/gabung-stock-in
+        `${url}/warehouse/gabung-stock-in
           `,
         {
           wh_penimbangan_id: selectedItem,

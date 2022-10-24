@@ -45,7 +45,7 @@ function CheckOut(props) {
 
   const getStockSales = () => {
     axios
-      .get(`${url}warehouse/stock-sales/list?filter[gudang]=${selectedGudang}`, {
+      .get(`${url}/warehouse/stock-sales/list?filter[gudang]=${selectedGudang}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ function CheckOut(props) {
 
   const getCheckOutDetail = () => {
     axios
-      .get(`${url}warehouse/stock-sales/detail/${checkOutId}`, {
+      .get(`${url}/warehouse/stock-sales/detail/${checkOutId}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@ function CheckOut(props) {
 
   const getCllient = () => {
     axios
-      .get(`${url}client/list`, {
+      .get(`${url}/client/list`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -127,7 +127,7 @@ function CheckOut(props) {
 
   const getWarehouse = (id) => {
     axios
-      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+      .get(`${url}/warehouse/list?include=wilayah_tugas,gudang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -146,7 +146,7 @@ function CheckOut(props) {
 
   const getGudang = (val) => {
     axios
-      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+      .get(`${url}/gudang/list?filter[warehouse]=${val}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -193,7 +193,7 @@ function CheckOut(props) {
     };
     await axios
       .post(
-        `${url}warehouse/stock-sales/remove
+        `${url}/warehouse/stock-sales/remove
         `,
         {
           stock_sales_id: stock_id,
@@ -233,7 +233,7 @@ function CheckOut(props) {
     } else {
       await axios
         .put(
-          `${url}warehouse/stock-sales/checkout/${checkOutData?.id}
+          `${url}/warehouse/stock-sales/checkout/${checkOutData?.id}
           `,
           {
             client_id: selectedClient,

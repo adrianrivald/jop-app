@@ -23,7 +23,7 @@ const Overlay = () => {
 
   const onSubmit = async () => {
     await axios
-      .get(`${url}pengiriman/scan-by-kode?identifier=${code}`, {
+      .get(`${url}/pengiriman/scan-by-kode?identifier=${code}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

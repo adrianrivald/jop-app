@@ -57,7 +57,7 @@ function WarehouseCIDetailRescale() {
 
   const getWarehouse = (id) => {
     axios
-      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+      .get(`${url}/warehouse/list?include=wilayah_tugas,gudang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ function WarehouseCIDetailRescale() {
 
   const getGudang = (val) => {
     axios
-      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+      .get(`${url}/gudang/list?filter[warehouse]=${val}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ function WarehouseCIDetailRescale() {
 
   const getWeigher = () => {
     axios
-      .get(`${url}petugas-timbang/list`, {
+      .get(`${url}/petugas-timbang/list`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -114,7 +114,7 @@ function WarehouseCIDetailRescale() {
 
   const getShipmentDetail = async () => {
     await axios
-      .get(`${url}pengiriman/scan-by-uuid?identifier=${id}`, {
+      .get(`${url}/pengiriman/scan-by-uuid?identifier=${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -166,7 +166,7 @@ function WarehouseCIDetailRescale() {
     };
     await axios
       .post(
-        `${url}warehouse/timbang-ulang
+        `${url}/warehouse/timbang-ulang
         `,
         payload,
         config

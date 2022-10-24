@@ -72,7 +72,7 @@ function LogisticShipment() {
 
   const getLogisticType = () => {
     axios
-      .get(`${url}jenis-logistik/list?sort=nama`, {
+      .get(`${url}/jenis-logistik/list?sort=nama`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -91,7 +91,7 @@ function LogisticShipment() {
 
   const getVehicle = (val) => {
     axios
-      .get(`${url}armada/list?sort=kode&filter[jenis_logistik]=${val}`, {
+      .get(`${url}/armada/list?sort=kode&filter[jenis_logistik]=${val}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ function LogisticShipment() {
 
   const getStorage = (val) => {
     axios
-      .get(`${url}gudang/list`, {
+      .get(`${url}/gudang/list`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -155,7 +155,7 @@ function LogisticShipment() {
     };
     await axios
       .post(
-        `${url}pengiriman/store
+        `${url}/pengiriman/store
     `,
         shipment_payload,
         config

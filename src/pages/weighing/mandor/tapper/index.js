@@ -38,7 +38,7 @@ const WeighingTapper = () => {
   const getData = async () => {
     if (transaction_id && transaction_id !== undefined) {
       await axios
-        .get(`${url}penimbangan/detail/transaksi/${transaction_id}`, {
+        .get(`${url}/penimbangan/detail/transaksi/${transaction_id}`, {
           url: process.env.REACT_APP_API_URL,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ const WeighingTapper = () => {
         });
     } else {
       await axios
-        .get(`${url}absensi/scan-by-tapper-uuid/${scanned_tapper}`, {
+        .get(`${url}/absensi/scan-by-tapper-uuid/${scanned_tapper}`, {
           url: process.env.REACT_APP_API_URL,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -119,7 +119,7 @@ const WeighingTapper = () => {
     };
     await axios
       .post(
-        `${url}upload-foto
+        `${url}/upload-foto
         `,
         formData,
         config
@@ -143,7 +143,7 @@ const WeighingTapper = () => {
     };
     await axios
       .post(
-        `${url}penimbangan/transaksi/store
+        `${url}/penimbangan/transaksi/store
         `,
         weighingPayload,
         config

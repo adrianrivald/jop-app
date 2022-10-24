@@ -22,7 +22,7 @@ const Overlay = () => {
 
   const getDetail = async () => {
     await axios
-      .get(`${url}absensi/scan-by-tapper-kode/${code}`, {
+      .get(`${url}/absensi/scan-by-tapper-kode/${code}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

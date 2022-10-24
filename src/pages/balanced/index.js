@@ -30,7 +30,7 @@ const Balanced = () => {
 
   const getWeighing = () => {
     axios
-      .get(`${url}penimbangan/list?include=tph,divisi,petugas_penimbang`, {
+      .get(`${url}/penimbangan/list?include=tph,divisi,petugas_penimbang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ const Balanced = () => {
   const getWeighingHistory = (sort) => {
     axios
       .get(
-        `${url}penimbangan/riwayat/by-penimbang?include=tph,divisi,petugas_penimbang&sort=${
+        `${url}/penimbangan/riwayat/by-penimbang?include=tph,divisi,petugas_penimbang&sort=${
           !sort || sort === 'asc' ? '-' : ''
         }tanggal_penimbangan&filter[penimbang]=${user?.id}`,
         {
@@ -65,7 +65,7 @@ const Balanced = () => {
 
   const onDoneWeighing = (id) => {
     axios
-      .get(`${url}penimbangan/selesai/${id}`, {
+      .get(`${url}/penimbangan/selesai/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

@@ -28,7 +28,7 @@ function WarehouseCIDetailNew() {
 
   const getShipmentDetail = () => {
     axios
-      .get(`${url}pengiriman/scan-by-uuid?identifier=${id}`, {
+      .get(`${url}/pengiriman/scan-by-uuid?identifier=${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

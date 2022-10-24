@@ -24,7 +24,7 @@ function LogisticScan() {
     try {
       if (result) {
         axios
-          .get(`${url}absensi/scan-by-tapper-uuid/${result?.text}`, {
+          .get(`${url}/absensi/scan-by-tapper-uuid/${result?.text}`, {
             url: process.env.REACT_APP_API_URL,
             headers: {
               Authorization: `Bearer ${token}`,

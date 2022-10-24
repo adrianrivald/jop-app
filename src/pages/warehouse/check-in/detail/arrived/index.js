@@ -29,7 +29,7 @@ function WarehouseCIDetailArrived() {
 
   const getDetail = () => {
     axios
-      .get(`${url}warehouse/timbang/detail/${id}`, {
+      .get(`${url}/warehouse/timbang/detail/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ function WarehouseCIDetailArrived() {
     };
     await axios
       .post(
-        `${url}upload-foto
+        `${url}/upload-foto
         `,
         formData,
         config
@@ -96,7 +96,7 @@ function WarehouseCIDetailArrived() {
     };
     await axios
       .put(
-        `${url}warehouse/timbang/update/${id}
+        `${url}/warehouse/timbang/update/${id}
         `,
         payload,
         config

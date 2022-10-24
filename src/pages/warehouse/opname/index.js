@@ -43,7 +43,7 @@ function Opname(props) {
 
   const getWarehouse = (id) => {
     axios
-      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+      .get(`${url}/warehouse/list?include=wilayah_tugas,gudang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ function Opname(props) {
   };
   const getMaterial = () => {
     axios
-      .get(`${url}bahan-baku/list`, {
+      .get(`${url}/bahan-baku/list`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ function Opname(props) {
 
   const getGudang = (val) => {
     axios
-      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+      .get(`${url}/gudang/list?filter[warehouse]=${val}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -99,7 +99,7 @@ function Opname(props) {
 
   const getOpname = (gudang_id, bahan_baku_id) => {
     axios
-      .get(`${url}warehouse/stock-opname?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${bahan_baku_id}`, {
+      .get(`${url}/warehouse/stock-opname?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${bahan_baku_id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -131,7 +131,7 @@ function Opname(props) {
 
   const handleSubmit = async () => {
     await axios
-      .get(`${url}warehouse/scan-by-stock-kode?identifier=${code}`, {
+      .get(`${url}/warehouse/scan-by-stock-kode?identifier=${code}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

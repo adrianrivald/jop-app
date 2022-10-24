@@ -125,7 +125,7 @@ function DetailWeighing() {
     // setWeighingDetail(data)
 
     axios
-      .get(`${url}penimbangan/detail/${id}?include=petugas_timbang`, {
+      .get(`${url}/penimbangan/detail/${id}?include=petugas_timbang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

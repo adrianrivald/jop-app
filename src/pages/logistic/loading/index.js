@@ -54,7 +54,7 @@ function LogisticLoading() {
     };
     await axios
       .post(
-        `${url}upload-foto
+        `${url}/upload-foto
         `,
         formData,
         config
@@ -95,7 +95,7 @@ function LogisticLoading() {
       try {
         await axios
           .post(
-            `${url}pengiriman/loading/store-new
+            `${url}/pengiriman/loading/store-new
             `,
             payload,
             config
