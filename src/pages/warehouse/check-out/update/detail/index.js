@@ -143,7 +143,9 @@ function WarehouseCODetailUpdate() {
               <div className="relative">
                 <span className="absolute inset-y-4 right-2">kg</span>
                 <input
-                  className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                  className={`rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline ${
+                    isEditWet ? 'border border-flora' : ''
+                  }`}
                   type="number"
                   min="0"
                   defaultValue={data?.total_wet}
@@ -160,7 +162,9 @@ function WarehouseCODetailUpdate() {
               <div className="relative">
                 <span className="absolute inset-y-4 right-2">%</span>
                 <input
-                  className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                  className={`rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline ${
+                    isEditDrc ? 'border border-flora' : ''
+                  }`}
                   type="number"
                   min="0"
                   defaultValue={data?.drc}
@@ -178,7 +182,9 @@ function WarehouseCODetailUpdate() {
               <div className="relative">
                 <span className="absolute inset-y-4 right-2">kg</span>
                 <input
-                  className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                  className={`rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline ${
+                    isEditDry ? 'border border-flora' : ''
+                  }`}
                   type="number"
                   min="0"
                   defaultValue={data?.total_dry}
