@@ -3,7 +3,6 @@ import Header from '../../../components/ui/Header';
 import DatePicker from '../../../components/forms/DatePicker';
 import FlatButton from '../../../components/button/flat';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
 import { getDateTime } from '../../../utils/getDateTime';
 import { getDate } from '../../../utils/getDate';
 import { useNavigate } from 'react-router-dom';
@@ -12,13 +11,9 @@ import { getStatusColor } from '../../../utils/getStatusColor';
 import { useSelector } from 'react-redux';
 import { getAssignmentByMandor } from '../../../store/actions/assignmentAction';
 
-const url = process.env.REACT_APP_API_URL;
-
 const Mandor = () => {
   const { data: listData, fetching: listDataFetching } = useSelector(({ assignment_mandor }) => assignment_mandor);
 
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const navigate = useNavigate();
   const defaultDate = getDate(new Date());
   const [selectedDate, setSelectedDate] = useState(defaultDate);
@@ -37,10 +32,8 @@ const Mandor = () => {
 
   const handleAcceptAssignment = async (id) => {
     await axios
-      .get(`${url}penugasan/terima-tugas/${id}`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/penugasan/terima-tugas/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })

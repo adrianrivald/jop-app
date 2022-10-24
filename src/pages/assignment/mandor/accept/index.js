@@ -3,17 +3,12 @@ import Header from '../../../../components/ui/Header';
 import FlatButton from '../../../../components/button/flat';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
 import { getDateTime } from '../../../../utils/getDateTime';
 import { getLocaleDateString } from '../../../../utils/getDate';
 import { toSentenceCase } from '../../../../utils/strings';
 import { getStatusColor } from '../../../../utils/getStatusColor';
 
-const url = process.env.REACT_APP_API_URL;
-
 const MandorAcceptAssignment = () => {
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   let { id } = useParams();
   const [detail, setDetail] = useState({});
   const navigate = useNavigate();
@@ -21,11 +16,9 @@ const MandorAcceptAssignment = () => {
   const getDetailMandorAssignment = async () => {
     await axios
       .get(
-        `${url}penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
+        `/penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
         {
-          url: process.env.REACT_APP_API_URL,
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         }

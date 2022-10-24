@@ -3,18 +3,13 @@ import Header from '../../../../components/ui/Header';
 import FlatButton from '../../../../components/button/flat';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
 import { getDateTime } from '../../../../utils/getDateTime';
 import { getLocaleDateString } from '../../../../utils/getDate';
 import { toSentenceCase } from '../../../../utils/strings';
 import { getStatusColor } from '../../../../utils/getStatusColor';
 import listReason from '../../../../utils/listReason';
 
-const url = process.env.REACT_APP_API_URL;
-
 const MandorDiversionAssignment = () => {
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const navigate = useNavigate();
   let { id } = useParams();
   const [detail, setDetail] = useState({});
@@ -24,11 +19,9 @@ const MandorDiversionAssignment = () => {
   const getDetailMandorAssignment = async () => {
     await axios
       .get(
-        `${url}penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
+        `/penugasan/detail/${id}?sort=-tanggal_tugas&include=hancak,wilayah_tugas,jenis_tugas,divisi,hancak,field,clone,sistem,mandor,pekerja.skema_kerja`,
         {
-          url: process.env.REACT_APP_API_URL,
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         }
@@ -49,16 +42,14 @@ const MandorDiversionAssignment = () => {
   const handleDiversionAssignment = async () => {
     await axios
       .post(
-        `${url}penugasan/pengajuan-pengalihan/${id}
+        `/penugasan/pengajuan-pengalihan/${id}
         `,
         {
           alasan: reason,
           pesan_tugas: additional,
         },
         {
-          url: process.env.REACT_APP_API_URL,
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         }

@@ -1,19 +1,21 @@
 import axios from 'axios';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Button from '../../../../components/button/Button';
 import './overlay.css';
+import Joi from 'joi';
+import { showToast } from '../../../../store/actions/uiAction';
 
-const url = process.env.REACT_APP_API_URL;
+const SCHEMA = Joi.object({
+  pekerja_id: Joi.string().uuid().label('Pekerja ID').required(),
+  penugasan_id: Joi.string().uuid().label('Penugasan ID').required(),
+});
 
 const Overlay = () => {
   const [code, setCode] = React.useState('');
   const [tapperDetail, setTapperDetail] = React.useState({});
   const { id_tugas } = useParams();
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const absenceType = window.location.pathname.split('/')[3];
 
   const onChange = (e) => {
@@ -22,10 +24,8 @@ const Overlay = () => {
 
   const getDetail = async () => {
     await axios
-      .get(`${url}absensi/scan-by-tapper-kode/${code}`, {
-        url: process.env.REACT_APP_API_URL,
+      .get(`/absensi/scan-by-tapper-kode/${code}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
@@ -41,25 +41,34 @@ const Overlay = () => {
 
   React.useEffect(() => {
     const submit = async () => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      };
-      await axios
-        .post(
-          `${url}absensi/store`,
+      try {
+        await SCHEMA.validateAsync({
+          pekerja_id: tapperDetail?.id,
+          penugasan_id: id_tugas,
+        });
+
+        const config = {
+          headers: {
+            Accept: 'application/json',
+          },
+        };
+        await axios.post(
+          `/absensi/store`,
           {
             pekerja_id: tapperDetail?.id,
             penugasan_id: id_tugas,
             tipe_absen: absenceType === 'in' ? 'masuk' : 'keluar',
           },
           config
-        )
-        .then(() => {
-          navigate(`/absence/tapper/${tapperDetail?.id}`);
+        );
+
+        navigate(`/absence/tapper/${tapperDetail?.id}`);
+      } catch (err) {
+        showToast({
+          message: err.message,
+          isError: true,
         });
+      }
     };
 
     if (tapperDetail?.id) {
