@@ -94,7 +94,7 @@ function Warehouse() {
   return (
     <>
       <div className="header">
-        <Header title={headerTitle()} isWithBack />
+        <Header title={headerTitle()} isWithBack to="/homepage" />
       </div>
       <div className="container">
         <TabsWH selectedTab={selectedTab} tabList={tabList} onChangeTab={onChangeTab} />
