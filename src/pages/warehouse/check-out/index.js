@@ -4,61 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import DropDown from '../../../components/forms/Dropdown';
+import Title from '../../../components/title/Title';
 import Divider from '../../../components/ui/Divider';
+import Modal from '../../../components/ui/Modal';
 import Toast from '../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
-
-function Modal(props) {
-  return (
-    <>
-      <div className="fixed inset-0 z-10 overflow-y-auto transition-all">
-        <div className="fixed inset-0 w-full h-full bg-black opacity-40" onClick={props.setIsShowModal()}></div>
-        <div className="flex items-center min-h-screen px-4 py-8">
-          <div className="relative w-full max-w-lg p-4 mx-auto bg-white rounded-md shadow-lg">
-            <div className="mt-3 sm:flex">
-              <div className="flex items-center justify-center flex-none w-12 h-12 mx-auto bg-red-100 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6 text-red-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="mt-2 text-center sm:ml-4 sm:text-left">
-                <h4 className="text-lg font-medium text-gray-800">Delete account ?</h4>
-                <p className="mt-2 text-[15px] leading-relaxed text-gray-500">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                  dolore magna aliqua.
-                </p>
-                <div className="items-center gap-2 mt-3 sm:flex">
-                  <button
-                    className="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md outline-none ring-offset-2 ring-red-600 focus:ring-2"
-                    onClick={props.setIsShowModal()}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    className="w-full mt-2 p-2.5 flex-1 text-gray-800 rounded-md outline-none border ring-offset-2 ring-indigo-600 focus:ring-2"
-                    onClick={props.setIsShowModal()}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
 
 function Dropdown(props) {
   return (
@@ -75,12 +26,12 @@ function CheckOut(props) {
   const navigate = useNavigate();
   const [openedId, setOpenedId] = React.useState({});
   const [gudangList, setGudangList] = React.useState([]);
-  const [materialList, setMaterialList] = React.useState([]);
+  const [clientList, setClientList] = React.useState([]);
   const [warehouseList, setWarehouseList] = React.useState([]);
   const [selectedId, setSelectedId] = React.useState('');
   const [showedId, setShowedId] = React.useState('');
   const [selectedGudang, setSelectedGudang] = React.useState('');
-  const [selectedMaterial, setSelectedMaterial] = React.useState('');
+  const [selectedClient, setSelectedClient] = React.useState('');
   const [stockSalesData, setStockSalesData] = React.useState([]);
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
@@ -103,7 +54,6 @@ function CheckOut(props) {
       })
       .then((res) => {
         const data = res.data.data;
-        console.log(data, 'stocksaleddata');
         setStockSalesData(data);
         setShowedId(data?.id);
         localStorage.setItem('check-out-value', data?.id);
@@ -132,8 +82,6 @@ function CheckOut(props) {
   };
 
   React.useEffect(() => {
-    // getGudang();
-    getMaterial();
     getWarehouse();
     if (checkOutId !== undefined || checkOutId) {
       getCheckOutDetail();
@@ -141,9 +89,14 @@ function CheckOut(props) {
   }, []);
 
   React.useEffect(() => {
+    if (isShowModal) {
+      getCllient();
+    }
+  }, [isShowModal]);
+
+  React.useEffect(() => {
     if (selectedGudang !== '') {
       getStockSales(selectedGudang);
-      // getCheckOutDetail(selectedGudang, selectedMaterial);
     }
   }, [selectedGudang]);
 
@@ -152,6 +105,25 @@ function CheckOut(props) {
       getCheckOutDetail();
     }
   }, [showedId]);
+
+  const getCllient = () => {
+    axios
+      .get(`${url}client/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const clientData = data.map((res) => ({
+          value: res.id,
+          label: res.name,
+        }));
+        setClientList(clientData);
+      });
+  };
 
   const getWarehouse = (id) => {
     axios
@@ -169,24 +141,6 @@ function CheckOut(props) {
           label: res.nama,
         }));
         setWarehouseList(warehouseData);
-      });
-  };
-  const getMaterial = () => {
-    axios
-      .get(`${url}bahan-baku/list`, {
-        url: process.env.REACT_APP_API_URL,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-      .then((res) => {
-        const data = res.data.data.data;
-        const materialData = data.map((res) => ({
-          value: res.id,
-          label: res.nama,
-        }));
-        setMaterialList(materialData);
       });
   };
 
@@ -209,6 +163,10 @@ function CheckOut(props) {
       });
   };
 
+  const onChangeClient = (e) => {
+    setSelectedClient(e.target.value);
+  };
+
   const onChangeWH = (e) => {
     getGudang(e.target.value);
   };
@@ -223,7 +181,6 @@ function CheckOut(props) {
   };
 
   const onEditStock = (data) => {
-    console.log(data, 'datastock');
     navigate(`check-out/stock/update/${data?.id}`);
   };
 
@@ -231,7 +188,6 @@ function CheckOut(props) {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        // 'Content-Type': 'image/jpeg',
         Accept: 'application/json',
       },
     };
@@ -258,8 +214,44 @@ function CheckOut(props) {
       });
   };
 
-  const handleSubmit = () => {
-    //
+  const handleSubmit = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    };
+    if (!selectedClient) {
+      setIsSubmitted(true);
+      setIsSuccess(false);
+      setIsButtonDisabled(true);
+      setAlertMessage('Pilih klien terlebih dahulu!');
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsSubmitted(false);
+      }, 3000);
+    } else {
+      await axios
+        .put(
+          `${url}warehouse/stock-sales/checkout/${checkOutData?.id}
+          `,
+          {
+            client_id: selectedClient,
+          },
+          config
+        )
+        .then(() => {
+          setIsSuccess(true);
+          setIsSubmitted(true);
+          setIsButtonDisabled(true);
+          setAlertMessage('Sukses checkout data!');
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsSubmitted(false);
+            setIsShowModal(false);
+          }, 3000);
+        });
+    }
   };
 
   return (
@@ -452,7 +444,6 @@ function CheckOut(props) {
                   <Divider className="mb-0" />
                 </div>
               ))}
-              <Divider className="mb-0" />
             </div>
           ) : (
             <div>
@@ -505,7 +496,18 @@ function CheckOut(props) {
         <Button isText text="Check-Out" className="w-full font-bold" onClick={() => setIsShowModal(true)} />
       </div>
       <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
-      {isShowModal === true ? <Modal setIsShowModal={() => setIsShowModal(false)} /> : null}
+      {isShowModal === true ? (
+        <Modal onClose={() => setIsShowModal(false)}>
+          <Title text="Pilih Klien Tujuan" />
+          <DropDown
+            className="w-full mt-5 mx-auto"
+            defaultValue="Pilih klien tujuan"
+            option={clientList}
+            onChange={(e) => onChangeClient(e)}
+          />
+          <Button isText text={'Check Out'} className="mt-5 font-bold" onClick={handleSubmit} />
+        </Modal>
+      ) : null}
     </div>
   );
 }
