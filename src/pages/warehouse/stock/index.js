@@ -364,7 +364,7 @@ function Stock(props) {
                       }
                       isText={false}
                       className="bg-white text-black shadow m-0"
-                      onClick={() => navigate(`scan`)}
+                      onClick={() => navigate(`/warehouse/stock/${res?.id}/qr`)}
                     />
                     <div className="cursor-pointer">
                       <svg
@@ -541,7 +541,7 @@ function Stock(props) {
                       }
                       isText={false}
                       className="bg-white text-black shadow m-0"
-                      onClick={() => navigate(`/warehouse/check-in/join/${res?.id}/qr`)}
+                      onClick={() => navigate(`/warehouse/stock/${res?.id}/qr`)}
                     />
                     <div className="cursor-pointer">
                       <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">

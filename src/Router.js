@@ -42,6 +42,7 @@ import { hideToast } from './store/actions/uiAction';
 import WarehouseCIQR from './pages/warehouse/check-in/join/qr';
 import WarehouseCODetailUpdate from './pages/warehouse/check-out/update/detail';
 import WarehouseCOStockUpdate from './pages/warehouse/check-out/update/stock';
+import WarehouseStockQR from './pages/warehouse/stock/qr';
 
 export default function Router() {
   const toastState = useSelector(({ toast }) => toast);
@@ -100,6 +101,7 @@ export default function Router() {
             <Route path="/warehouse/check-in/detail/:id/rescale" exact element={<WarehouseCIDetailRescale />} />
             <Route path="/warehouse/check-in/scan" exact element={<WarehouseCIScan />} />
             <Route path="/warehouse/check-in/join/:id" exact element={<WarehouseCIJoin />} />
+            <Route path="/warehouse/stock/:id/qr" exact element={<WarehouseStockQR />} />
             <Route path="/warehouse/check-in/join/:id/qr" exact element={<WarehouseCIQR />} />
             <Route path="/warehouse/check-out/detail/update/:id" exact element={<WarehouseCODetailUpdate />} />
             <Route path="/warehouse/check-out/stock/update/:id" exact element={<WarehouseCOStockUpdate />} />
