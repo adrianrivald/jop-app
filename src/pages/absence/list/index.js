@@ -109,7 +109,7 @@ function AbsenceList() {
         <p className="text-xs">Nomor Tugas</p>
         <div className="flex justify-between items-center">
           <p className="text-sm font-bold">{absenceList?.kode}</p>
-          <Button isText text="Detail Tugas" onClick={() => navigate(`/assignment/mandor/detail/${id_tugas}/accept`)} />
+          <Button isText text="Detail Tugas" onClick={() => navigate(`/assignment/detail/${id_tugas}/accept`)} />
         </div>
         <div>
           <Dropdown
