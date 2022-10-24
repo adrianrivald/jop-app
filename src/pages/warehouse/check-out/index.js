@@ -83,7 +83,7 @@ function CheckOut(props) {
 
   React.useEffect(() => {
     getWarehouse();
-    if (checkOutId !== undefined || checkOutId) {
+    if (checkOutId !== 'undefined' && checkOutId && checkOutId !== null) {
       getCheckOutDetail();
     }
   }, []);
@@ -101,7 +101,7 @@ function CheckOut(props) {
   }, [selectedGudang]);
 
   React.useEffect(() => {
-    if (showedId) {
+    if (showedId !== '') {
       getCheckOutDetail();
     }
   }, [showedId]);
@@ -279,7 +279,7 @@ function CheckOut(props) {
         <DropDown option={[]} defaultValue="Jumlah Timbangan" onChange={(e) => {}} />
       </div>
       <div className="mt-7">
-        {checkOutData && checkOutId ? (
+        {checkOutData && checkOutId !== 'undefined' && checkOutId !== null ? (
           // checkOutData?.detail?.map((res, idx) =>
           openedId === true ? (
             <div>
