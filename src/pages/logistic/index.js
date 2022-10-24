@@ -74,7 +74,7 @@ function Logistic() {
 
   const getTPH = () => {
     axios
-      .get(`${url}tph/list?include=wilayah_tugas,divisi&sort=kode,nama`, {
+      .get(`${url}/tph/list?include=wilayah_tugas,divisi&sort=kode,nama`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -130,7 +130,7 @@ function Logistic() {
   const getBatchReadyToDeliver = () => {
     axios
       .get(
-        `${url}pengiriman/batch-siap-kirim?filter[tph]=${
+        `${url}/pengiriman/batch-siap-kirim?filter[tph]=${
           logistic_payload?.kode_lokasi
         }&filter[periode]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
@@ -150,7 +150,7 @@ function Logistic() {
   const getBatchOnDelivery = () => {
     axios
       .get(
-        `${url}pengiriman/batch-dalam-pengiriman?filter[tph]=${
+        `${url}/pengiriman/batch-dalam-pengiriman?filter[tph]=${
           logistic_payload?.kode_lokasi
         }&filter[periode]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {
@@ -170,7 +170,7 @@ function Logistic() {
   const getBatchDelivered = () => {
     axios
       .get(
-        `${url}pengiriman/batch-selesai-kirim?filter[tph]=${
+        `${url}/pengiriman/batch-selesai-kirim?filter[tph]=${
           logistic_payload?.kode_lokasi
         }&filter[periode]=${logistic_payload?.from.concat(',', logistic_payload?.to)}`,
         {

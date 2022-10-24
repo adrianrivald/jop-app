@@ -22,7 +22,7 @@ function WarehouseCIQR() {
 
   const getStockDetail = () => {
     axios
-      .get(`${url}warehouse/stock-in/detail/${id}`, {
+      .get(`${url}/warehouse/stock-in/detail/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

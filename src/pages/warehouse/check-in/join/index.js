@@ -33,7 +33,7 @@ function WarehouseCIJoin() {
 
   const getStockDetail = () => {
     axios
-      .get(`${url}warehouse/stock-in/detail/${id}`, {
+      .get(`${url}/warehouse/stock-in/detail/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -112,7 +112,7 @@ function WarehouseCIJoin() {
     };
     await axios
       .post(
-        `${url}upload-foto
+        `${url}/upload-foto
         `,
         formData,
         config
@@ -136,7 +136,7 @@ function WarehouseCIJoin() {
     };
     await axios
       .put(
-        `${url}warehouse/stock-in/update/${id}
+        `${url}/warehouse/stock-in/update/${id}
         `,
         payload,
         config

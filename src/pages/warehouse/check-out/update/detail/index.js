@@ -95,7 +95,7 @@ function WarehouseCODetailUpdate() {
     } else {
       await axios
         .put(
-          `${url}warehouse/stock-out/update/${id}
+          `${url}/warehouse/stock-out/update/${id}
           `,
           payload,
           config

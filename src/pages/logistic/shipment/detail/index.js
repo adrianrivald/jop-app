@@ -26,7 +26,7 @@ function LogisticShipmentDetail() {
 
   const getShipmentDetail = () => {
     axios
-      .get(`${url}pengiriman/detail-pengiriman/${id}`, {
+      .get(`${url}/pengiriman/detail-pengiriman/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

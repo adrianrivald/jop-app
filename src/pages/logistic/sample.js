@@ -22,7 +22,7 @@ function LogisticSample() {
 
   const getBatchDetail = () => {
     axios
-      .get(`${url}pengiriman/detail-batch/${id}`, {
+      .get(`${url}/pengiriman/detail-batch/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,

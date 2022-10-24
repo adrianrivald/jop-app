@@ -28,7 +28,7 @@ function LogisticDetail() {
 
   const getBatchDetail = () => {
     axios
-      .get(`${url}pengiriman/detail-batch/${id}`, {
+      .get(`${url}/pengiriman/detail-batch/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,7 +77,7 @@ function LogisticDetail() {
   const handleDone = () => {
     if (!isButtonDisabled || !localStorage.getItem('delivered')) {
       axios
-        .get(`${url}pengiriman/batch/done/${id}`, {
+        .get(`${url}/pengiriman/batch/done/${id}`, {
           url: process.env.REACT_APP_API_URL,
           headers: {
             Authorization: `Bearer ${token}`,
