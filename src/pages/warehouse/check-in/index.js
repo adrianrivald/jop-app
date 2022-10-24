@@ -8,60 +8,43 @@ import Divider from '../../../components/ui/Divider';
 
 const url = process.env.REACT_APP_API_URL;
 
+function Dropdown(props) {
+  return (
+    <div className={`${props.customClass} w-full`}>
+      <h2 className="text-left mb-1">{props.title}</h2>
+      <DropDown defaultValue={props.defaultValue} onChange={props.onChange} option={props.option} />
+    </div>
+  );
+}
+
 function CheckIn(props) {
   const cookies = new Cookies();
   const token = cookies.get('token');
+  const [warehouseList, setWarehouseList] = React.useState([]);
+  const [gudangList, setGudangList] = React.useState([]);
   const navigate = useNavigate();
+  const [selectedGudang, setSelectedGudang] = React.useState('');
   const [openedId, setOpenedId] = React.useState({});
-  const [checkInData, setCheckInData] = React.useState([
-    {
-      status: 'Perjalanan',
-      date: 'Rabu, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P1',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (120 Kg)',
-        armada: 'B 3355 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Kamis, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-    {
-      status: 'Perjalanan',
-      date: 'Jumat, 12 Februari 2022, 15:37',
-      code: 'TP1-01/02-12/B.007/P2',
-      detail: {
-        jenis_logistik: 'Ojek - Motor (114 Kg)',
-        armada: 'B 155 QPR  -  01',
-        alamat: 'Gudang Induk - WH1 - G1',
-        supir: 'Aji Kuntara / 02887 - PKWT',
-        pengawal: 'Sumber Wono / 02887 - PKWT',
-      },
-      foto: [],
-    },
-  ]);
+  const [selectedItem, setSelectedItem] = React.useState([]);
+  const [selectedMaterial, setSelectedMaterial] = React.useState('');
+  const [materialList, setMaterialList] = React.useState([]);
+
+  const [checkInData, setCheckInData] = React.useState([]);
 
   React.useEffect(() => {
-    getCheckInData();
+    getMaterial();
+    getWarehouse();
   }, []);
 
-  const getCheckInData = () => {
+  React.useEffect(() => {
+    if (selectedGudang !== '' && selectedMaterial !== '') {
+      getCheckInData(selectedGudang, selectedMaterial);
+    }
+  }, [selectedGudang, selectedMaterial]);
+
+  const getWarehouse = (id) => {
     axios
-      .get(`${url}warehouse/timbang/list`, {
+      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -70,7 +53,64 @@ function CheckIn(props) {
       })
       .then((res) => {
         const data = res.data.data.data;
-        // setCheckInData(data);
+        const warehouseData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setWarehouseList(warehouseData);
+      });
+  };
+
+  const getGudang = (val) => {
+    axios
+      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const gudangData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setGudangList(gudangData);
+      });
+  };
+
+  const getMaterial = () => {
+    axios
+      .get(`${url}bahan-baku/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const materialData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setMaterialList(materialData);
+      });
+  };
+
+  const getCheckInData = (gudang_id, jenis_bahan_baku_id) => {
+    axios
+      .get(`${url}warehouse/timbang/list?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${jenis_bahan_baku_id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        setCheckInData(data);
       });
   };
 
@@ -88,14 +128,54 @@ function CheckIn(props) {
     });
   };
 
-  const onCheckMaterial = (e) => {
+  const onChangeWH = (e) => {
+    getGudang(e.target.value);
+  };
+
+  const onChangeGudang = (e) => {
+    setSelectedGudang(e.target.value);
+  };
+
+  const onChangeMaterial = (e) => {
+    setSelectedMaterial(e.target.value);
+  };
+
+  const onCheckMaterial = (e, id) => {
+    if (!selectedItem.includes(id)) {
+      setSelectedItem([...selectedItem, id]);
+    } else {
+      setSelectedItem(selectedItem.filter((val) => val !== id));
+    }
     e.stopPropagation();
-    // TODO
+  };
+
+  const handleSubmit = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    };
+    await axios
+      .post(
+        `${url}warehouse/gabung-stock-in
+          `,
+        {
+          wh_penimbangan_id: selectedItem,
+        },
+        config
+      )
+      .then((res) => {
+        navigate(`/warehouse/check-in/join/${res?.data.data.stock_in_id}`);
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
   };
 
   return (
     <div>
-      <div className="scan mt-3">
+      <div className="scan mb-3">
         <Button
           isIcon
           icon={
@@ -111,9 +191,27 @@ function CheckIn(props) {
           onClick={() => navigate(`check-in/scan`)}
         />
       </div>
+      <div className="flex justify-between gap-2">
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Tempat Penimbangan"
+            defaultValue="Pilih tempat penimbangan"
+            option={warehouseList}
+            onChange={(e) => onChangeWH(e)}
+          />
+        </div>
+        <div className="flex-auto w-64">
+          <Dropdown
+            title="Gudang"
+            defaultValue="Pilih gudang"
+            option={gudangList}
+            onChange={(e) => onChangeGudang(e)}
+          />
+        </div>
+      </div>
       <div className="flex justify-between items-center mt-4">
         <p className="text-sm font-bold">Daftar Barang Sampai</p>
-        <DropDown option={[]} defaultValue="Slab(P1)" />
+        <DropDown option={materialList} defaultValue="Pilih jenis bahan baku" onChange={(e) => onChangeMaterial(e)} />
       </div>
       <div className="mt-7">
         {checkInData?.length > 0 ? (
@@ -126,12 +224,12 @@ function CheckIn(props) {
                 >
                   <div className="flex items-center">
                     <input
-                      checked={false}
-                      onClick={onCheckMaterial}
+                      checked={selectedItem.includes(res?.id)}
+                      onClick={(e) => onCheckMaterial(e, res?.id)}
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
-                    <p className="font-bold">{res?.code}</p>
+                    <p className="font-bold">{res?.kode}</p>
                   </div>
                   <div className="cursor-pointer">
                     <svg
@@ -157,21 +255,21 @@ function CheckIn(props) {
                   <div className="flex justify-between items-center font-bold">
                     <div className="flex items-center">
                       <input
-                        checked={false}
-                        onClick={onCheckMaterial}
+                        checked={selectedItem.includes(res?.id)}
+                        onClick={(e) => onCheckMaterial(e, res?.id)}
                         type="checkbox"
                         className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                       />
                       <div
-                        onClick={() => navigate('/warehouse/check-in/detail/arrived')}
+                        onClick={() => navigate(`/warehouse/check-in/detail/arrived/${res?.id}`)}
                         className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold"
                       >
-                        OJ.01-1
+                        {res?.kode_armada}
                       </div>
                     </div>
-                    <p>100</p>
-                    <p>92</p>
-                    <p>8</p>
+                    <p>{res?.berat_kirim}</p>
+                    <p>{res?.berat_sampai}</p>
+                    <p>{res?.selisih_berat}</p>
                   </div>
                 </div>
                 <Divider className="mb-0" />
@@ -184,12 +282,12 @@ function CheckIn(props) {
                 >
                   <div className="flex items-center">
                     <input
-                      checked={(prev) => !prev}
-                      onClick={onCheckMaterial}
+                      checked={selectedItem.includes(res?.id)}
+                      onClick={(e) => onCheckMaterial(e, res?.id)}
                       type="checkbox"
                       className="accent-flora scale-150 text-flora bg-gray-100 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 mr-3"
                     />
-                    <p className="font-bold">{res?.code}</p>
+                    <p className="font-bold">{res?.kode}</p>
                   </div>
                   <div className="cursor-pointer">
                     <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -212,7 +310,13 @@ function CheckIn(props) {
         )}
       </div>
       <div className="submit-area mt-8">
-        <Button isText text="Gabungkan" className="w-full font-bold" onClick={() => navigate('check-in/join')} />
+        <Button
+          isText
+          text="Gabungkan"
+          className="w-full font-bold"
+          onClick={handleSubmit}
+          disabled={checkInData?.length === 0 || selectedItem?.length === 0}
+        />
       </div>
     </div>
   );

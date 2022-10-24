@@ -21,8 +21,20 @@ const Overlay = () => {
     setCode(e.target.value);
   };
 
-  const onSubmit = () => {
-    navigate('/warehouse/opname/update');
+  const onSubmit = async () => {
+    await axios
+      .get(`${url}warehouse/scan-by-stock-kode?identifier=${code}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        console.log(data, 'data');
+        navigate(`/warehouse/opname/update/${data.id}`);
+      });
   };
 
   return (

@@ -52,7 +52,6 @@ function WarehouseCIDetailRescale() {
   React.useEffect(() => {
     getShipmentDetail();
     getWarehouse();
-    getGudang();
     getWeigher();
   }, []);
 
@@ -75,9 +74,9 @@ function WarehouseCIDetailRescale() {
       });
   };
 
-  const getGudang = () => {
+  const getGudang = (val) => {
     axios
-      .get(`${url}gudang/list`, {
+      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -125,6 +124,8 @@ function WarehouseCIDetailRescale() {
       .then((res) => {
         const data = res.data.data;
         setShipmentDetail(data);
+        const joinedPhotos = data?.loading?.map((res) => res.foto);
+        setPhotos(joinedPhotos);
         const detailMaterial = data?.loading?.map((res) => ({
           jenis_bahan_baku_id: res?.jenis_bahan_buku_id,
           berat_kirim: res?.berat,
@@ -139,6 +140,9 @@ function WarehouseCIDetailRescale() {
   };
 
   const onChangeHandler = (e, input_id) => {
+    if (input_id === 'tempat_penimbangan') {
+      getGudang(e.target.value);
+    }
     setPayload((prev) => ({
       ...prev,
       [input_id]: e.target.value,
@@ -241,8 +245,9 @@ function WarehouseCIDetailRescale() {
                       <span className="absolute inset-y-7 right-2">kg</span>
                       <input
                         className="w-full text-4xl font-bold rounded-lg py-2 px-3 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                        type="text"
-                        pattern="\d*"
+                        type="number"
+                        min="0"
+                        max={res?.berat}
                         onChange={(e) => onChangeWeight(e, idx)}
                       />
                     </div>
@@ -262,18 +267,13 @@ function WarehouseCIDetailRescale() {
             <div className="photo-area mt-3">
               <div className="photos-container overflow-x-auto flex gap-3">
                 {photos?.map((res, idx) => (
-                  <img
-                    width="200"
-                    alt={`photo_${idx + 1}`}
-                    src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                    className="rounded-xl"
-                  />
+                  <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />
                 ))}
               </div>
             </div>
             <div className="button-area flex mt-12 gap-2">
               <Button isText isBack text="Kembali" className="w-full" />
-              <Button isText text="Konfirmasi" className="w-full" onClick={handleSubmit} />
+              <Button isText text="Konfirmasi" className="w-full" onClick={handleSubmit} disabled={isButtonDisabled} />
             </div>
           </div>
           <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />

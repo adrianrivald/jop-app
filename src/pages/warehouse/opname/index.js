@@ -1,7 +1,12 @@
+import axios from 'axios';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import FlatButton from '../../../components/button/flat';
 import DropDown from '../../../components/forms/Dropdown';
+
+const url = process.env.REACT_APP_API_URL;
 
 function Dropdown(props) {
   return (
@@ -12,26 +17,166 @@ function Dropdown(props) {
   );
 }
 function Opname(props) {
+  const cookies = new Cookies();
+  const token = cookies.get('token');
   const navigate = useNavigate();
+  const [gudangList, setGudangList] = React.useState([]);
+  const [materialList, setMaterialList] = React.useState([]);
+  const [warehouseList, setWarehouseList] = React.useState([]);
+  const [opnameData, setOpnameData] = React.useState({});
+  const [selectedGudang, setSelectedGudang] = React.useState('');
+  const [selectedMaterial, setSelectedMaterial] = React.useState('');
+  const [isNoData, setIsNoData] = React.useState(true);
+  const [code, setCode] = React.useState('');
+
+  React.useEffect(() => {
+    // getGudang();
+    getMaterial();
+    getWarehouse();
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedGudang !== '' && selectedMaterial !== '') {
+      getOpname(selectedGudang, selectedMaterial);
+    }
+  }, [selectedGudang, selectedMaterial]);
+
+  const getWarehouse = (id) => {
+    axios
+      .get(`${url}warehouse/list?include=wilayah_tugas,gudang`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const warehouseData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setWarehouseList(warehouseData);
+      });
+  };
+  const getMaterial = () => {
+    axios
+      .get(`${url}bahan-baku/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const materialData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setMaterialList(materialData);
+      });
+  };
+
+  const getGudang = (val) => {
+    axios
+      .get(`${url}gudang/list?filter[warehouse]=${val}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const gudangData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setGudangList(gudangData);
+      });
+  };
+
+  const getOpname = (gudang_id, bahan_baku_id) => {
+    axios
+      .get(`${url}warehouse/stock-opname?filter[gudang]=${gudang_id}&filter[jenis_bahan_baku]=${bahan_baku_id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        setOpnameData(data);
+        setIsNoData(false);
+      });
+  };
+
+  const onChangeWH = (e) => {
+    getGudang(e.target.value);
+  };
+
+  const onChangeGudang = (e) => {
+    setSelectedGudang(e.target.value);
+  };
+
+  const onChangeMaterial = (e) => {
+    setSelectedMaterial(e.target.value);
+  };
+
+  const onChangeCode = (e) => {
+    setCode(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    await axios
+      .get(`${url}warehouse/scan-by-stock-kode?identifier=${code}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        navigate(`/warehouse/opname/update/${data.id}`);
+      });
+  };
 
   return (
     <div>
       <div className="flex justify-between gap-2">
         <div className="flex-auto w-64">
-          <Dropdown title="Tempat Penimbangan" defaultValue="Pilih tempat penimbangan" option={[]} />
+          <Dropdown
+            title="Tempat Penimbangan"
+            defaultValue="Pilih tempat penimbangan"
+            option={warehouseList}
+            onChange={(e) => onChangeWH(e)}
+          />
         </div>
         <div className="flex-auto w-64">
-          <Dropdown title="Gudang" defaultValue="Pilih gudang" option={[]} />
+          <Dropdown
+            title="Gudang"
+            defaultValue="Pilih gudang"
+            option={gudangList}
+            onChange={(e) => onChangeGudang(e)}
+          />
         </div>
       </div>
       <div className="flex justify-between my-3 gap-3">
         <div className="p-3 rounded-xl border border-cloud w-full">
           <p className="text-xxs mb-1">Jenis bahan baku</p>
-          <DropDown option={[]} onChange={() => {}} defaultValue={'Slab'} className="mt-6" />
+          <DropDown
+            option={materialList}
+            onChange={(e) => onChangeMaterial(e)}
+            defaultValue={'Pilih jenis bahan baku'}
+            className="mt-6"
+          />
         </div>
         <div className="p-3 rounded-xl border border-cloud w-full">
           <p className="text-xxs mb-3">Total Berat Timbang (WET)</p>
-          <p className="text-4xl font-bold">2000 kg</p>
+          <p className="text-4xl font-bold">{isNoData ? 'No Data' : <>{opnameData?.total_wet} kg</>}</p>
         </div>
       </div>
       <div className="scan mt-3">
@@ -56,23 +201,10 @@ function Opname(props) {
           <input
             className="text-coal font-bold w-3/4 h-9 rounded-lg py-2.5 px-2.5 text-xs leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            onChange={(e) => e}
+            onChange={(e) => onChangeCode(e)}
           />
-          <Button isText text="Submit" className="h-9 py-0 ml-2" onClick={() => {}} />
+          <Button isText text="Submit" className="h-9 py-0 ml-2" onClick={handleSubmit} />
         </div>
-      </div>
-      <div className="mt-44 w-full">
-        <FlatButton
-          className="w-full rounded-xl"
-          role="white"
-          text="Kembali ke atas"
-          onClick={() =>
-            window.scrollTo({
-              top: 0,
-              behavior: 'smooth',
-            })
-          }
-        />
       </div>
     </div>
   );

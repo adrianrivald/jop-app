@@ -6,6 +6,7 @@
     "@headlessui/react": "^1.6.6",
     "@heroicons/react": "^1.0.6",
     "axios": "^0.27.2",
+    "file-saver": "^2.0.5",
     "fetch-queue": "file:pkg/fetch-queue",
     "joi": "^17.6.2",
     "md5": "^2.3.0",

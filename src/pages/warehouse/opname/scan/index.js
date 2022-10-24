@@ -17,15 +17,15 @@ function WarehouseOpnameScan() {
   const token = cookies.get('token');
   const [alertMessage, setAlertMessage] = React.useState('');
   const [isSubmitted, setIsSubmitted] = React.useState(false);
-  const saved_payload = JSON.parse(localStorage.getItem('saved_payload'));
-  const scan_type = localStorage.getItem('scan_type');
 
   const onResult = (result) => {
     try {
       if (result) {
-        //
+        navigate(`/warehouse/opname/update/${result?.text}`);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

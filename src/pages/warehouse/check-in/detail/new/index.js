@@ -38,43 +38,9 @@ function WarehouseCIDetailNew() {
       .then((res) => {
         const data = res.data.data;
         setShipmentDetail(data);
+        const joinedPhotos = data?.loading?.map((res) => res.foto);
+        setPhotos(joinedPhotos);
       });
-  };
-
-  const onSelectPhoto = (e) => {
-    let formData = new FormData();
-    formData.append('file', e.target.files[0]);
-    formData.append('path', 'public/logistik/kirim');
-    void uploadPhoto(formData);
-  };
-
-  const uploadPhoto = async (formData) => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        // 'Content-Type': 'image/jpeg',
-        Accept: 'application/json',
-      },
-    };
-    await axios
-      .post(
-        `${url}upload-foto
-        `,
-        formData,
-        config
-      )
-      .then((res) => {
-        const data = res?.data?.data;
-        setPhotos([...photos, data?.path]);
-        setPayload({
-          ...payload,
-          path_foto: [...photos, data?.path],
-        });
-      });
-  };
-
-  const handleSubmit = () => {
-    navigate('rescale');
   };
 
   return (
@@ -137,22 +103,15 @@ function WarehouseCIDetailNew() {
           <div className="photo-area mt-3">
             <div className="photos-container overflow-x-auto flex gap-3">
               {photos?.map((res, idx) => (
-                <img
-                  width="200"
-                  alt={`photo_${idx + 1}`}
-                  // src={`${'https://jop.dudyali.com/storage/'}${res}`}
-                  src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                  // src={res}
-                  className="rounded-xl"
-                />
+                <img width="200" alt={`photo_${idx + 1}`} src={res} className="rounded-xl" />
               ))}
             </div>
           </div>
         </div>
 
         <div className="button-area flex mt-12 gap-2">
-          <Button isText isBack text="Kembali" className="w-full" />
-          <Button isText text="Timbang Ulang" className="w-full" onClick={handleSubmit} />
+          <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate('/warehouse')} />
+          <Button isText text="Timbang Ulang" className="w-full" onClick={() => navigate('rescale')} />
         </div>
       </div>
     </>
