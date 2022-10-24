@@ -1,19 +1,19 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Button from '../../../../components/button/Button';
-import Title from '../../../../components/title/Title';
-import Header from '../../../../components/ui/Header';
+import Button from '../../../../../components/button/Button';
+import Title from '../../../../../components/title/Title';
+import Header from '../../../../../components/ui/Header';
 import Cookies from 'universal-cookie';
-import Toast from '../../../../components/ui/Toast';
-import DropDown from '../../../../components/forms/Dropdown';
-import FlatButton from '../../../../components/button/flat';
-import Divider from '../../../../components/ui/Divider';
+import Toast from '../../../../../components/ui/Toast';
+import DropDown from '../../../../../components/forms/Dropdown';
+import FlatButton from '../../../../../components/button/flat';
+import Divider from '../../../../../components/ui/Divider';
 import axios from 'axios';
-// import FlatButton from '../../../../../../../../components/button/flat';
+// import FlatButton from '../../../../../../../../../../components/button/flat';
 
 const url = process.env.REACT_APP_API_URL;
 
-function WarehouseOpnameUpdate() {
+function WarehouseCOStockUpdate() {
   const { id } = useParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -21,7 +21,7 @@ function WarehouseOpnameUpdate() {
   const [photos, setPhotos] = React.useState([]);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
-  const [opnameDetail, setOpnameDetail] = React.useState([]);
+  const [stockInDetail, setStockInDetail] = React.useState([]);
   const [payload, setPayload] = React.useState({});
   const [isEditWet, setIsEditWet] = React.useState(false);
   const [isEditDrc, setIsEditDrc] = React.useState(false);
@@ -30,12 +30,12 @@ function WarehouseOpnameUpdate() {
   const [alertMessage, setAlertMessage] = React.useState('');
 
   React.useEffect(() => {
-    getOpnameDetail();
+    getStockInDetail();
   }, []);
 
-  const getOpnameDetail = () => {
+  const getStockInDetail = () => {
     axios
-      .get(`${url}warehouse/scan-by-stock-uuid?identifier=${id}`, {
+      .get(`${url}warehouse/stock-in/detail/${id}`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,10 +44,10 @@ function WarehouseOpnameUpdate() {
       })
       .then((res) => {
         const data = res.data.data;
-        setOpnameDetail(data);
+        setStockInDetail(data);
       })
-      .catch((error) => {
-        console.error(error.message);
+      .catch((err) => {
+        console.error(err.message);
       });
   };
 
@@ -95,8 +95,7 @@ function WarehouseOpnameUpdate() {
         Accept: 'application/json',
       },
     };
-
-    if (payload?.mode === 'total_wet' && payload?.value < opnameDetail?.total_dry) {
+    if (payload?.mode === 'total_wet' && payload?.value < stockInDetail?.total_dry) {
       setIsSubmitted(true);
       setIsSuccess(false);
       setIsButtonDisabled(true);
@@ -105,7 +104,7 @@ function WarehouseOpnameUpdate() {
         setIsButtonDisabled(false);
         setIsSubmitted(false);
       }, 3000);
-    } else if (payload?.mode === 'total_dry' && payload?.value > opnameDetail?.total_wet) {
+    } else if (payload?.mode === 'total_dry' && payload?.value > stockInDetail?.total_wet) {
       setIsSubmitted(true);
       setIsSuccess(false);
       setIsButtonDisabled(true);
@@ -142,19 +141,19 @@ function WarehouseOpnameUpdate() {
         <Header title="Update Kondisi Stock" isWithBack />
       </div>
       <div className="container">
-        <Title text="WH1-G1.001/02-12/P1" />
+        <Title text={stockInDetail?.kode} />
         <div className="flex justify-between my-5 gap-3">
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">Wet</p>
-            <p className="text-4xl font-bold">{opnameDetail?.total_wet}</p>
+            <p className="text-4xl font-bold">{stockInDetail?.total_wet}</p>
           </div>
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">DRC</p>
-            <p className="text-4xl font-bold">{opnameDetail?.drc} %</p>
+            <p className="text-4xl font-bold">{stockInDetail?.drc} %</p>
           </div>
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">Dry</p>
-            <p className="text-4xl font-bold">{opnameDetail?.total_dry}</p>
+            <p className="text-4xl font-bold">{stockInDetail?.total_dry}</p>
           </div>
         </div>
         <Divider />
@@ -168,7 +167,7 @@ function WarehouseOpnameUpdate() {
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
                   type="number"
                   min="0"
-                  defaultValue={opnameDetail?.total_wet}
+                  defaultValue={stockInDetail?.total_wet}
                   disabled={!isEditWet}
                   onChange={(e) => onChangeHandler(e)}
                 />
@@ -185,7 +184,7 @@ function WarehouseOpnameUpdate() {
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
                   type="number"
                   min="0"
-                  defaultValue={opnameDetail?.drc}
+                  defaultValue={stockInDetail?.drc}
                   disabled={!isEditDrc}
                   onChange={(e) => onChangeHandler(e)}
                 />
@@ -203,7 +202,7 @@ function WarehouseOpnameUpdate() {
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
                   type="number"
                   min="0"
-                  defaultValue={opnameDetail?.total_dry}
+                  defaultValue={stockInDetail?.total_dry}
                   disabled={!isEditDry}
                   onChange={(e) => onChangeHandler(e)}
                 />
@@ -222,4 +221,4 @@ function WarehouseOpnameUpdate() {
   );
 }
 
-export default WarehouseOpnameUpdate;
+export default WarehouseCOStockUpdate;

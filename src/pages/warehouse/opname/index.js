@@ -206,19 +206,6 @@ function Opname(props) {
           <Button isText text="Submit" className="h-9 py-0 ml-2" onClick={handleSubmit} />
         </div>
       </div>
-      <div className="mt-44 w-full">
-        <FlatButton
-          className="w-full rounded-xl"
-          role="white"
-          text="Kembali ke atas"
-          onClick={() =>
-            window.scrollTo({
-              top: 0,
-              behavior: 'smooth',
-            })
-          }
-        />
-      </div>
     </div>
   );
 }

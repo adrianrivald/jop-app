@@ -1,64 +1,33 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Button from '../../../../components/button/Button';
-import Title from '../../../../components/title/Title';
-import Header from '../../../../components/ui/Header';
+import Button from '../../../../../components/button/Button';
+import Title from '../../../../../components/title/Title';
+import Header from '../../../../../components/ui/Header';
 import Cookies from 'universal-cookie';
-import Toast from '../../../../components/ui/Toast';
-import DropDown from '../../../../components/forms/Dropdown';
-import FlatButton from '../../../../components/button/flat';
-import Divider from '../../../../components/ui/Divider';
+import Toast from '../../../../../components/ui/Toast';
+import DropDown from '../../../../../components/forms/Dropdown';
+import FlatButton from '../../../../../components/button/flat';
+import Divider from '../../../../../components/ui/Divider';
 import axios from 'axios';
 // import FlatButton from '../../../../../../../../components/button/flat';
 
 const url = process.env.REACT_APP_API_URL;
 
-function WarehouseCOUpdate() {
+function WarehouseCODetailUpdate() {
   const { id } = useParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
+  const data = JSON.parse(localStorage.getItem('current-checkout-detail'));
   const [photos, setPhotos] = React.useState([]);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
-  const [opnameDetail, setOpnameDetail] = React.useState([]);
   const [payload, setPayload] = React.useState({});
   const [isEditWet, setIsEditWet] = React.useState(false);
   const [isEditDrc, setIsEditDrc] = React.useState(false);
   const [isEditDry, setIsEditDry] = React.useState(false);
-
-  React.useEffect(() => {
-    getOpnameDetail();
-
-    const data_dummy = [
-      {
-        id: '4e2de4f3-3d6d-4118-ad08-380a98f23911',
-        kode: 'WH1-G1.001/10-14/P1',
-        total_wet: 100,
-        drc: 50,
-        total_dry: 10,
-        foto: [],
-      },
-    ];
-    setOpnameDetail(data_dummy[0]);
-  }, []);
-
-  const getOpnameDetail = () => {
-    axios
-      .get(`${url}warehouse/scan-by-stock-kode?identifier=${'4e2de4f3-3d6d-4118-ad08-380a98f23911'}`, {
-        url: process.env.REACT_APP_API_URL,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-      .then((res) => {
-        const data = res.data.data;
-      })
-      .catch((error) => {
-        console.error(error.message);
-      });
-  };
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
 
   const onEditWet = () => {
     setPayload((prev) => ({
@@ -104,22 +73,45 @@ function WarehouseCOUpdate() {
         Accept: 'application/json',
       },
     };
-    await axios
-      .put(
-        `${url}warehouse/stock-in/update/${id}
-        `,
-        payload,
-        config
-      )
-      .then(() => {
-        setIsSubmitted(true);
-        setIsButtonDisabled(true);
-        setTimeout(() => {
-          setIsButtonDisabled(false);
-          setIsSubmitted(false);
-          navigate(`/warehouse`);
-        }, 3000);
-      });
+
+    if (payload?.mode === 'total_wet' && payload?.value < data?.total_dry) {
+      setIsSubmitted(true);
+      setIsSuccess(false);
+      setIsButtonDisabled(true);
+      setAlertMessage('Total wet tidak boleh lebih kecil dari total dry');
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsSubmitted(false);
+      }, 3000);
+    } else if (payload?.mode === 'total_dry' && payload?.value > data?.total_wet) {
+      setIsSubmitted(true);
+      setIsSuccess(false);
+      setIsButtonDisabled(true);
+      setAlertMessage('Total dry tidak boleh lebih besar dari total wet');
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsSubmitted(false);
+      }, 3000);
+    } else {
+      await axios
+        .put(
+          `${url}warehouse/stock-out/update/${id}
+          `,
+          payload,
+          config
+        )
+        .then(() => {
+          setIsSuccess(true);
+          setIsSubmitted(true);
+          setIsButtonDisabled(true);
+          setAlertMessage('Sukses mengupdate data!');
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsSubmitted(false);
+            navigate(`/warehouse`);
+          }, 3000);
+        });
+    }
   };
 
   return (
@@ -128,19 +120,19 @@ function WarehouseCOUpdate() {
         <Header title="Update Kondisi Stock" isWithBack />
       </div>
       <div className="container">
-        <Title text="WH1-G1.001/02-12/P1" />
+        <Title text={`${data?.wh_kode} / ${data?.kode}  (${data?.nama})`} />
         <div className="flex justify-between my-5 gap-3">
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">Wet</p>
-            <p className="text-4xl font-bold">{opnameDetail?.total_wet}</p>
+            <p className="text-4xl font-bold">{data?.total_wet}</p>
           </div>
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">DRC</p>
-            <p className="text-4xl font-bold">{opnameDetail?.drc} %</p>
+            <p className="text-4xl font-bold">{data?.drc} %</p>
           </div>
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">Dry</p>
-            <p className="text-4xl font-bold">{opnameDetail?.total_dry}</p>
+            <p className="text-4xl font-bold">{data?.total_dry}</p>
           </div>
         </div>
         <Divider />
@@ -154,7 +146,7 @@ function WarehouseCOUpdate() {
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
                   type="number"
                   min="0"
-                  defaultValue={opnameDetail?.total_wet}
+                  defaultValue={data?.total_wet}
                   disabled={!isEditWet}
                   onChange={(e) => onChangeHandler(e)}
                 />
@@ -171,7 +163,7 @@ function WarehouseCOUpdate() {
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
                   type="number"
                   min="0"
-                  defaultValue={opnameDetail?.drc}
+                  defaultValue={data?.drc}
                   disabled={!isEditDrc}
                   onChange={(e) => onChangeHandler(e)}
                 />
@@ -189,7 +181,7 @@ function WarehouseCOUpdate() {
                   className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
                   type="number"
                   min="0"
-                  defaultValue={opnameDetail?.total_dry}
+                  defaultValue={data?.total_dry}
                   disabled={!isEditDry}
                   onChange={(e) => onChangeHandler(e)}
                 />
@@ -202,10 +194,10 @@ function WarehouseCOUpdate() {
           <Button isText isBack text="Kembali" className="w-full" onClick={() => navigate(-1)} />
           <Button isText text="Simpan" className="w-full" onClick={handleSubmit} disabled={isButtonDisabled} />
         </div>
-        <Toast text={'Sukses mengupdate data!'} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
+        <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
       </div>
     </>
   );
 }
 
-export default WarehouseCOUpdate;
+export default WarehouseCODetailUpdate;

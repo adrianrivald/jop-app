@@ -5,6 +5,7 @@ import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import DropDown from '../../../components/forms/Dropdown';
 import Divider from '../../../components/ui/Divider';
+import Toast from '../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -489,7 +490,7 @@ function Stock(props) {
                   </div>
                   <div className="button-area flex mt-5 gap-2">
                     <Button isText isBack text="Batalkan" className="w-full" onClick={() => onCollapse()} />
-                    <Button isText text="Simpan" className="w-full" onClick={handleSave} />
+                    <Button isText text="Simpan" className="w-full" onClick={handleSave} disabled={isButtonDisabled} />
                   </div>
                 </div>
                 <Divider className="mb-0" />
@@ -564,8 +565,15 @@ function Stock(props) {
         )}
       </div>
       <div className="submit-area mt-8">
-        <Button isText text="Keluarkan Stock" className="w-full font-bold" onClick={handleSubmit} />
+        <Button
+          isText
+          text="Keluarkan Stock"
+          className="w-full font-bold"
+          onClick={handleSubmit}
+          disabled={isButtonDisabled || stockData?.length === 0 || selectedItem?.length === 0}
+        />
       </div>
+      <Toast text={'Sukses keluarkan stock!'} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
     </div>
   );
 }

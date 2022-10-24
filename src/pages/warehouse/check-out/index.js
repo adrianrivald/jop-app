@@ -5,8 +5,60 @@ import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import DropDown from '../../../components/forms/Dropdown';
 import Divider from '../../../components/ui/Divider';
+import Toast from '../../../components/ui/Toast';
 
 const url = process.env.REACT_APP_API_URL;
+
+function Modal(props) {
+  return (
+    <>
+      <div className="fixed inset-0 z-10 overflow-y-auto transition-all">
+        <div className="fixed inset-0 w-full h-full bg-black opacity-40" onClick={props.setIsShowModal()}></div>
+        <div className="flex items-center min-h-screen px-4 py-8">
+          <div className="relative w-full max-w-lg p-4 mx-auto bg-white rounded-md shadow-lg">
+            <div className="mt-3 sm:flex">
+              <div className="flex items-center justify-center flex-none w-12 h-12 mx-auto bg-red-100 rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6 text-red-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="mt-2 text-center sm:ml-4 sm:text-left">
+                <h4 className="text-lg font-medium text-gray-800">Delete account ?</h4>
+                <p className="mt-2 text-[15px] leading-relaxed text-gray-500">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                  dolore magna aliqua.
+                </p>
+                <div className="items-center gap-2 mt-3 sm:flex">
+                  <button
+                    className="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md outline-none ring-offset-2 ring-red-600 focus:ring-2"
+                    onClick={props.setIsShowModal()}
+                  >
+                    Delete
+                  </button>
+                  <button
+                    className="w-full mt-2 p-2.5 flex-1 text-gray-800 rounded-md outline-none border ring-offset-2 ring-indigo-600 focus:ring-2"
+                    onClick={props.setIsShowModal()}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
 
 function Dropdown(props) {
   return (
@@ -26,12 +78,40 @@ function CheckOut(props) {
   const [materialList, setMaterialList] = React.useState([]);
   const [warehouseList, setWarehouseList] = React.useState([]);
   const [selectedId, setSelectedId] = React.useState('');
+  const [showedId, setShowedId] = React.useState('');
   const [selectedGudang, setSelectedGudang] = React.useState('');
   const [selectedMaterial, setSelectedMaterial] = React.useState('');
+  const [stockSalesData, setStockSalesData] = React.useState([]);
   const [photos, setPhotos] = React.useState([]);
   const [payload, setPayload] = React.useState({});
   const checkOutId = localStorage.getItem('check-out-value');
   const [checkOutData, setCheckOutData] = React.useState([]);
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
+  const [isShowModal, setIsShowModal] = React.useState(false);
+
+  const getStockSales = () => {
+    axios
+      .get(`${url}warehouse/stock-sales/list?filter[gudang]=${selectedGudang}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        console.log(data, 'stocksaleddata');
+        setStockSalesData(data);
+        setShowedId(data?.id);
+        localStorage.setItem('check-out-value', data?.id);
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
 
   const getCheckOutDetail = () => {
     axios
@@ -44,7 +124,6 @@ function CheckOut(props) {
       })
       .then((res) => {
         const data = res.data.data;
-        console.log(data, ' data');
         setCheckOutData(data);
       })
       .catch((err) => {
@@ -62,10 +141,17 @@ function CheckOut(props) {
   }, []);
 
   React.useEffect(() => {
-    if (selectedGudang !== '' && selectedMaterial !== '') {
-      getCheckOutDetail(selectedGudang, selectedMaterial);
+    if (selectedGudang !== '') {
+      getStockSales(selectedGudang);
+      // getCheckOutDetail(selectedGudang, selectedMaterial);
     }
-  }, [selectedGudang, selectedMaterial]);
+  }, [selectedGudang]);
+
+  React.useEffect(() => {
+    if (showedId) {
+      getCheckOutDetail();
+    }
+  }, [showedId]);
 
   const getWarehouse = (id) => {
     axios
@@ -123,13 +209,6 @@ function CheckOut(props) {
       });
   };
 
-  const onSelectPhoto = (e) => {
-    let formData = new FormData();
-    formData.append('file', e.target.files[0]);
-    formData.append('path', 'public/logistik/kirim');
-    void uploadPhoto(formData);
-  };
-
   const onChangeWH = (e) => {
     getGudang(e.target.value);
   };
@@ -138,11 +217,17 @@ function CheckOut(props) {
     setSelectedGudang(e.target.value);
   };
 
-  const onChangeMaterial = (e) => {
-    setSelectedMaterial(e.target.value);
+  const onEditDetail = (data) => {
+    navigate(`check-out/detail/update/${data?.id}`);
+    localStorage.setItem('current-checkout-detail', JSON.stringify({ ...data, wh_kode: checkOutData?.kode }));
   };
 
-  const uploadPhoto = async (formData) => {
+  const onEditStock = (data) => {
+    console.log(data, 'datastock');
+    navigate(`check-out/stock/update/${data?.id}`);
+  };
+
+  const onRemoveStock = async (stock_id, wh_id) => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -152,36 +237,25 @@ function CheckOut(props) {
     };
     await axios
       .post(
-        `${url}upload-foto
+        `${url}warehouse/stock-sales/remove
         `,
-        formData,
+        {
+          stock_sales_id: stock_id,
+          wh_stock_in_id: [wh_id],
+        },
         config
       )
       .then((res) => {
-        const data = res?.data?.data;
-        setPhotos([...photos, data?.path]);
-        setPayload({
-          ...payload,
-          path_foto: [...photos, data?.path],
-        });
+        setIsSuccess(true);
+        setIsSubmitted(true);
+        setIsButtonDisabled(true);
+        setAlertMessage('Sukses menghapus data!');
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+          setIsSubmitted(false);
+          getCheckOutDetail();
+        }, 3000);
       });
-  };
-
-  const onExpand = (idx, id) => {
-    setSelectedId(id);
-    setOpenedId(idx + 1);
-  };
-
-  const onCollapse = (idx) => {
-    setOpenedId({
-      ...openedId,
-      [`item_${idx}`]: false,
-    });
-  };
-
-  const onCheckMaterial = (e) => {
-    e.stopPropagation();
-    // TODO
   };
 
   const handleSubmit = () => {
@@ -190,7 +264,7 @@ function CheckOut(props) {
 
   return (
     <div>
-      {/* <div className="flex justify-between gap-2">
+      <div className="flex justify-between gap-2">
         <div className="flex-auto w-64">
           <Dropdown
             title="Tempat Penimbangan"
@@ -207,13 +281,13 @@ function CheckOut(props) {
             onChange={(e) => onChangeGudang(e)}
           />
         </div>
-      </div> */}
+      </div>
       <div className="flex justify-between items-center mt-4">
         <p className="text-sm font-bold">Daftar Order Sales</p>
-        <DropDown option={materialList} defaultValue="Jumlah Timbangan" onChange={(e) => onChangeMaterial(e)} />
+        <DropDown option={[]} defaultValue="Jumlah Timbangan" onChange={(e) => {}} />
       </div>
       <div className="mt-7">
-        {checkOutData ? (
+        {checkOutData && checkOutId ? (
           // checkOutData?.detail?.map((res, idx) =>
           openedId === true ? (
             <div>
@@ -232,7 +306,7 @@ function CheckOut(props) {
                         </div>
                         <div className="flex gap-1">
                           <span>Drc</span>
-                          <span className="text-xs text-sun font-bold">{checkOutData?.drc}</span>
+                          <span className="text-xs text-sun font-bold">{checkOutData?.drc} %</span>
                         </div>
                         <div className="flex gap-1">
                           <span>Dry</span>
@@ -242,20 +316,6 @@ function CheckOut(props) {
                     </div>
                   </div>
                   <div className="flex items-center gap-5">
-                    <Button
-                      isIcon
-                      icon={
-                        <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M5.889 2.83333H8.55566C8.55566 2.09695 7.95873 1.5 7.22233 1.5C6.48593 1.5 5.889 2.09695 5.889 2.83333ZM4.889 2.83333C4.889 1.54467 5.93366 0.5 7.22233 0.5C8.511 0.5 9.55566 1.54467 9.55566 2.83333H13.389C13.6651 2.83333 13.889 3.05719 13.889 3.33333C13.889 3.60947 13.6651 3.83333 13.389 3.83333H12.5096L11.7283 11.9075C11.6043 13.1889 10.5273 14.1667 9.23986 14.1667H5.20479C3.91736 14.1667 2.84043 13.1889 2.71642 11.9075L1.93505 3.83333H1.05566C0.779524 3.83333 0.555664 3.60947 0.555664 3.33333C0.555664 3.05719 0.779524 2.83333 1.05566 2.83333H4.889ZM6.22233 6C6.22233 5.72386 5.99846 5.5 5.72233 5.5C5.44619 5.5 5.22233 5.72386 5.22233 6V11C5.22233 11.2761 5.44619 11.5 5.72233 11.5C5.99846 11.5 6.22233 11.2761 6.22233 11V6ZM8.72233 5.5C8.99846 5.5 9.22233 5.72386 9.22233 6V11C9.22233 11.2761 8.99846 11.5 8.72233 11.5C8.4462 11.5 8.22233 11.2761 8.22233 11V6C8.22233 5.72386 8.4462 5.5 8.72233 5.5ZM3.71177 11.8111C3.78618 12.58 4.43233 13.1667 5.20479 13.1667H9.23986C10.0123 13.1667 10.6585 12.58 10.7329 11.8111L11.5049 3.83333H2.93972L3.71177 11.8111Z"
-                            fill="#332919"
-                          />
-                        </svg>
-                      }
-                      isText={false}
-                      className="bg-white text-black shadow m-0"
-                      onClick={() => navigate(`scan`)}
-                    />
                     <div className="cursor-pointer">
                       <svg
                         className="rotate-90"
@@ -291,9 +351,9 @@ function CheckOut(props) {
                         <div className="w-4/12">
                           {res?.kode} - <b>{res?.nama}</b>
                         </div>
-                        <div className="w-1/12">{res?.total_wet}</div>
-                        <div className="w-1/12">{res?.drc}%</div>
-                        <div className="w-1/12">{res?.total_dry}</div>
+                        <div className="w-1/12 font-bold">{res?.total_wet}</div>
+                        <div className="w-1/12 font-bold">{res?.drc}%</div>
+                        <div className="w-1/12 font-bold">{res?.total_dry}</div>
                         <div className="w-1/12 ">
                           <Button
                             isIcon
@@ -313,7 +373,7 @@ function CheckOut(props) {
                             }
                             isText={false}
                             className="bg-white text-black shadow m-0"
-                            onClick={() => navigate(`scan`)}
+                            onClick={() => onEditDetail(res)}
                           />
                         </div>
                       </div>
@@ -329,19 +389,19 @@ function CheckOut(props) {
                   >
                     <div className="flex items-center">
                       <div>
-                        <p className="font-bold">{checkOutData?.kode}</p>
+                        <p className="font-bold">{res?.kode}</p>
                         <div className="flex justify-center gap-3">
                           <div className="flex gap-1">
                             <span>Wet</span>
-                            <span className="text-xs text-sun font-bold">{checkOutData?.total_wet}</span>
+                            <span className="text-xs text-sun font-bold">{res?.total_wet}</span>
                           </div>
                           <div className="flex gap-1">
-                            <span>Wet</span>
-                            <span className="text-xs text-sun font-bold">{checkOutData?.drc}</span>
+                            <span>Drc</span>
+                            <span className="text-xs text-sun font-bold">{res?.drc} %</span>
                           </div>
                           <div className="flex gap-1">
-                            <span>Wet</span>
-                            <span className="text-xs text-sun font-bold">{checkOutData?.total_dry}</span>
+                            <span>Dry</span>
+                            <span className="text-xs text-sun font-bold">{res?.total_dry}</span>
                           </div>
                         </div>
                       </div>
@@ -365,7 +425,7 @@ function CheckOut(props) {
                         }
                         isText={false}
                         className="bg-white text-black shadow m-0"
-                        onClick={() => navigate(`scan`)}
+                        onClick={() => onEditStock(res)}
                       />
                       <Button
                         isIcon
@@ -385,7 +445,7 @@ function CheckOut(props) {
                         }
                         isText={false}
                         className="bg-white text-black shadow m-0"
-                        onClick={() => navigate(`scan`)}
+                        onClick={() => onRemoveStock(checkOutData?.id, res?.id)}
                       />
                     </div>
                   </div>
@@ -409,31 +469,17 @@ function CheckOut(props) {
                         <span className="text-xs text-sun font-bold">{checkOutData?.total_wet}</span>
                       </div>
                       <div className="flex gap-1">
-                        <span>Wet</span>
-                        <span className="text-xs text-sun font-bold">{checkOutData?.drc}</span>
+                        <span>Drc</span>
+                        <span className="text-xs text-sun font-bold">{checkOutData?.drc} %</span>
                       </div>
                       <div className="flex gap-1">
-                        <span>Wet</span>
+                        <span>Dry</span>
                         <span className="text-xs text-sun font-bold">{checkOutData?.total_dry}</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-5">
-                  <Button
-                    isIcon
-                    icon={
-                      <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M5.889 2.83333H8.55566C8.55566 2.09695 7.95873 1.5 7.22233 1.5C6.48593 1.5 5.889 2.09695 5.889 2.83333ZM4.889 2.83333C4.889 1.54467 5.93366 0.5 7.22233 0.5C8.511 0.5 9.55566 1.54467 9.55566 2.83333H13.389C13.6651 2.83333 13.889 3.05719 13.889 3.33333C13.889 3.60947 13.6651 3.83333 13.389 3.83333H12.5096L11.7283 11.9075C11.6043 13.1889 10.5273 14.1667 9.23986 14.1667H5.20479C3.91736 14.1667 2.84043 13.1889 2.71642 11.9075L1.93505 3.83333H1.05566C0.779524 3.83333 0.555664 3.60947 0.555664 3.33333C0.555664 3.05719 0.779524 2.83333 1.05566 2.83333H4.889ZM6.22233 6C6.22233 5.72386 5.99846 5.5 5.72233 5.5C5.44619 5.5 5.22233 5.72386 5.22233 6V11C5.22233 11.2761 5.44619 11.5 5.72233 11.5C5.99846 11.5 6.22233 11.2761 6.22233 11V6ZM8.72233 5.5C8.99846 5.5 9.22233 5.72386 9.22233 6V11C9.22233 11.2761 8.99846 11.5 8.72233 11.5C8.4462 11.5 8.22233 11.2761 8.22233 11V6C8.22233 5.72386 8.4462 5.5 8.72233 5.5ZM3.71177 11.8111C3.78618 12.58 4.43233 13.1667 5.20479 13.1667H9.23986C10.0123 13.1667 10.6585 12.58 10.7329 11.8111L11.5049 3.83333H2.93972L3.71177 11.8111Z"
-                          fill="#332919"
-                        />
-                      </svg>
-                    }
-                    isText={false}
-                    className="bg-white text-black shadow m-0"
-                    onClick={() => navigate(`scan`)}
-                  />
                   <div className="cursor-pointer">
                     <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -456,8 +502,10 @@ function CheckOut(props) {
         )}
       </div>
       <div className="submit-area mt-8">
-        <Button isText text="Check-Out" className="w-full font-bold" onClick={() => navigate('check-in/join')} />
+        <Button isText text="Check-Out" className="w-full font-bold" onClick={() => setIsShowModal(true)} />
       </div>
+      <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
+      {isShowModal === true ? <Modal setIsShowModal={() => setIsShowModal(false)} /> : null}
     </div>
   );
 }

@@ -310,7 +310,13 @@ function CheckIn(props) {
         )}
       </div>
       <div className="submit-area mt-8">
-        <Button isText text="Gabungkan" className="w-full font-bold" onClick={handleSubmit} />
+        <Button
+          isText
+          text="Gabungkan"
+          className="w-full font-bold"
+          onClick={handleSubmit}
+          disabled={checkInData?.length === 0 || selectedItem?.length === 0}
+        />
       </div>
     </div>
   );
