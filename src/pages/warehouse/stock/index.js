@@ -39,6 +39,8 @@ function Stock(props) {
   const [isEditDry, setIsEditDry] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
 
   React.useEffect(() => {
     // getGudang();
@@ -233,29 +235,51 @@ function Stock(props) {
     e.stopPropagation();
   };
 
-  const handleSave = async () => {
+  const handleSave = async (total_wet, drc, total_dry) => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     };
-    await axios
-      .put(
-        `${url}warehouse/stock-in/update/${selectedId}
-        `,
-        payload,
-        config
-      )
-      .then(() => {
-        setIsSubmitted(true);
-        setIsButtonDisabled(true);
-        setTimeout(() => {
-          setIsButtonDisabled(false);
-          setIsSubmitted(false);
-          navigate(`/warehouse`);
-        }, 3000);
-      });
+    if (payload?.mode === 'total_wet' && payload?.value < total_dry) {
+      setIsSubmitted(true);
+      setIsSuccess(false);
+      setIsButtonDisabled(true);
+      setAlertMessage('Total wet tidak boleh lebih kecil dari total dry');
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsSubmitted(false);
+      }, 3000);
+    } else if (payload?.mode === 'total_dry' && payload?.value > total_wet) {
+      setIsSubmitted(true);
+      setIsSuccess(false);
+      setIsButtonDisabled(true);
+      setAlertMessage('Total dry tidak boleh lebih besar dari total wet');
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsSubmitted(false);
+      }, 3000);
+    } else {
+      await axios
+        .put(
+          `${url}warehouse/stock-in/update/${selectedId}
+          `,
+          payload,
+          config
+        )
+        .then(() => {
+          setIsSuccess(true);
+          setAlertMessage('Sukses mengupdate data!');
+          setIsSubmitted(true);
+          setIsButtonDisabled(true);
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsSubmitted(false);
+            navigate(`/warehouse`);
+          }, 3000);
+        });
+    }
   };
 
   const handleSubmit = async () => {
@@ -395,7 +419,9 @@ function Stock(props) {
                         <div className="relative">
                           <span className="absolute inset-y-4 right-2">kg</span>
                           <input
-                            className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                            className={`rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline ${
+                              isEditWet ? 'border border-flora' : ''
+                            }`}
                             type="number"
                             min="0"
                             defaultValue={res?.total_wet}
@@ -412,7 +438,9 @@ function Stock(props) {
                         <div className="relative">
                           <span className="absolute inset-y-4 right-2">%</span>
                           <input
-                            className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                            className={`rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline ${
+                              isEditDrc ? 'border border-flora' : ''
+                            }`}
                             type="number"
                             min="0"
                             defaultValue={res?.drc}
@@ -430,7 +458,9 @@ function Stock(props) {
                         <div className="relative">
                           <span className="absolute inset-y-4 right-2">kg</span>
                           <input
-                            className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
+                            className={`rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline ${
+                              isEditDry ? 'border border-flora' : ''
+                            }`}
                             type="number"
                             min="0"
                             defaultValue={res?.total_dry}
@@ -448,9 +478,7 @@ function Stock(props) {
                         <img
                           width="200"
                           alt={`photo_${idx + 1}`}
-                          // src={`${'https://jop.dudyali.com/storage/'}${res}`}
                           src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                          // src={res}
                           className="rounded-xl"
                         />
                       ))}
@@ -458,9 +486,7 @@ function Stock(props) {
                         <img
                           width="200"
                           alt={`photo_${idx + 1}`}
-                          // src={`${'https://jop.dudyali.com/storage/'}${res}`}
                           src={res.includes('/storage') ? res : `${'https://jop.dudyali.com/storage/'}${res}`}
-                          // src={res}
                           className="rounded-xl"
                         />
                       ))}
@@ -490,7 +516,13 @@ function Stock(props) {
                   </div>
                   <div className="button-area flex mt-5 gap-2">
                     <Button isText isBack text="Batalkan" className="w-full" onClick={() => onCollapse()} />
-                    <Button isText text="Simpan" className="w-full" onClick={handleSave} disabled={isButtonDisabled} />
+                    <Button
+                      isText
+                      text="Simpan"
+                      className="w-full"
+                      onClick={() => handleSave(res?.total_wet, res?.drc, res?.total_dry)}
+                      disabled={isButtonDisabled}
+                    />
                   </div>
                 </div>
                 <Divider className="mb-0" />
@@ -573,7 +605,7 @@ function Stock(props) {
           disabled={isButtonDisabled || stockData?.length === 0 || selectedItem?.length === 0}
         />
       </div>
-      <Toast text={'Sukses keluarkan stock!'} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
+      <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
     </div>
   );
 }
