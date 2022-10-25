@@ -25,7 +25,7 @@ function Dropdown(props) {
 
 function FilledCircle() {
   return (
-    <div className="w-1/4">
+    <div className="w-8">
       <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12.2227" cy="12" r="12" fill="#E96E1D" />
       </svg>
@@ -35,7 +35,7 @@ function FilledCircle() {
 
 function OutlinedCircle() {
   return (
-    <div className="w-1/4">
+    <div className="w-8">
       <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12.2227" cy="12" r="11" stroke="#A7A29A" strokeWidth="2" />
       </svg>
@@ -259,10 +259,10 @@ function Logistic() {
             {batchReadyToDeliver?.length > 0 && (
               <div className="w-2/4 ml-2">
                 <div className="flex gap-6">
-                  <p className="w-1/4">P1</p>
-                  <p className="w-1/4">P2</p>
-                  <p className="w-1/4">P3</p>
-                  <p className="w-1/4">P4</p>
+                  <p className="w-8">P1</p>
+                  <p className="w-8">P2</p>
+                  <p className="w-8">P3</p>
+                  <p className="w-8">P4</p>
                 </div>
               </div>
             )}
@@ -281,14 +281,14 @@ function Logistic() {
                 <div className="w-2/4">
                   <div className="flex gap-6">
                     {res?.detail?.map((res, idx) => {
+                      console.log(res, 'detail');
                       if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
                         return <FilledCircle />;
                       } else if (res?.kode !== 'P1' || res?.kode !== 'P2' || res?.kode !== 'P3' || res?.kode !== 'P4') {
-                        return <OutlinedCircle />;
+                        return null;
                       }
                       return <OutlinedCircle />;
                     })}
-                    {res?.detail?.length < 4 && <OutlinedCircle />}
                   </div>
                 </div>
               </div>
@@ -306,10 +306,10 @@ function Logistic() {
             {batchOnDelivery?.length > 0 && (
               <div className="w-2/4 ml-2">
                 <div className="flex gap-6">
-                  <p className="w-1/4">P1</p>
-                  <p className="w-1/4">P2</p>
-                  <p className="w-1/4">P3</p>
-                  <p className="w-1/4">P4</p>
+                  <p className="w-8">P1</p>
+                  <p className="w-8">P2</p>
+                  <p className="w-8">P3</p>
+                  <p className="w-8">P4</p>
                 </div>
               </div>
             )}
@@ -328,14 +328,14 @@ function Logistic() {
                 <div className="w-2/4">
                   <div className="flex gap-6">
                     {res?.detail?.map((res, idx) => {
+                      console.log(res, 'detail');
                       if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
                         return <FilledCircle />;
                       } else if (res?.kode !== 'P1' || res?.kode !== 'P2' || res?.kode !== 'P3' || res?.kode !== 'P4') {
-                        return <OutlinedCircle />;
+                        return null;
                       }
                       return <OutlinedCircle />;
                     })}
-                    {res?.detail?.length < 4 && <OutlinedCircle />}
                   </div>
                 </div>
               </div>
@@ -353,10 +353,10 @@ function Logistic() {
             {batchDelivered?.length > 0 && (
               <div className="w-2/4 ml-2">
                 <div className="flex gap-6">
-                  <p className="w-1/4">P1</p>
-                  <p className="w-1/4">P2</p>
-                  <p className="w-1/4">P3</p>
-                  <p className="w-1/4">P4</p>
+                  <p className="w-8">P1</p>
+                  <p className="w-8">P2</p>
+                  <p className="w-8">P3</p>
+                  <p className="w-8">P4</p>
                 </div>
               </div>
             )}
@@ -375,6 +375,7 @@ function Logistic() {
                 <div className="w-2/4">
                   <div className="flex gap-6">
                     {res?.detail?.map((res, idx) => {
+                      console.log(res, 'detail');
                       if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
                         return <FilledCircle />;
                       } else if (res?.kode !== 'P1' || res?.kode !== 'P2' || res?.kode !== 'P3' || res?.kode !== 'P4') {
@@ -382,7 +383,6 @@ function Logistic() {
                       }
                       return <OutlinedCircle />;
                     })}
-                    {res?.detail?.length < 4 && <OutlinedCircle />}
                   </div>
                 </div>
               </div>
