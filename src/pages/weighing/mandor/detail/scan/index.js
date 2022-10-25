@@ -21,7 +21,7 @@ function WeighingScan() {
   const onResult = async (result, error) => {
     try {
       if (result) {
-        navigate(`/weighing/mandor/detail/${id}/tapper/${result?.text}`);
+        navigate(`/weighing/detail/${id}/tapper/${result?.text}`);
         localStorage.setItem('scanned_tapper', result?.text);
       }
     } catch (error) {
