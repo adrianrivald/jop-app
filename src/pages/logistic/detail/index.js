@@ -219,7 +219,7 @@ function LogisticDetail() {
                   </div>
                   <div>
                     <p>{moment(res?.created_at, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')}</p>
-                    <p className="text-md font-bold">Ojek 01-1</p>
+                    <p className="text-md font-bold">{res?.kode_armada}</p>
                   </div>
                   <p className="flex-auto text-right text-sun font-bold">{capitalize(res?.status_pengiriman)}</p>
                 </div>

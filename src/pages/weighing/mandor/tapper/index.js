@@ -226,8 +226,8 @@ const WeighingTapper = () => {
                     <span className="absolute inset-y-3 right-2">kg</span>
                     <input
                       className="rounded-lg py-4 px-4 text-xs leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      pattern="\d*"
+                      type="number"
+                      min="0"
                       onChange={(e) => onChangeWeight(e, res.code, idx)}
                     />
                   </div>
