@@ -76,7 +76,7 @@ function LogisticShipmentDetail() {
             </div>
             <div className="p-3 rounded-xl border border-cloud w-full">
               <p className="text-xxs">Berat produk sisa</p>
-              <span className="text-4xl font-bold">20</span>
+              <span className="text-4xl font-bold">{shipmentData?.berat_sisa}</span>
               <span> kg</span>
             </div>
           </div>
@@ -125,7 +125,7 @@ function LogisticShipmentDetail() {
                       </div>
                       <div className="flex gap-3 my-1">
                         <p className="w-2/4">Armada</p>
-                        <p className="w-2/4 font-bold">{shipmentData?.armada}</p>
+                        <p className="w-2/4 font-bold">{shipmentData?.kode_armada}</p>
                       </div>
                       <div className="flex gap-3 my-1">
                         <p className="w-2/4">Alamat / fasilitas tujuan</p>

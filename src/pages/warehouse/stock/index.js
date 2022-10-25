@@ -276,7 +276,7 @@ function Stock(props) {
           setTimeout(() => {
             setIsButtonDisabled(false);
             setIsSubmitted(false);
-            navigate(`/warehouse`);
+            getStock(selectedGudang, selectedMaterial);
           }, 3000);
         });
     }
@@ -301,11 +301,14 @@ function Stock(props) {
       )
       .then((res) => {
         const stock_sales_id = res?.data?.data?.stock_sales_id;
+        setIsSuccess(true);
+        setAlertMessage('Sukses keluarkan stock!');
         setIsSubmitted(true);
         setIsButtonDisabled(true);
         setTimeout(() => {
           setIsButtonDisabled(false);
           setIsSubmitted(false);
+          getStock(selectedGudang, selectedMaterial);
           localStorage.setItem('saved_tab', 'check-out');
           localStorage.setItem('check-out-value', stock_sales_id);
         }, 3000);
