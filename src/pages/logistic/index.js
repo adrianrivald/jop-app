@@ -379,7 +379,7 @@ function Logistic() {
                       if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
                         return <FilledCircle />;
                       } else if (res?.kode !== 'P1' || res?.kode !== 'P2' || res?.kode !== 'P3' || res?.kode !== 'P4') {
-                        return <OutlinedCircle />;
+                        return null;
                       }
                       return <OutlinedCircle />;
                     })}
