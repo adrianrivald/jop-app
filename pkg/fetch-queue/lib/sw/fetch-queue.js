@@ -77,40 +77,41 @@ export class FetchQueue {
    * @return {Promise<Response>}
    * @private
    */
-  async _handle(request, thisFetch, noCache = false) {
+  async _handle(request, noCache = false) {
     const isSafeMethod = _SAFE_METHOD.includes(request.method);
+    const clonedRequest = request.clone();
     try {
-      const res = await thisFetch(request);
+      const res = await fetch(request);
 
       if (res.status === 502) {
-        return this._onRequestError(request, new Error('server gateway error'));
+        return this._onRequestError(clonedRequest, new Error('server gateway error'));
       }
 
       if (isSafeMethod) {
         const cache = await caches.open(_CACHE_NAME);
-        await cache.put(request, res.clone());
+        await cache.put(clonedRequest, res.clone());
       }
 
       return res;
     } catch (err) {
       if (isSafeMethod) {
         if (noCache) {
-          return this._onRequestError(request, err);
+          return this._onRequestError(clonedRequest, err);
         }
 
         const cache = await caches.open(_CACHE_NAME);
-        const res = await cache.match(request);
+        const res = await cache.match(clonedRequest);
         if (res) {
           return res;
         }
       }
 
-      return this._onRequestError(request, err);
+      return this._onRequestError(clonedRequest, err);
     }
   }
 
   async wbHandler(request, handler) {
-    return this._handle(request, handler.fetch.bind(handler));
+    return this._handle(request);
   }
 
   registerSyncListener() {
@@ -137,7 +138,7 @@ export class FetchQueue {
     for await (const reqObj of this._queue.entries()) {
       const req = RequestObject.fromJSON(reqObj).toRequest();
 
-      this._handle(req, fetch, true).then(async (res) => {
+      this._handle(req, true).then(async (res) => {
         const t = await res.text();
 
         this._messageChannel.postMessage(
