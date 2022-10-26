@@ -38,12 +38,8 @@ const UserMenu = (props) => {
         }`}
       >
         <h3 className="text-center my-12 text-xl font-bold text-ellipsis overflow-hidden">{props.cardTitle}</h3>
-        <span className="block my-1 text-xs text-left">Upcoming Appointment :</span>
-        <div className="flex items-center justify-between">
-          <span className="text-xs">17 Februari 2022, 12:00</span>
-          <div className="text-flora text-xs">Detail</div>
-        </div>
       </div>
+      <div className="border border-flora w-full" />
     </Link>
   );
 
@@ -80,7 +76,7 @@ const Contact = (props) => (
     <DropDown onChange={props.onChange} option={props.option} />
     {props.option
       .filter((res) => res.value === props.selectedContact)
-      .map((result, idx) => (
+      .map((result) => (
         <div>
           {result.data.map((res) => (
             <div className="p-4">
@@ -97,7 +93,6 @@ const Contact = (props) => (
             <p>Alamat : </p>
             <p>{result.address}</p>
           </div>
-          <div className="m-10">GOOGLE MAP</div>
         </div>
       ))}
   </div>
