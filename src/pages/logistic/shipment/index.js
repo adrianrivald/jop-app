@@ -29,26 +29,21 @@ function LogisticShipment() {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
-  const userData = JSON.parse(localStorage.getItem('userData'));
   const [tphList, setTphList] = React.useState([]);
-  const [photos, setPhotos] = React.useState([]);
   const loaded_data = JSON.parse(localStorage.getItem('loaded_data'));
   const [logisticType, setLogisticType] = React.useState([]);
   const [vehicleList, setVehicleList] = React.useState([]);
   const [storageList, setStorageList] = React.useState([]);
-  const [addInput, setAddInput] = React.useState({});
+  const [weightLimit, setWeightLimit] = React.useState();
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
-  const scanned_driver = localStorage.getItem('scanned_driver');
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
   const shipment_payload = JSON.parse(localStorage.getItem('shipment_payload'));
 
   React.useEffect(() => {
     getLogisticType();
     getStorage();
-    setAddInput({
-      ...addInput,
-      loading_id: loaded_data?.loading_id,
-    });
     localStorage.setItem(
       'shipment_payload',
       JSON.stringify({
@@ -58,15 +53,6 @@ function LogisticShipment() {
     );
     if (shipment_payload?.jenis_logistik_id !== null) {
       getVehicle(shipment_payload?.jenis_logistik_id);
-    }
-  }, []);
-
-  React.useEffect(() => {
-    if (scanned_driver !== undefined) {
-      setAddInput({
-        ...addInput,
-        supir_id: scanned_driver,
-      });
     }
   }, []);
 
@@ -91,7 +77,7 @@ function LogisticShipment() {
 
   const getVehicle = (val) => {
     axios
-      .get(`${url}/armada/list?sort=kode&filter[jenis_logistik]=${val}`, {
+      .get(`${url}/armada/list?sort=kode&filter[jenis_logistik]=${val}&include=merk`, {
         url: process.env.REACT_APP_API_URL,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -101,8 +87,8 @@ function LogisticShipment() {
       .then((res) => {
         const data = res.data.data.data;
         const vehicleData = data.map((res) => ({
-          value: res.id,
-          label: res.plat_nomor,
+          value: `${res.id},${res?.merk?.berat_maksimum}`,
+          label: `${res?.plat_nomor} - ${res?.merk?.berat_maksimum} kg`,
         }));
         setVehicleList(vehicleData);
       });
@@ -128,18 +114,24 @@ function LogisticShipment() {
   };
 
   const onChangeHandler = (e, id) => {
-    setAddInput({
-      ...addInput,
-      [id]: e.target.value,
-    });
-
-    localStorage.setItem(
-      'shipment_payload',
-      JSON.stringify({
-        ...shipment_payload,
-        [id]: e.target.value,
-      })
-    );
+    if (id !== 'armada_id') {
+      localStorage.setItem(
+        'shipment_payload',
+        JSON.stringify({
+          ...shipment_payload,
+          [id]: e.target.value,
+        })
+      );
+    } else {
+      localStorage.setItem(
+        'shipment_payload',
+        JSON.stringify({
+          ...shipment_payload,
+          [id]: e.target.value.split(',')[0],
+        })
+      );
+      setWeightLimit(e.target.value.split(',')[1]);
+    }
 
     if (id === 'jenis_logistik_id') {
       getVehicle(e.target.value);
@@ -153,28 +145,44 @@ function LogisticShipment() {
         Accept: 'application/json',
       },
     };
-    await axios
-      .post(
-        `${url}/pengiriman/store
-    `,
-        shipment_payload,
-        config
-      )
-      .then(() => {
-        setIsSubmitted(true);
-        setIsButtonDisabled(true);
-        setTimeout(() => {
-          setIsButtonDisabled(false);
-          setIsSubmitted(false);
-          localStorage.removeItem('loaded_data');
-          localStorage.removeItem('supir_data');
-          localStorage.removeItem('pengawal_data');
-          localStorage.removeItem('shipment_payload');
-          localStorage.removeItem('scan_type');
-          localStorage.removeItem('scanned_tapper');
-          navigate(-1);
-        }, 3000);
-      });
+
+    const totalMaterialWeight = loaded_data.detail?.reduce((acc, o) => acc + o.berat_kirim, 0);
+
+    if (totalMaterialWeight > weightLimit) {
+      setIsSubmitted(true);
+      setIsSuccess(false);
+      setIsButtonDisabled(true);
+      setAlertMessage('Total dry tidak boleh lebih besar dari total wet');
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsSubmitted(false);
+      }, 3000);
+    } else {
+      await axios
+        .post(
+          `${url}/pengiriman/store
+      `,
+          shipment_payload,
+          config
+        )
+        .then(() => {
+          setIsSubmitted(true);
+          setAlertMessage('Sukses mengirim data!');
+          setIsSuccess(true);
+          setIsButtonDisabled(true);
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsSubmitted(false);
+            localStorage.removeItem('loaded_data');
+            localStorage.removeItem('supir_data');
+            localStorage.removeItem('pengawal_data');
+            localStorage.removeItem('shipment_payload');
+            localStorage.removeItem('scan_type');
+            localStorage.removeItem('scanned_tapper');
+            navigate(-1);
+          }, 3000);
+        });
+    }
   };
 
   const onScan = (type) => {
@@ -329,7 +337,7 @@ function LogisticShipment() {
               <Button className="w-full" isText text="Deliver" onClick={handleSubmit} disabled={isButtonDisabled} />
             </div>
           </div>
-          <Toast text="Sukses mengirim data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
+          <Toast text={alertMessage} onClose={() => setIsSubmitted(false)} isShow={isSubmitted} isSuccess={isSuccess} />
         </div>
       </div>
     </>
