@@ -114,6 +114,15 @@ function WarehouseOpnameUpdate() {
         setIsButtonDisabled(false);
         setIsSubmitted(false);
       }, 3000);
+    } else if (payload?.mode === 'total_wet' && payload?.value === '0') {
+      setIsSubmitted(true);
+      setIsSuccess(false);
+      setIsButtonDisabled(true);
+      setAlertMessage('Total wet tidak boleh 0!');
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        setIsSubmitted(false);
+      }, 3000);
     } else {
       await axios
         .put(
