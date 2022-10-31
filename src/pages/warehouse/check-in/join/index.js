@@ -42,7 +42,6 @@ function WarehouseCIJoin() {
       })
       .then((res) => {
         const data = res.data.data;
-        console.log(data, 'data');
         setStockDetail(data);
       })
       .catch((err) => {

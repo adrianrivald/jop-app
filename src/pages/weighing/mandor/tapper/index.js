@@ -74,7 +74,6 @@ const WeighingTapper = () => {
           const data = res.data.data;
           setTapperDetail(data);
           setTapperHistoryDetail(data?.riwayat_penugasan?.length > 0 ? data?.riwayat_penugasan[0] : []);
-          console.log(data?.riwayat_penugasan[0], data, 'data riwayat');
           setTransactionData(data);
           setWeighingPayload({
             ...weighingPayload,

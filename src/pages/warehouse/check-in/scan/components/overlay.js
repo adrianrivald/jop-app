@@ -32,7 +32,6 @@ const Overlay = () => {
       })
       .then((res) => {
         const data = res.data.data;
-        console.log(data, 'data');
         navigate(`/warehouse/check-in/detail/${data.id}`);
       });
   };

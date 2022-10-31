@@ -182,10 +182,6 @@ function WarehouseCIDetailRescale() {
       });
   };
 
-  React.useEffect(() => {
-    console.log(payload, 'payload');
-  }, [toggle]);
-
   return (
     <>
       <div className="header">

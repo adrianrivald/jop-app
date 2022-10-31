@@ -47,7 +47,10 @@ function Logistic() {
   const cookies = new Cookies();
   const token = cookies.get('token');
   const [tphList, setTphList] = React.useState([]);
+  const [gudangList, setGudangList] = React.useState([]);
   const [input, setInput] = React.useState({});
+  const [isTphMode, setIsTphMode] = React.useState(true);
+  const [batchGudang, setBatchGudang] = React.useState([]);
   const [batchReadyToDeliver, setBatchReadyToDeliver] = React.useState([]);
   const [batchOnDelivery, setBatchOnDelivery] = React.useState([]);
   const [batchDelivered, setBatchDelivered] = React.useState([]);
@@ -91,6 +94,25 @@ function Logistic() {
       });
   };
 
+  const getGudang = (val) => {
+    axios
+      .get(`${url}/gudang/list`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data.data;
+        const gudangData = data.map((res) => ({
+          value: res.id,
+          label: res.nama,
+        }));
+        setGudangList(gudangData);
+      });
+  };
+
   const onChangeHandler = (e, id) => {
     localStorage.setItem(
       'logistic_payload',
@@ -107,6 +129,13 @@ function Logistic() {
 
     if (id === 'lokasi' && e.target.value === 'tph') {
       getTPH();
+      setIsTphMode(true);
+      localStorage.setItem('mode', 'tph');
+    }
+    if (id === 'lokasi' && e.target.value === 'wh') {
+      getGudang();
+      setIsTphMode(false);
+      localStorage.setItem('mode', 'wh');
     }
     // setSelectedTph(e.target.value);
   };
@@ -119,13 +148,41 @@ function Logistic() {
         'from' in logistic_payload &&
         'to' in logistic_payload
       ) {
-        getBatchReadyToDeliver();
-        getBatchOnDelivery();
-        getBatchDelivered();
+        if (isTphMode) {
+          getBatchReadyToDeliver();
+          getBatchOnDelivery();
+          getBatchDelivered();
+        } else {
+          getBatchGudang();
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input]);
+
+  const getBatchGudang = () => {
+    axios
+      .get(
+        `${url}/pengiriman/stock-selesai-checkout?filter[gudang]=${
+          logistic_payload?.kode_lokasi
+        }&filter[status_kirim]=null|dalam-pengiriman|selesai-terkirim&filter[periode]=${logistic_payload?.from.concat(
+          ',',
+          logistic_payload?.to
+        )}`,
+        {
+          url: process.env.REACT_APP_API_URL,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }
+      )
+      .then((res) => {
+        const data = res.data.data.data;
+        setBatchGudang(data);
+        console.log(data, 'data');
+      });
+  };
 
   const getBatchReadyToDeliver = () => {
     axios
@@ -203,20 +260,20 @@ function Logistic() {
   return (
     <>
       <div className="header">
-        <Header title="Logistik" isWithBack moreAction={handleBack} />
+        <Header title="Logistik" to={'/homepage'} isWithBack moreAction={handleBack} />
       </div>
       <div className="container">
         <Dropdown
-          title="Masukan lokasi"
+          title="Masukkan lokasi"
           // defaultValue={!shipment_payload?.gudang_id ? 'Pilih kode lokasi gudang' : ''}
-          selected={logistic_payload?.lokasi !== null ? logistic_payload?.lokasi : 'tph'}
+          selected={logistic_payload?.lokasi !== null ? logistic_payload?.lokasi : 'Pilih kode lokasi'}
           option={[
             {
               value: 'tph',
               label: 'Tempat Penimbangan',
             },
             {
-              value: 'gudang',
+              value: 'wh',
               label: 'Gudang',
             },
           ]}
@@ -225,7 +282,7 @@ function Logistic() {
         <Dropdown
           title="Masukan kode lokasi awal"
           defaultValue={!logistic_payload?.kode_lokasi ? 'Pilih kode lokasi awal' : ''}
-          option={tphList}
+          option={isTphMode ? tphList : gudangList}
           selected={
             logistic_payload?.kode_lokasi !== null && tphList !== []
               ? logistic_payload?.kode_lokasi
@@ -251,146 +308,323 @@ function Logistic() {
           </div>
         </div>
         <Divider />
-        <div className="batch mt-5">
-          <div className="flex justify-between items-center">
-            <div className="w-2/4">
-              <p className="font-bold text-xs">Batch siap kirim</p>
-            </div>
-            {batchReadyToDeliver?.length > 0 && (
-              <div className="w-2/4 ml-2">
-                <div className="flex gap-6">
-                  <p className="w-8">P1</p>
-                  <p className="w-8">P2</p>
-                  <p className="w-8">P3</p>
-                  <p className="w-8">P4</p>
+        {isTphMode ? (
+          <>
+            <div className="batch mt-5">
+              <div className="flex justify-between items-center">
+                <div className="w-2/4">
+                  <p className="font-bold text-xs">Batch siap kirim</p>
                 </div>
-              </div>
-            )}
-          </div>
-          {batchReadyToDeliver?.length > 0 ? (
-            batchReadyToDeliver?.map((res, idx) => (
-              <div className="flex justify-between items-center mt-3">
-                <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
-                  <div className="flex items-center">
-                    <span className="font-bold">{res?.kode.split('-')[0]}</span>
-                    <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
-                      {res?.kode.split('/')[1]}-{res?.batch}
+                {batchReadyToDeliver?.length > 0 && (
+                  <div className="w-2/4 ml-2">
+                    <div className="flex gap-6">
+                      <p className="w-8">P1</p>
+                      <p className="w-8">P2</p>
+                      <p className="w-8">P3</p>
+                      <p className="w-8">P4</p>
                     </div>
                   </div>
-                </div>
-                <div className="w-2/4">
-                  <div className="flex gap-6">
-                    {res?.detail?.map((res, idx) => {
-                      console.log(res, 'detail');
-                      if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
-                        return <FilledCircle />;
-                      } else if (res?.kode !== 'P1' || res?.kode !== 'P2' || res?.kode !== 'P3' || res?.kode !== 'P4') {
-                        return null;
-                      }
-                      return <OutlinedCircle />;
-                    })}
-                  </div>
-                </div>
+                )}
               </div>
-            ))
-          ) : (
-            <span className="flex justify-center mt-3">No Data</span>
-          )}
-        </div>
-        <Divider />
-        <div className="batch mt-5">
-          <div className="flex justify-between items-center">
-            <div className="w-2/4">
-              <p className="font-bold text-xs">Batch sedang dalam pengiriman</p>
-            </div>
-            {batchOnDelivery?.length > 0 && (
-              <div className="w-2/4 ml-2">
-                <div className="flex gap-6">
-                  <p className="w-8">P1</p>
-                  <p className="w-8">P2</p>
-                  <p className="w-8">P3</p>
-                  <p className="w-8">P4</p>
-                </div>
-              </div>
-            )}
-          </div>
-          {batchOnDelivery?.length > 0 ? (
-            batchOnDelivery?.map((res, idx) => (
-              <div className="flex justify-between items-center mt-3">
-                <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
-                  <div className="flex items-center">
-                    <span>{res?.kode.split('-')[0]}</span>
-                    <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
-                      {res?.kode.split('/')[1]}-{res?.batch}
+              {batchReadyToDeliver?.length > 0 ? (
+                batchReadyToDeliver?.map((res, idx) => (
+                  <div className="flex justify-between items-center mt-3">
+                    <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
+                      <div className="flex items-center">
+                        <span className="font-bold">{res?.kode.split('-')[0]}</span>
+                        <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
+                          {res?.kode.split('/')[1]}-{res?.batch}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-2/4">
+                      <div className="flex gap-6">
+                        {res?.detail?.map((res, idx) => {
+                          if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
+                            return <FilledCircle />;
+                          } else if (
+                            res?.kode !== 'P1' ||
+                            res?.kode !== 'P2' ||
+                            res?.kode !== 'P3' ||
+                            res?.kode !== 'P4'
+                          ) {
+                            return null;
+                          }
+                          return <OutlinedCircle />;
+                        })}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="w-2/4">
-                  <div className="flex gap-6">
-                    {res?.detail?.map((res, idx) => {
-                      console.log(res, 'detail');
-                      if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
-                        return <FilledCircle />;
-                      } else if (res?.kode !== 'P1' || res?.kode !== 'P2' || res?.kode !== 'P3' || res?.kode !== 'P4') {
-                        return null;
-                      }
-                      return <OutlinedCircle />;
-                    })}
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <span className="flex justify-center mt-3">No Data</span>
-          )}
-          <Divider />
-        </div>
-        <div className="batch mt-5">
-          <div className="flex justify-between items-center">
-            <div className="w-2/4">
-              <p className="font-bold text-xs">Batch selesai terkirim</p>
+                ))
+              ) : (
+                <span className="flex justify-center mt-3">No Data</span>
+              )}
             </div>
-            {batchDelivered?.length > 0 && (
-              <div className="w-2/4 ml-2">
-                <div className="flex gap-6">
-                  <p className="w-8">P1</p>
-                  <p className="w-8">P2</p>
-                  <p className="w-8">P3</p>
-                  <p className="w-8">P4</p>
+            <Divider />
+            <div className="batch mt-5">
+              <div className="flex justify-between items-center">
+                <div className="w-2/4">
+                  <p className="font-bold text-xs">Batch sedang dalam pengiriman</p>
                 </div>
-              </div>
-            )}
-          </div>
-          {batchDelivered?.length > 0 ? (
-            batchDelivered?.map((res, idx) => (
-              <div className="flex justify-between items-center mt-3">
-                <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id, 'delivered')}>
-                  <div className="flex items-center">
-                    <span>{res?.kode.split('-')[0]}</span>
-                    <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
-                      {res?.kode.split('/')[1]}-{res?.batch}
+                {batchOnDelivery?.length > 0 && (
+                  <div className="w-2/4 ml-2">
+                    <div className="flex gap-6">
+                      <p className="w-8">P1</p>
+                      <p className="w-8">P2</p>
+                      <p className="w-8">P3</p>
+                      <p className="w-8">P4</p>
                     </div>
                   </div>
-                </div>
-                <div className="w-2/4">
-                  <div className="flex gap-6">
-                    {res?.detail?.map((res, idx) => {
-                      console.log(res, 'detail');
-                      if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
-                        return <FilledCircle />;
-                      } else if (res?.kode !== 'P1' || res?.kode !== 'P2' || res?.kode !== 'P3' || res?.kode !== 'P4') {
-                        return null;
-                      }
-                      return <OutlinedCircle />;
-                    })}
-                  </div>
-                </div>
+                )}
               </div>
-            ))
-          ) : (
-            <span className="flex justify-center mt-3">No Data</span>
-          )}
-        </div>
+              {batchOnDelivery?.length > 0 ? (
+                batchOnDelivery?.map((res, idx) => (
+                  <div className="flex justify-between items-center mt-3">
+                    <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
+                      <div className="flex items-center">
+                        <span>{res?.kode.split('-')[0]}</span>
+                        <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
+                          {res?.kode.split('/')[1]}-{res?.batch}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-2/4">
+                      <div className="flex gap-6">
+                        {res?.detail?.map((res, idx) => {
+                          if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
+                            return <FilledCircle />;
+                          } else if (
+                            res?.kode !== 'P1' ||
+                            res?.kode !== 'P2' ||
+                            res?.kode !== 'P3' ||
+                            res?.kode !== 'P4'
+                          ) {
+                            return null;
+                          }
+                          return <OutlinedCircle />;
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <span className="flex justify-center mt-3">No Data</span>
+              )}
+              <Divider />
+            </div>
+            <div className="batch mt-5">
+              <div className="flex justify-between items-center">
+                <div className="w-2/4">
+                  <p className="font-bold text-xs">Batch selesai terkirim</p>
+                </div>
+                {batchDelivered?.length > 0 && (
+                  <div className="w-2/4 ml-2">
+                    <div className="flex gap-6">
+                      <p className="w-8">P1</p>
+                      <p className="w-8">P2</p>
+                      <p className="w-8">P3</p>
+                      <p className="w-8">P4</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {batchDelivered?.length > 0 ? (
+                batchDelivered?.map((res, idx) => (
+                  <div className="flex justify-between items-center mt-3">
+                    <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id, 'delivered')}>
+                      <div className="flex items-center">
+                        <span>{res?.kode.split('-')[0]}</span>
+                        <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
+                          {res?.kode.split('/')[1]}-{res?.batch}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-2/4">
+                      <div className="flex gap-6">
+                        {res?.detail?.map((res, idx) => {
+                          if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
+                            return <FilledCircle />;
+                          } else if (
+                            res?.kode !== 'P1' ||
+                            res?.kode !== 'P2' ||
+                            res?.kode !== 'P3' ||
+                            res?.kode !== 'P4'
+                          ) {
+                            return null;
+                          }
+                          return <OutlinedCircle />;
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <span className="flex justify-center mt-3">No Data</span>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="batch mt-5">
+              <div className="flex justify-between items-center">
+                <div className="w-2/4">
+                  <p className="font-bold text-xs">Batch siap kirim</p>
+                </div>
+                {batchGudang?.filter((val) => val?.status_kirim === null)?.length > 0 && (
+                  <div className="w-2/4 ml-2">
+                    <div className="flex gap-6">
+                      <p className="w-8">P1</p>
+                      <p className="w-8">P2</p>
+                      <p className="w-8">P3</p>
+                      <p className="w-8">P4</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {batchGudang?.filter((val) => val?.status_kirim === null)?.length > 0 ? (
+                batchGudang
+                  .filter((val) => val?.status_kirim === null)
+                  ?.map((res, idx) => (
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
+                        <div className="flex items-center">
+                          <span className="font-bold">{res?.kode.split('-')[0]}</span>
+                          <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
+                            {res?.kode.split('/')[1]}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-2/4">
+                        <div className="flex gap-6">
+                          {res?.detail?.map((res, idx) => {
+                            if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
+                              return <FilledCircle />;
+                            } else if (
+                              res?.kode !== 'P1' ||
+                              res?.kode !== 'P2' ||
+                              res?.kode !== 'P3' ||
+                              res?.kode !== 'P4'
+                            ) {
+                              return null;
+                            }
+                            return <OutlinedCircle />;
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <span className="flex justify-center mt-3">No Data</span>
+              )}
+            </div>
+            <Divider />
+            <div className="batch mt-5">
+              <div className="flex justify-between items-center">
+                <div className="w-2/4">
+                  <p className="font-bold text-xs">Batch sedang dalam pengiriman</p>
+                </div>
+                {batchGudang?.filter((val) => val?.status_kirim === 'dalam-pengiriman')?.length > 0 && (
+                  <div className="w-2/4 ml-2">
+                    <div className="flex gap-6">
+                      <p className="w-8">P1</p>
+                      <p className="w-8">P2</p>
+                      <p className="w-8">P3</p>
+                      <p className="w-8">P4</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {batchGudang?.filter((val) => val?.status_kirim === 'dalam-pengiriman')?.length > 0 ? (
+                batchGudang
+                  ?.filter((val) => val?.status_kirim === 'dalam-pengiriman')
+                  ?.map((res, idx) => (
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id)}>
+                        <div className="flex items-center">
+                          <span>{res?.kode.split('-')[0]}</span>
+                          <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
+                            {res?.kode.split('/')[1]}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-2/4">
+                        <div className="flex gap-6">
+                          {res?.detail?.map((res, idx) => {
+                            if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
+                              return <FilledCircle />;
+                            } else if (
+                              res?.kode !== 'P1' ||
+                              res?.kode !== 'P2' ||
+                              res?.kode !== 'P3' ||
+                              res?.kode !== 'P4'
+                            ) {
+                              return null;
+                            }
+                            return <OutlinedCircle />;
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <span className="flex justify-center mt-3">No Data</span>
+              )}
+              <Divider />
+            </div>
+            <div className="batch mt-5">
+              <div className="flex justify-between items-center">
+                <div className="w-2/4">
+                  <p className="font-bold text-xs">Batch selesai terkirim</p>
+                </div>
+                {batchGudang.filter((val) => val?.status_kirim === 'selesai-terkirim')?.length > 0 && (
+                  <div className="w-2/4 ml-2">
+                    <div className="flex gap-6">
+                      <p className="w-8">P1</p>
+                      <p className="w-8">P2</p>
+                      <p className="w-8">P3</p>
+                      <p className="w-8">P4</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {batchGudang?.filter((val) => val?.status_kirim === 'selesai-terkirim').length > 0 ? (
+                batchGudang
+                  ?.filter((val) => val?.status_kirim === 'selesai-terkirim')
+                  .map((res, idx) => (
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="w-2/4 cursor-pointer" onClick={() => onClickBatch(res?.id, 'delivered')}>
+                        <div className="flex items-center">
+                          <span>{res?.kode.split('-')[0]}</span>
+                          <div className="cursor-pointer ml-2 rounded-lg p-2 text-xs bg-white shadow focus:outline-none focus:shadow-outline font-bold">
+                            {res?.kode.split('/')[1]}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-2/4">
+                        <div className="flex gap-6">
+                          {res?.detail?.map((res, idx) => {
+                            if (res?.kode === 'P1' || res?.kode === 'P2' || res?.kode === 'P3' || res?.kode === 'P4') {
+                              return <FilledCircle />;
+                            } else if (
+                              res?.kode !== 'P1' ||
+                              res?.kode !== 'P2' ||
+                              res?.kode !== 'P3' ||
+                              res?.kode !== 'P4'
+                            ) {
+                              return null;
+                            }
+                            return <OutlinedCircle />;
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <span className="flex justify-center mt-3">No Data</span>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </>
   );

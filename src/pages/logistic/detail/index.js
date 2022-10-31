@@ -5,8 +5,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Button from '../../../components/button/Button';
 import SubmitButton from '../../../components/button/submit';
+import Title from '../../../components/title/Title';
 import Divider from '../../../components/ui/Divider';
 import Header from '../../../components/ui/Header';
+import Modal from '../../../components/ui/Modal';
 import Toast from '../../../components/ui/Toast';
 import { capitalize } from '../../../utils/strings';
 
@@ -20,11 +22,36 @@ function LogisticDetail() {
   const [batchDetail, setBatchDetail] = React.useState({});
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
+  const [isDoneModal, setIsDoneModal] = React.useState(false);
+  const mode = localStorage.getItem('mode');
 
   React.useEffect(() => {
-    getBatchDetail();
+    if (mode === 'tph' || !mode) {
+      getBatchDetail();
+    } else {
+      getBatchDetailWh();
+    }
     localStorage.removeItem('shipment_payload');
+    localStorage.removeItem('scan_type');
+    localStorage.removeItem('supir_data');
+    localStorage.removeItem('pengawal_data');
+    localStorage.removeItem('loaded_data');
   }, []);
+
+  const getBatchDetailWh = () => {
+    axios
+      .get(`${url}/pengiriman/stock-sales/detail/${id}`, {
+        url: process.env.REACT_APP_API_URL,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        const data = res.data.data;
+        setBatchDetail(data);
+      });
+  };
 
   const getBatchDetail = () => {
     axios
@@ -63,6 +90,7 @@ function LogisticDetail() {
           detail: batchDetail?.detail,
           kode: batchDetail?.kode,
           loading_id: batchDetail?.loading?.id,
+          client: batchDetail?.client,
         })
       );
       navigate(`/logistic/shipment/${id}`);
@@ -76,23 +104,45 @@ function LogisticDetail() {
 
   const handleDone = () => {
     if (!isButtonDisabled || !localStorage.getItem('delivered')) {
-      axios
-        .get(`${url}/pengiriman/batch/done/${id}`, {
-          url: process.env.REACT_APP_API_URL,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        })
-        .then((res) => {
-          setIsSubmitted(true);
-          setIsButtonDisabled(true);
-          setTimeout(() => {
-            setIsButtonDisabled(false);
-            setIsSubmitted(false);
-            navigate('/logistic');
-          }, 3000);
-        });
+      if (mode === 'tph') {
+        axios
+          .get(`${url}/pengiriman/batch/done/${id}`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          })
+          .then((res) => {
+            setIsDoneModal(false);
+            setIsSubmitted(true);
+            setIsButtonDisabled(true);
+            setTimeout(() => {
+              setIsButtonDisabled(false);
+              setIsSubmitted(false);
+              navigate('/logistic');
+            }, 3000);
+          });
+      } else {
+        axios
+          .get(`${url}/pengiriman/stock/done/${id}`, {
+            url: process.env.REACT_APP_API_URL,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          })
+          .then((res) => {
+            setIsDoneModal(false);
+            setIsSubmitted(true);
+            setIsButtonDisabled(true);
+            setTimeout(() => {
+              setIsButtonDisabled(false);
+              setIsSubmitted(false);
+              navigate('/logistic');
+            }, 3000);
+          });
+      }
     }
   };
 
@@ -121,8 +171,6 @@ function LogisticDetail() {
 
     return false;
   };
-
-  console.log(batchDetail?.loading?.length === 0, 'isnothasloading');
 
   return (
     <>
@@ -244,10 +292,19 @@ function LogisticDetail() {
             text="Done"
             role="white"
             className="mt-2 w-full text-md"
-            onClick={handleDone}
+            onClick={() => setIsDoneModal(true)}
           />
         </div>
         <Toast text="Pengiriman telah diselesaikan !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
+        {isDoneModal ? (
+          <Modal onClose={() => setIsDoneModal(false)}>
+            <Title text="Apakah kamu yakin ingin menyelesaikan pengiriman?" />
+            <div className="flex justify-between items-center gap-3 mt-5">
+              <Button isText isBack text="Kembali" className="w-full" onClick={() => setIsDoneModal(false)} />
+              <Button isText text="Konfirmasi" className="w-full" onClick={handleDone} />
+            </div>
+          </Modal>
+        ) : null}
       </div>
     </>
   );

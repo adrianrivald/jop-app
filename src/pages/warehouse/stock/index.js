@@ -121,7 +121,6 @@ function Stock(props) {
       })
       .then((res) => {
         const data = res.data.data;
-        console.log(data.data, 'dataa');
         setStockData(data);
         setIsNoData(false);
         setStockData(data?.data);
