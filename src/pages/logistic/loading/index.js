@@ -32,10 +32,17 @@ function LogisticLoading() {
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [tphList, setTphList] = React.useState([]);
   const [photos, setPhotos] = React.useState([]);
-  const [payload, setPayload] = React.useState({
-    tph_penimbangan_detail_id: id,
-  });
   const batchItem = JSON.parse(localStorage.getItem('batch_item'));
+  const mode = localStorage.getItem('mode');
+  const [payload, setPayload] = React.useState(
+    mode === 'tph'
+      ? {
+          tph_penimbangan_detail_id: id,
+        }
+      : {
+          wh_stock_out_id: id,
+        }
+  );
 
   const onSelectPhoto = (e) => {
     let formData = new FormData();
@@ -92,32 +99,62 @@ function LogisticLoading() {
         setIsError(false);
       }, 3000);
     } else {
-      try {
-        await axios
-          .post(
-            `${url}/pengiriman/loading/store-new
-            `,
-            payload,
-            config
-          )
-          .then(() => {
-            setIsSubmitted(true);
-            setIsButtonDisabled(true);
-            setTimeout(() => {
-              setIsButtonDisabled(false);
-              setIsSubmitted(false);
-              navigate(-1);
-            }, 3000);
-            localStorage.removeItem('batch_item');
-          });
-      } catch (error) {
-        setIsError(true);
-        setErrorText(error?.response?.data?.message);
-        setIsButtonDisabled(true);
-        setTimeout(() => {
-          setIsButtonDisabled(false);
-          setIsError(false);
-        }, 3000);
+      if (mode === 'tph') {
+        try {
+          await axios
+            .post(
+              `${url}/pengiriman/loading/store-new
+              `,
+              payload,
+              config
+            )
+            .then(() => {
+              setIsSubmitted(true);
+              setIsButtonDisabled(true);
+              setTimeout(() => {
+                setIsButtonDisabled(false);
+                setIsSubmitted(false);
+                navigate(-1);
+              }, 3000);
+              localStorage.removeItem('batch_item');
+            });
+        } catch (error) {
+          setIsError(true);
+          setErrorText(error?.response?.data?.message);
+          setIsButtonDisabled(true);
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsError(false);
+          }, 3000);
+        }
+      } else {
+        try {
+          await axios
+            .post(
+              `${url}/pengiriman/loading/store-new-wh
+              `,
+              payload,
+              config
+            )
+            .then(() => {
+              setIsSubmitted(true);
+              setIsButtonDisabled(true);
+              setTimeout(() => {
+                setIsButtonDisabled(false);
+                setIsSubmitted(false);
+                navigate(-1);
+              }, 3000);
+              localStorage.removeItem('batch_item');
+            });
+        } catch (error) {
+          setIsError(true);
+          setErrorText(error?.response?.data?.message);
+          setIsButtonDisabled(true);
+          setTimeout(() => {
+            setIsButtonDisabled(false);
+            setIsError(false);
+          }, 3000);
+        }
       }
     }
   };
