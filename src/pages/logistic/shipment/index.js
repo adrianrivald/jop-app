@@ -164,7 +164,7 @@ function LogisticShipment() {
       setIsSubmitted(true);
       setIsSuccess(false);
       setIsButtonDisabled(true);
-      setAlertMessage('Total dry tidak boleh lebih besar dari total wet');
+      setAlertMessage('Total kirim lebih berat dari limit kapasitas armada yang dipilih!');
       setTimeout(() => {
         setIsButtonDisabled(false);
         setIsSubmitted(false);
