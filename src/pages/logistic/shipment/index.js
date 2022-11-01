@@ -34,7 +34,6 @@ function LogisticShipment() {
   const [logisticType, setLogisticType] = React.useState([]);
   const [vehicleList, setVehicleList] = React.useState([]);
   const [storageList, setStorageList] = React.useState([]);
-  const [weightLimit, setWeightLimit] = React.useState();
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
@@ -142,7 +141,7 @@ function LogisticShipment() {
           [id]: e.target.value.split(',')[0],
         })
       );
-      setWeightLimit(e.target.value.split('|')[1]);
+      localStorage.setItem('weight_limit', e.target.value.split('|')[1]);
     }
 
     if (id === 'jenis_logistik_id') {
@@ -158,9 +157,10 @@ function LogisticShipment() {
       },
     };
 
+    const weight_limit = localStorage.getItem('weight_limit');
     const totalMaterialWeight = loaded_data.detail?.reduce((acc, o) => acc + o.berat_kirim, 0);
 
-    if (totalMaterialWeight > weightLimit) {
+    if (totalMaterialWeight > weight_limit) {
       setIsSubmitted(true);
       setIsSuccess(false);
       setIsButtonDisabled(true);
