@@ -30,12 +30,12 @@ function LogisticLoading() {
   const [isError, setIsError] = React.useState(false);
   const [errorText, setErrorText] = React.useState('');
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
-  const [tphList, setTphList] = React.useState([]);
   const [photos, setPhotos] = React.useState([]);
   const batchItem = JSON.parse(localStorage.getItem('batch_item'));
-  const mode = localStorage.getItem('mode');
+  const logistic_payload = JSON.parse(localStorage.getItem('logistic_payload'));
+
   const [payload, setPayload] = React.useState(
-    mode === 'tph'
+    logistic_payload?.lokasi === 'tph'
       ? {
           tph_penimbangan_detail_id: id,
         }
@@ -99,7 +99,7 @@ function LogisticLoading() {
         setIsError(false);
       }, 3000);
     } else {
-      if (mode === 'tph') {
+      if (logistic_payload?.lokasi === 'tph') {
         try {
           await axios
             .post(

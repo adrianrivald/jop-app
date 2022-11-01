@@ -39,12 +39,12 @@ function LogisticShipment() {
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState('');
   const shipment_payload = JSON.parse(localStorage.getItem('shipment_payload'));
-  const mode = localStorage.getItem('mode');
+  const logistic_payload = JSON.parse(localStorage.getItem('logistic_payload'));
 
   React.useEffect(() => {
     getLogisticType();
     getStorage();
-    if (mode === 'tph') {
+    if (logistic_payload?.lokasi === 'tph') {
       localStorage.setItem(
         'shipment_payload',
         JSON.stringify({
@@ -138,7 +138,7 @@ function LogisticShipment() {
         'shipment_payload',
         JSON.stringify({
           ...shipment_payload,
-          [id]: e.target.value.split(',')[0],
+          [id]: e.target.value.split('|')[0],
         })
       );
       localStorage.setItem('weight_limit', e.target.value.split('|')[1]);
@@ -191,6 +191,7 @@ function LogisticShipment() {
             localStorage.removeItem('shipment_payload');
             localStorage.removeItem('scan_type');
             localStorage.removeItem('scanned_tapper');
+            localStorage.removeItem('weight_limit');
             navigate(-1);
           }, 3000);
         });
@@ -254,7 +255,7 @@ function LogisticShipment() {
             onChange={(e) => onChangeHandler(e, 'armada_id')}
           />
           <div className="flex gap-3">
-            {mode === 'tph' ? (
+            {logistic_payload?.lokasi === 'tph' ? (
               <Dropdown
                 title="Kode lokasi gudang"
                 defaultValue={!shipment_payload?.gudang_id ? 'Pilih kode lokasi gudang' : ''}
@@ -276,7 +277,7 @@ function LogisticShipment() {
             <label className="text-left mb-1">Alamat / fasilitas tujuan lain (optional)</label>
             <textarea
               defaultValue={
-                mode === 'tph'
+                logistic_payload?.lokasi === 'tph'
                   ? shipment_payload?.alamat_pengiriman !== null
                     ? shipment_payload?.alamat_pengiriman
                     : ''
