@@ -155,15 +155,15 @@ function WarehouseOpnameUpdate() {
         <div className="flex justify-between my-5 gap-3">
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">Wet</p>
-            <p className="text-4xl font-bold">{opnameDetail?.total_wet}</p>
+            <p className="text-2xl font-bold">{opnameDetail?.total_wet}</p>
           </div>
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">DRC</p>
-            <p className="text-4xl font-bold">{opnameDetail?.drc} %</p>
+            <p className="text-2xl font-bold">{opnameDetail?.drc} %</p>
           </div>
           <div className="p-3 rounded-xl border border-cloud w-full">
             <p className="text-xxs mb-3">Dry</p>
-            <p className="text-4xl font-bold">{opnameDetail?.total_dry}</p>
+            <p className="text-2xl font-bold">{opnameDetail?.total_dry}</p>
           </div>
         </div>
         <Divider />
