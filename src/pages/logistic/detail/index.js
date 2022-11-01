@@ -23,10 +23,10 @@ function LogisticDetail() {
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isDoneModal, setIsDoneModal] = React.useState(false);
-  const mode = localStorage.getItem('mode');
+  const mode = JSON.parse(localStorage.getItem('logistic_payload'));
 
   React.useEffect(() => {
-    if (mode === 'tph' || !mode) {
+    if (mode?.lokasi === 'tph' || !mode) {
       getBatchDetail();
     } else {
       getBatchDetailWh();
