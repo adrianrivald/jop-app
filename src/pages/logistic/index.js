@@ -57,6 +57,13 @@ function Logistic() {
   React.useEffect(() => {
     localStorage.removeItem('delivered');
     getTPH();
+    localStorage.setItem(
+      'logistic_payload',
+      JSON.stringify({
+        ...logistic_payload,
+        lokasi: 'tph',
+      })
+    );
     if (logistic_payload?.lokasi === 'wh') {
       getGudang();
     }
@@ -266,7 +273,7 @@ function Logistic() {
         <Dropdown
           title="Masukan kode lokasi awal"
           defaultValue={!logistic_payload?.kode_lokasi ? 'Pilih kode lokasi awal' : ''}
-          option={logistic_payload?.lokasi === 'tph' ? tphList : gudangList}
+          option={logistic_payload?.lokasi === 'tph' || !logistic_payload?.lokasi ? tphList : gudangList}
           selected={logistic_payload?.kode_lokasi !== null ? logistic_payload?.kode_lokasi : 'Pilih kode lokasi'}
           onChange={(e) => onChangeHandler(e, 'kode_lokasi')}
         />

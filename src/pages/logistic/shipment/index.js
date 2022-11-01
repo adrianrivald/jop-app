@@ -29,7 +29,6 @@ function LogisticShipment() {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get('token');
-  const [tphList, setTphList] = React.useState([]);
   const loaded_data = JSON.parse(localStorage.getItem('loaded_data'));
   const [logisticType, setLogisticType] = React.useState([]);
   const [vehicleList, setVehicleList] = React.useState([]);
@@ -105,7 +104,7 @@ function LogisticShipment() {
       });
   };
 
-  const getStorage = (val) => {
+  const getStorage = () => {
     axios
       .get(`${url}/gudang/list`, {
         url: process.env.REACT_APP_API_URL,
@@ -125,24 +124,15 @@ function LogisticShipment() {
   };
 
   const onChangeHandler = (e, id) => {
-    if (id !== 'armada_id') {
-      localStorage.setItem(
-        'shipment_payload',
-        JSON.stringify({
-          ...shipment_payload,
-          [id]: e.target.value,
-        })
-      );
-    } else {
-      localStorage.setItem(
-        'shipment_payload',
-        JSON.stringify({
-          ...shipment_payload,
-          [id]: e.target.value.split('|')[0],
-        })
-      );
-      localStorage.setItem('weight_limit', e.target.value.split('|')[1]);
-    }
+    localStorage.setItem(
+      'shipment_payload',
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem('shipment_payload')),
+        [id]: id !== 'armada_id' ? e.target.value : e.target.value.split('|')[0],
+      })
+    );
+
+    localStorage.setItem('weight_limit', e.target.value.split('|')[1]);
 
     if (id === 'jenis_logistik_id') {
       getVehicle(e.target.value);
@@ -247,9 +237,7 @@ function LogisticShipment() {
           <Dropdown
             title="Armada yang digunakan"
             defaultValue={!shipment_payload?.armada_id ? 'Pilih armada' : ''}
-            selected={
-              shipment_payload?.armada_id !== null && vehicleList !== [] ? shipment_payload?.armada_id : 'Pilih armada'
-            }
+            selected={shipment_payload?.armada_id !== null ? shipment_payload?.armada_id : 'Pilih armada'}
             className="mt-3"
             option={vehicleList}
             onChange={(e) => onChangeHandler(e, 'armada_id')}
