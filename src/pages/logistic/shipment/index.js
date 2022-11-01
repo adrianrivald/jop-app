@@ -99,7 +99,7 @@ function LogisticShipment() {
       .then((res) => {
         const data = res.data.data.data;
         const vehicleData = data.map((res) => ({
-          value: `${res.id}-${res?.merk?.berat_maksimum}`,
+          value: `${res.id}|${res?.merk?.berat_maksimum}`,
           label: `${res?.plat_nomor} - ${res?.merk?.berat_maksimum} kg`,
         }));
         setVehicleList(vehicleData);
@@ -135,7 +135,6 @@ function LogisticShipment() {
         })
       );
     } else {
-      console.log(e.target.value, 'value');
       localStorage.setItem(
         'shipment_payload',
         JSON.stringify({
@@ -143,7 +142,7 @@ function LogisticShipment() {
           [id]: e.target.value.split(',')[0],
         })
       );
-      setWeightLimit(e.target.value.split('-')[1]);
+      setWeightLimit(e.target.value.split('|')[1]);
     }
 
     if (id === 'jenis_logistik_id') {
@@ -160,8 +159,6 @@ function LogisticShipment() {
     };
 
     const totalMaterialWeight = loaded_data.detail?.reduce((acc, o) => acc + o.berat_kirim, 0);
-    console.log(totalMaterialWeight, 'totalmaterialweight');
-    console.log(weightLimit, 'weightlimit');
 
     if (totalMaterialWeight > weightLimit) {
       setIsSubmitted(true);
