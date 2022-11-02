@@ -49,7 +49,6 @@ function Logistic() {
   const [tphList, setTphList] = React.useState([]);
   const [gudangList, setGudangList] = React.useState([]);
   const [input, setInput] = React.useState({});
-  const [isTphMode, setIsTphMode] = React.useState(true);
   const [batchGudang, setBatchGudang] = React.useState([]);
   const [batchReadyToDeliver, setBatchReadyToDeliver] = React.useState([]);
   const [batchOnDelivery, setBatchOnDelivery] = React.useState([]);
@@ -57,6 +56,7 @@ function Logistic() {
   const logistic_payload = JSON.parse(localStorage.getItem('logistic_payload'));
   React.useEffect(() => {
     localStorage.removeItem('delivered');
+    getTPH();
     localStorage.setItem(
       'logistic_payload',
       JSON.stringify({
@@ -64,14 +64,9 @@ function Logistic() {
         lokasi: 'tph',
       })
     );
-    // if (logistic_payload?.lokasi === 'tph') {
-    getTPH();
-    // }
-    // if (logistic_payload?.from !== null && logistic_payload?.to !== null) {
-    //   getBatchReadyToDeliver();
-    //   getBatchOnDelivery();
-    //   getBatchDelivered();
-    // }
+    if (logistic_payload?.lokasi === 'wh') {
+      getGudang();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -94,7 +89,7 @@ function Logistic() {
       });
   };
 
-  const getGudang = (val) => {
+  const getGudang = () => {
     axios
       .get(`${url}/gudang/list`, {
         url: process.env.REACT_APP_API_URL,
@@ -129,13 +124,9 @@ function Logistic() {
 
     if (id === 'lokasi' && e.target.value === 'tph') {
       getTPH();
-      setIsTphMode(true);
-      localStorage.setItem('mode', 'tph');
     }
     if (id === 'lokasi' && e.target.value === 'wh') {
       getGudang();
-      setIsTphMode(false);
-      localStorage.setItem('mode', 'wh');
     }
     // setSelectedTph(e.target.value);
   };
@@ -148,7 +139,7 @@ function Logistic() {
         'from' in logistic_payload &&
         'to' in logistic_payload
       ) {
-        if (isTphMode) {
+        if (logistic_payload?.lokasi === 'tph') {
           getBatchReadyToDeliver();
           getBatchOnDelivery();
           getBatchDelivered();
@@ -282,12 +273,8 @@ function Logistic() {
         <Dropdown
           title="Masukan kode lokasi awal"
           defaultValue={!logistic_payload?.kode_lokasi ? 'Pilih kode lokasi awal' : ''}
-          option={isTphMode ? tphList : gudangList}
-          selected={
-            logistic_payload?.kode_lokasi !== null && tphList !== []
-              ? logistic_payload?.kode_lokasi
-              : 'Pilih kode lokasi'
-          }
+          option={logistic_payload?.lokasi === 'tph' || !logistic_payload?.lokasi ? tphList : gudangList}
+          selected={logistic_payload?.kode_lokasi !== null ? logistic_payload?.kode_lokasi : 'Pilih kode lokasi'}
           onChange={(e) => onChangeHandler(e, 'kode_lokasi')}
         />
         <div>
@@ -308,7 +295,7 @@ function Logistic() {
           </div>
         </div>
         <Divider />
-        {isTphMode ? (
+        {logistic_payload?.lokasi === 'tph' ? (
           <>
             <div className="batch mt-5">
               <div className="flex justify-between items-center">

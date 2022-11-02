@@ -23,10 +23,10 @@ function LogisticDetail() {
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const [isDoneModal, setIsDoneModal] = React.useState(false);
-  const mode = localStorage.getItem('mode');
+  const logistic_payload = JSON.parse(localStorage.getItem('logistic_payload'));
 
   React.useEffect(() => {
-    if (mode === 'tph' || !mode) {
+    if (logistic_payload?.lokasi === 'tph') {
       getBatchDetail();
     } else {
       getBatchDetailWh();
@@ -104,7 +104,7 @@ function LogisticDetail() {
 
   const handleDone = () => {
     if (!isButtonDisabled || !localStorage.getItem('delivered')) {
-      if (mode === 'tph') {
+      if (logistic_payload?.lokasi === 'tph') {
         axios
           .get(`${url}/pengiriman/batch/done/${id}`, {
             url: process.env.REACT_APP_API_URL,
