@@ -6,17 +6,29 @@ import Title from '../../../../components/title/Title';
 import Header from '../../../../components/ui/Header';
 import Fallback from '../../../../assets/images/fallback-ava.png';
 import FlatButton from '../../../../components/button/flat';
-import Cookies from 'universal-cookie';
 import Divider from '../../../../components/ui/Divider';
-import Toast from '../../../../components/ui/Toast';
+import { showToast } from '../../../../store/actions/uiAction';
+import Joi from 'joi';
+import { ACCEPTED_STATUS_CODE } from 'fetch-queue/lib/CONSTANTS';
 
-const url = process.env.REACT_APP_API_URL;
+const SCHEMA = Joi.object({
+  tapper_id: Joi.string().uuid().label('Tapper ID').required(),
+  tph_penimbangan_id: Joi.string().uuid().label('TPH Penimbangan ID').required(),
+  detail: Joi.array()
+    .items(
+      Joi.object({
+        jenis_bahan_baku_id: Joi.string().uuid().label('Jenis Bahan Baku ID').required(),
+        berat_wet: Joi.number().min(0).label('Berat basah').required(),
+      })
+    )
+    .label('Detail')
+    .min(1),
+  foto: Joi.array().items(Joi.string()).label('Foto'),
+});
 
 const WeighingTapper = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const [transactionData, setTransactionData] = React.useState({});
   const [photos, setPhotos] = React.useState([]);
   const scanned_tapper = localStorage.getItem('scanned_tapper');
@@ -25,7 +37,6 @@ const WeighingTapper = () => {
   const [tapperHistoryDetail, setTapperHistoryDetail] = React.useState([]);
   const [weighingPayload, setWeighingPayload] = React.useState({});
   const stored_data = JSON.parse(localStorage.getItem('selected_material'));
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const transaction_id = localStorage.getItem('transaction_id');
   const weighing_transaction = JSON.parse(localStorage.getItem('weighing_transaction'));
@@ -38,10 +49,8 @@ const WeighingTapper = () => {
   const getData = async () => {
     if (transaction_id && transaction_id !== undefined) {
       await axios
-        .get(`${url}/penimbangan/detail/transaksi/${transaction_id}`, {
-          url: process.env.REACT_APP_API_URL,
+        .get(`/penimbangan/detail/transaksi/${transaction_id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         })
@@ -63,10 +72,8 @@ const WeighingTapper = () => {
         });
     } else {
       await axios
-        .get(`${url}/absensi/scan-by-tapper-uuid/${scanned_tapper}`, {
-          url: process.env.REACT_APP_API_URL,
+        .get(`/absensi/scan-by-tapper-uuid/${scanned_tapper}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         })
@@ -111,14 +118,13 @@ const WeighingTapper = () => {
   const uploadPhoto = async (formData) => {
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
         // 'Content-Type': 'image/jpeg',
         Accept: 'application/json',
       },
     };
     await axios
       .post(
-        `${url}/upload-foto
+        `/upload-foto
         `,
         formData,
         config
@@ -134,28 +140,49 @@ const WeighingTapper = () => {
   };
 
   const handleSubmit = async () => {
+    setIsButtonDisabled(true);
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
     };
-    await axios
-      .post(
-        `${url}/penimbangan/transaksi/store
+
+    try {
+      await SCHEMA.validateAsync(weighingPayload);
+
+      const res = await axios.post(
+        `/penimbangan/transaksi/store
         `,
         weighingPayload,
         config
-      )
-      .then(() => {
-        setIsSubmitted(true);
-        setIsButtonDisabled(true);
-        setTimeout(() => {
-          setIsButtonDisabled(false);
-          setIsSubmitted(false);
-          navigate(`/weighing/detail/${id}`);
-        }, 3000);
+      );
+
+      if (res.status === ACCEPTED_STATUS_CODE) {
+        showToast({
+          message: 'Koneksi anda bermasalah, data sudah dalam antrian !',
+        });
+      } else {
+        showToast({
+          message: 'Sukses menambahkan data !',
+        });
+      }
+
+      navigate(`/weighing/detail/${id}`);
+    } catch (err) {
+      if (err.isAxiosError) {
+        return showToast({
+          message: err.response?.data?.error?.message,
+          isError: true,
+        });
+      }
+
+      showToast({
+        message: err.message,
+        isError: true,
       });
+    } finally {
+      setIsButtonDisabled(false);
+    }
   };
 
   return (
@@ -309,7 +336,6 @@ const WeighingTapper = () => {
           disabled={isButtonDisabled}
         />
       </div>
-      <Toast text="Sukses menambahkan data !" onClose={() => setIsSubmitted(false)} isShow={isSubmitted} />
     </>
   );
 };
