@@ -17,8 +17,13 @@ function LogisticScan() {
   const token = cookies.get('token');
   const [alertMessage, setAlertMessage] = React.useState('');
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isScanned, setIsScanned] = React.useState(false);
   const shipment_payload = JSON.parse(localStorage.getItem('shipment_payload'));
   const scan_type = localStorage.getItem('scan_type');
+
+  React.useEffect(() => {
+    navigate(-1);
+  }, [isScanned]);
 
   const onResult = (result) => {
     try {
@@ -48,7 +53,7 @@ function LogisticScan() {
                   code: data?.kode,
                 })
               );
-              navigate(-1);
+              setIsScanned(true);
             } else {
               localStorage.setItem(
                 'shipment_payload',
@@ -65,7 +70,7 @@ function LogisticScan() {
                   code: data?.kode,
                 })
               );
-              navigate(-1);
+              setIsScanned(true);
             }
           });
       }
