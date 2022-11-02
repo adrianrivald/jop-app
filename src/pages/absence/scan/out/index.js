@@ -8,6 +8,7 @@ import Overlay from '../components/overlay';
 import Joi from 'joi';
 import { showToast } from '../../../../store/actions/uiAction';
 import moment from 'moment/moment';
+import { ACCEPTED_STATUS_CODE } from 'fetch-queue/lib/CONSTANTS';
 
 const SCHEMA = Joi.object({
   pekerja_id: Joi.string().uuid().label('Pekerja ID').required(),
@@ -31,7 +32,7 @@ function AbsenceOut() {
           },
         };
 
-        await axios.post(
+        const res = await axios.post(
           `/absensi/store`,
           {
             pekerja_id: result?.text,
@@ -42,10 +43,24 @@ function AbsenceOut() {
           config
         );
 
+        if (res.status === ACCEPTED_STATUS_CODE) {
+          showToast({
+            message: 'koneksi anda bermasalah, data sudah dalam antrian!',
+          });
+          return navigate(-1);
+        }
+
         navigate(`/absence/tapper/${result?.text}`);
       } catch (err) {
+        if (err.isAxiosError) {
+          return showToast({
+            message: err.response?.data?.error?.message,
+            isError: true,
+          });
+        }
+
         showToast({
-          message: err.response?.data?.error?.message,
+          message: err.message,
           isError: true,
         });
       }
