@@ -48,6 +48,7 @@ function LogisticScan() {
                   code: data?.kode,
                 })
               );
+              navigate(-1);
             } else {
               localStorage.setItem(
                 'shipment_payload',
@@ -64,8 +65,8 @@ function LogisticScan() {
                   code: data?.kode,
                 })
               );
+              navigate(-1);
             }
-            navigate(-1);
           });
       }
     } catch (error) {
