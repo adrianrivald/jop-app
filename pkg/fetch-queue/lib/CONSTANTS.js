@@ -14,3 +14,4 @@ export const INTERNAL_ERROR_STATUS_CODE = 500;
 export const ACCEPTED_STATUS_CODE = 202;
 
 export const BC_NAME = 'FETCH_QUEUE';
+export const FETCH_TIMEOUT = 10000;
