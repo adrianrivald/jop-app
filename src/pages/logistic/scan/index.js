@@ -22,7 +22,9 @@ function LogisticScan() {
   const scan_type = localStorage.getItem('scan_type');
 
   React.useEffect(() => {
-    navigate(-1);
+    if (isScanned === true) {
+      navigate(-1);
+    }
   }, [isScanned]);
 
   const onResult = (result) => {
