@@ -1,6 +1,6 @@
 import { Queue } from './queue';
 import { Network } from './network';
-import { ACCEPTED_STATUS_CODE, INTERNAL_ERROR_STATUS_CODE, MESSAGE_TYPE, NOT_MODIFIED_STATUS_CODE } from '../CONSTANTS';
+import { ACCEPTED_STATUS_CODE, FETCH_TIMEOUT, MESSAGE_TYPE, NOT_MODIFIED_STATUS_CODE } from '../CONSTANTS';
 import { MessageChannel } from './message-channel';
 import Message from '../dto/Message';
 import FetchResponseMessageData from '../dto/FetchResponseMessageData';
@@ -8,6 +8,21 @@ import RequestObject from '../dto/RequestObject';
 
 const _SAFE_METHOD = ['GET', 'HEAD'];
 const _CACHE_NAME = 'FETCH_QUEUE';
+
+/**
+ * @param {Request} request
+ * @param timeout
+ * @return {Promise<Response<any, Record<string, any>, number>>}
+ */
+async function fetchWithTimeout(request, timeout = FETCH_TIMEOUT) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  const response = await fetch(request, {
+    signal: controller.signal,
+  });
+  clearTimeout(id);
+  return response;
+}
 
 export class FetchQueue {
   /**
@@ -81,7 +96,7 @@ export class FetchQueue {
     const isSafeMethod = _SAFE_METHOD.includes(request.method);
     const clonedRequest = request.clone();
     try {
-      const res = await fetch(request);
+      const res = await fetchWithTimeout(request);
 
       if (res.status === 502) {
         return this._onRequestError(clonedRequest, new Error('server gateway error'));
