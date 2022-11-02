@@ -57,13 +57,15 @@ function Logistic() {
   React.useEffect(() => {
     localStorage.removeItem('delivered');
     getTPH();
-    localStorage.setItem(
-      'logistic_payload',
-      JSON.stringify({
-        ...logistic_payload,
-        lokasi: 'tph',
-      })
-    );
+    if (!logistic_payload?.lokasi || logistic_payload?.lokasi === undefined) {
+      localStorage.setItem(
+        'logistic_payload',
+        JSON.stringify({
+          ...logistic_payload,
+          lokasi: 'tph',
+        })
+      );
+    }
     if (logistic_payload?.lokasi === 'wh') {
       getGudang();
     }
