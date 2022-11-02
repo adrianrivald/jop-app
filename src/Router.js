@@ -49,7 +49,13 @@ export default function Router() {
 
   return (
     <>
-      <Toast isShow={toastState.show} text={toastState.message} onClose={hideToast} isSuccess={!toastState.isError} />
+      <Toast
+        isShow={toastState.show}
+        text={toastState.message}
+        onClose={hideToast}
+        timeout={5000}
+        isSuccess={!toastState.isError}
+      />
       <BrowserRouter>
         <RouteGuard loginPath="/auth/login" homePath="/homepage">
           <Routes>

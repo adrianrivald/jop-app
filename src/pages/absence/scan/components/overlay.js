@@ -5,9 +5,11 @@ import Button from '../../../../components/button/Button';
 import './overlay.css';
 import Joi from 'joi';
 import { showToast } from '../../../../store/actions/uiAction';
+import moment from 'moment';
+import { ACCEPTED_STATUS_CODE } from 'fetch-queue/lib/CONSTANTS';
 
 const SCHEMA = Joi.object({
-  pekerja_id: Joi.string().uuid().label('Pekerja ID').required(),
+  pekerja_kode: Joi.string().label('Pekerja kode').required(),
   penugasan_id: Joi.string().uuid().label('Penugasan ID').required(),
 });
 
@@ -22,60 +24,62 @@ const Overlay = () => {
     setCode(e.target.value);
   };
 
-  const getDetail = async () => {
-    await axios
-      .get(`/absensi/scan-by-tapper-kode/${code}`, {
+  const navigateToTapperDetail = async () => {
+    const res = await axios.get(`/absensi/scan-by-tapper-kode/${code}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    const { id } = res.data.data;
+    navigate(`/absence/tapper/${id}`);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await SCHEMA.validateAsync({
+        pekerja_kode: code,
+        penugasan_id: id_tugas,
+      });
+
+      const config = {
         headers: {
           Accept: 'application/json',
         },
-      })
-      .then((res) => {
-        const data = res.data.data;
-        setTapperDetail(data);
-      });
-  };
-
-  const onSubmit = async () => {
-    getDetail();
-  };
-
-  React.useEffect(() => {
-    const submit = async () => {
-      try {
-        await SCHEMA.validateAsync({
-          pekerja_id: tapperDetail?.id,
+      };
+      const res = await axios.post(
+        `/absensi/store/offline`,
+        {
+          pekerja_kode: code,
           penugasan_id: id_tugas,
-        });
+          tipe_absen: absenceType === 'in' ? 'masuk' : 'keluar',
+          timestamp: moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
+        },
+        config
+      );
 
-        const config = {
-          headers: {
-            Accept: 'application/json',
-          },
-        };
-        await axios.post(
-          `/absensi/store`,
-          {
-            pekerja_id: tapperDetail?.id,
-            penugasan_id: id_tugas,
-            tipe_absen: absenceType === 'in' ? 'masuk' : 'keluar',
-          },
-          config
-        );
-
-        navigate(`/absence/tapper/${tapperDetail?.id}`);
-      } catch (err) {
+      if (res.status === ACCEPTED_STATUS_CODE) {
         showToast({
+          message: 'koneksi anda bermasalah, data sudah dalam antrian!',
+        });
+        return navigate(-1);
+      }
+
+      return navigateToTapperDetail();
+    } catch (err) {
+      if (err.isAxiosError) {
+        return showToast({
           message: err.response?.data?.error?.message,
           isError: true,
         });
       }
-    };
 
-    if (tapperDetail?.id) {
-      submit();
+      showToast({
+        message: err.message,
+        isError: true,
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tapperDetail?.id]);
+  };
 
   return (
     <>
@@ -91,7 +95,7 @@ const Overlay = () => {
             type="text"
             onChange={(e) => onChange(e)}
           />
-          <Button isText text="Submit" className="h-9 py-0 ml-2" onClick={onSubmit} />
+          <Button isText text="Submit" className="h-9 py-0 ml-2" onClick={handleSubmit} />
         </div>
       </div>
     </>

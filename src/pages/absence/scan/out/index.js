@@ -7,6 +7,7 @@ import { QrReader } from 'react-qr-reader';
 import Overlay from '../components/overlay';
 import Joi from 'joi';
 import { showToast } from '../../../../store/actions/uiAction';
+import moment from 'moment/moment';
 
 const SCHEMA = Joi.object({
   pekerja_id: Joi.string().uuid().label('Pekerja ID').required(),
@@ -36,6 +37,7 @@ function AbsenceOut() {
             pekerja_id: result?.text,
             penugasan_id: id_tugas,
             tipe_absen: 'keluar',
+            timestamp: moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
           },
           config
         );
