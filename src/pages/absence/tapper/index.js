@@ -174,7 +174,7 @@ const DetailTapper = () => {
                     <div className="flex justify-between items-center mt-3 w-full">
                       <p className="w-2/4">Waktu Absensi</p>
                       <p className="w-2/4 font-bold">
-                        {moment(res?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')}
+                        {moment(res?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')}
                       </p>
                     </div>
                     <div className="flex justify-between items-center mt-3 w-full">
