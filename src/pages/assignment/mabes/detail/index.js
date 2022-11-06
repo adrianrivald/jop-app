@@ -176,7 +176,7 @@ function MabesDetail() {
           <div>
             <p className="text-xs">{moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('D MMMM, YYYY')}</p>
             <p className="text-xs">
-              {moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')} - selesai
+              {moment(detailData?.tanggal_tugas, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')} - selesai
             </p>
           </div>
         </div>
