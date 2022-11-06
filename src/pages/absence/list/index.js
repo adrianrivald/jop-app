@@ -11,7 +11,7 @@ import Title from '../../../components/title/Title';
 
 function WorkerList(props) {
   return props.workerList.map((result, idx) => {
-    const modified_date = moment(result.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm');
+    const modified_date = moment(result.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('HH:mm');
     return (
       <div className="flex justify-between items-center mt-3 pt-3" key={idx}>
         <p className="w-8 text-xxs mx-4">{result?.kode}</p>
@@ -86,8 +86,8 @@ function AbsenceList() {
     const sort = e.target.value;
     getAbsence(sort);
     // const sorted = workerList.sort((a, b) => {
-    //     const aTime = moment(a.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
-    //     const bTime = moment(b.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('hh:mm')
+    //     const aTime = moment(a.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')
+    //     const bTime = moment(b.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format('HH:mm')
     //     if (e.target.value === "desc") {
     //         return bTime.localeCompare(aTime);
     //         // setWorkerList(bTime.localeCompare(aTime))
@@ -127,7 +127,7 @@ function AbsenceList() {
                   <p className="text-xxs font-bold">
                     {absenceList?.pekerja?.masuk?.list[0]?.nama ?? ''}, &nbsp;
                     {`${moment(absenceList?.pekerja?.masuk?.list[0]?.absensi_masuk, 'YYYY-MM-DD hh:mm:ss').format(
-                      'hh:mm'
+                      'HH:mm'
                     )} WIB` ?? '-'}
                   </p>
                 </div>
@@ -157,7 +157,7 @@ function AbsenceList() {
                   <p className="text-xxs font-bold">
                     {absenceList?.pekerja?.keluar?.list[0]?.nama}, &nbsp;
                     {moment(absenceList?.pekerja?.keluar?.list[0]?.absensi_keluar, 'YYYY-MM-DD hh:mm:ss').format(
-                      'hh:mm'
+                      'HH:mm'
                     )}{' '}
                     WIB
                   </p>
