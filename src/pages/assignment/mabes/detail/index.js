@@ -111,6 +111,7 @@ function MabesDetail() {
         setAlertMessage('Sukses membatalkan tugas');
         setTimeout(() => {
           setIsSubmitted(false);
+          navigate('/assignment');
         }, 3000);
       });
   };
